@@ -11,7 +11,7 @@
     ],
     "require": {
         "react/child-process": "^0.4",
-        "wyrihaximus/ticking-promise": "~1.1"
+        "wyrihaximus/ticking-promise": "~1.4"
     },
     "require-dev": {
         "satooshi/php-coveralls": "^0.6",
