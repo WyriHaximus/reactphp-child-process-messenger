@@ -166,12 +166,12 @@ class Messenger extends EventEmitter
         return $this->process->getCommand();
     }
 
-    public final function getEnhanceSigchildCompatibility()
+    final public function getEnhanceSigchildCompatibility()
     {
         return $this->process->getEnhanceSigchildCompatibility();
     }
 
-    public final function setEnhanceSigchildCompatibility($enhance)
+    final public function setEnhanceSigchildCompatibility($enhance)
     {
         return $this->process->setEnhanceSigchildCompatibility($enhance);
     }
