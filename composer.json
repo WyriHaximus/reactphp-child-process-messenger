@@ -18,7 +18,7 @@
         "phpunit/phpunit": "~4.0",
         "phake/phake": "~1.0",
         "vectorface/dunit": "~1.0",
-        "squizlabs/php_codesniffer": "~1.0",
+        "squizlabs/php_codesniffer": "~1.5",
         "jolicode/jolici": "^0.3"
     },
     "autoload": {
