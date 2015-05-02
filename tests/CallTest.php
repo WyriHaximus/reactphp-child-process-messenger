@@ -2,15 +2,15 @@
 
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
-use WyriHaximus\React\ChildProcess\Messenger\Messages\RpcCall;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Call;
 
-class RpcCallTest extends \PHPUnit_Framework_TestCase
+class CallTest extends \PHPUnit_Framework_TestCase
 {
     public function testBasic()
     {
         $target = 'target';
         $message = [];
-        $vo = new RpcCall($target, $message);
+        $vo = new Call($target, $message);
         $this->assertEquals($target, $vo->getTarget());
         $this->assertEquals($message, $vo->getMessage());
     }

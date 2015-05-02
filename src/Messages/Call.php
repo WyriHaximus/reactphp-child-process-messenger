@@ -2,7 +2,7 @@
 
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
-class RpcCall
+class Call
 {
     /**
      * @var string
