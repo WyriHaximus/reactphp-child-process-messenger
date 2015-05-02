@@ -1,6 +1,6 @@
 <?php
 
-namespace WyriHaximus\React\ChildProcessMessenger;
+namespace WyriHaximus\React\ChildProcess\Messenger;
 
 use Evenement\EventEmitter;
 use React\ChildProcess\Process;

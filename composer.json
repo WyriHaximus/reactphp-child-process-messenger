@@ -23,12 +23,12 @@
     },
     "autoload": {
         "psr-4": {
-            "WyriHaximus\\React\\ChildProcessMessenger\\": "src/"
+            "WyriHaximus\\React\\ChildProcess\\Messenger\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "WyriHaximus\\React\\Tests\\ChildProcessMessenger\\": "tests/"
+            "WyriHaximus\\React\\Tests\\ChildProcess\\Messenger\\": "tests/"
         }
     }
 }

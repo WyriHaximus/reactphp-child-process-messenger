@@ -1,9 +1,9 @@
 <?php
 
-namespace WyriHaximus\React\Tests\ChildProcessMessenger;
+namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 
 use Phake;
-use WyriHaximus\React\ChildProcessMessenger\Messenger;
+use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
 class MessengerTest extends \PHPUnit_Framework_TestCase
 {
