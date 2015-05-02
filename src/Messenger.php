@@ -6,6 +6,7 @@ use Evenement\EventEmitter;
 use React\ChildProcess\Process;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\RpcCall;
 
 class Messenger extends EventEmitter
 {
@@ -131,11 +132,7 @@ class Messenger extends EventEmitter
         ]) . PHP_EOL);
     }
 
-    /**
-     * @param array $message
-     * @return PromiseInterface
-     */
-    public function rpc($target, array $message = [])
+    public function rpc(RpcCall $message)
     {
         $call = $this->outstandingRpcCalls->newCall(function () {
 
@@ -144,8 +141,8 @@ class Messenger extends EventEmitter
         $this->process->stdin->write(json_encode([
             'type' => 'rpc',
             'uniqid' => $call->getUniqid(),
-            'target' => $target,
-            'payload' => $message,
+            'target' => $message->getTarget(),
+            'payload' => $message->getMessage(),
         ]) . PHP_EOL);
 
         return $call->getDeferred()->promise();
