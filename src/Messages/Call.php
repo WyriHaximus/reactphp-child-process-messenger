@@ -29,7 +29,7 @@ class Call
     }
 
     /**
-     * @return array
+     * @return Payload
      */
     public function getMessage()
     {
