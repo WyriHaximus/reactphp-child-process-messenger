@@ -10,11 +10,11 @@ class Call
     protected $target;
 
     /**
-     * @var array
+     * @var Payload
      */
-    protected $message = [];
+    protected $message;
 
-    public function __construct($target, array $message = [])
+    public function __construct($target, Payload $message)
     {
         $this->target = $target;
         $this->message = $message;
