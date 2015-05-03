@@ -29,7 +29,7 @@ trait OnDataTrait
     protected function iterateMessages(array $messages, $source)
     {
         foreach ($messages as $message) {
-            $this->handleMessage(json_decode($message), $source);
+            $this->handleMessage(json_decode($message, true), $source);
         }
     }
 }

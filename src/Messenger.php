@@ -7,6 +7,7 @@ use React\ChildProcess\Process;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Call;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 
 class Messenger extends EventEmitter
 {
@@ -89,34 +90,34 @@ class Messenger extends EventEmitter
             return;
         }
 
-        if ($source == 'stderr' && isset($message->uniqid)) {
-            $this->outstandingRpcCalls->getCall($message->uniqid)->getDeferred()->reject($message->payload);
+        if ($source == 'stderr' && isset($message['uniqid'])) {
+            $this->outstandingRpcCalls->getCall($message['uniqid'])->getDeferred()->reject($message['payload']);
             return;
         }
 
-        if ($source == 'stderr' && !isset($message->uniqid)) {
+        if ($source == 'stderr' && !isset($message['uniqid'])) {
             $this->emit('error', [
-                $message->payload,
+                $message['payload'],
                 $this,
             ]);
             return;
         }
 
-        switch ($message->type) {
+        switch ($message['type']) {
             case 'message':
                 $this->emit('message', [
-                    $message->payload,
+                    $message['payload'],
                     $this,
                 ]);
                 break;
             case 'rpc_result':
-                $this->outstandingRpcCalls->getCall($message->uniqid)->getDeferred()->resolve($message->payload);
+                $this->outstandingRpcCalls->getCall($message['uniqid'])->getDeferred()->resolve($message['payload']);
                 break;
             case 'rpc_error':
-                $this->outstandingRpcCalls->getCall($message->uniqid)->getDeferred()->reject($message->payload);
+                $this->outstandingRpcCalls->getCall($message['uniqid'])->getDeferred()->reject($message['payload']);
                 break;
             case 'rpc_notify':
-                $this->outstandingRpcCalls->getCall($message->uniqid)->getDeferred()->notify($message->payload);
+                $this->outstandingRpcCalls->getCall($message['uniqid'])->getDeferred()->notify($message['payload']);
                 break;
         }
     }
@@ -124,28 +125,28 @@ class Messenger extends EventEmitter
     /**
      * @param array $message
      */
-    public function message(array $message)
+    public function message(Payload $message)
     {
         $this->process->stdin->write(json_encode([
             'type' => 'message',
-            'payload' => $message,
+            'payload' => $message->getPayload(),
         ]) . PHP_EOL);
     }
 
     public function rpc(Call $call)
     {
-        $call = $this->outstandingRpcCalls->newCall(function () {
+        $callReference = $this->outstandingRpcCalls->newCall(function () {
 
         });
 
         $this->process->stdin->write(json_encode([
             'type' => 'rpc',
-            'uniqid' => $call->getUniqid(),
+            'uniqid' => $callReference->getUniqid(),
             'target' => $call->getTarget(),
-            'payload' => $call->getMessage(),
+            'payload' => $call->getMessage()->getPayload(),
         ]) . PHP_EOL);
 
-        return $call->getDeferred()->promise();
+        return $callReference->getDeferred()->promise();
     }
 
     public function close()

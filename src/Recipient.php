@@ -5,6 +5,8 @@ namespace WyriHaximus\React\ChildProcess\Messenger;
 use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
 use React\Stream\Stream;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Invoke;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 
 class Recipient extends EventEmitter
 {
@@ -58,6 +60,7 @@ class Recipient extends EventEmitter
      */
     public function registerRpc($target, callable $listener)
     {
+        echo $target;
         $this->rpcs[$target] = $listener;
     }
 
@@ -90,9 +93,9 @@ class Recipient extends EventEmitter
 
     protected function handleMessage($message)
     {
-        switch ($message->type) {
+        switch ($message['type']) {
             case 'rpc':
-                $this->handleRpc($message->target, $message->payload, $message->uniqid);
+                $this->handleRpc($message['target'], $message['payload'], $message['uniqid']);
                 break;
         }
     }
@@ -103,11 +106,14 @@ class Recipient extends EventEmitter
             return $this->rpcError($uniqid, 'Target doesn\'t exist');
         }
 
-        $this->rpcs[$target]($payload)->then(function ($payload) use ($uniqid) {
+        $invoke = new Invoke($this->loop, new Payload($payload));
+        $invoke->getPromise()->then(function ($payload) use ($uniqid) {
             $this->rpcSuccess($uniqid, $payload);
         }, null, function ($payload) use ($uniqid) {
             $this->rpcNotify($uniqid, $payload);
         });
+
+        $this->rpcs[$target]($invoke);
     }
 
     protected function rpcError($uniqid, $message)
@@ -134,10 +140,5 @@ class Recipient extends EventEmitter
             'uniqid' => $uniqid,
             'payload' => $payload,
         ]) . PHP_EOL);
-    }
-
-    protected function envelopeMessage($data)
-    {
-        //return
     }
 }
