@@ -29,6 +29,7 @@ class OutstandingCall
         $this->uniqid = $uniqid;
         $this->deferred = new Deferred($canceller);
     }
+
     /**
      * @return mixed
      */
