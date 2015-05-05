@@ -60,7 +60,6 @@ class Recipient extends EventEmitter
      */
     public function registerRpc($target, callable $listener)
     {
-        echo $target;
         $this->rpcs[$target] = $listener;
     }
 
