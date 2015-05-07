@@ -46,5 +46,5 @@ trait OnDataTrait
      * @param $source
      * @return void
      */
-    abstract function handleMessage(array $message, $source);
+    abstract protected function handleMessage(array $message, $source);
 }
