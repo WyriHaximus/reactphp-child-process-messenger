@@ -4,7 +4,7 @@
         "Read more about it at http://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "0ddfcd96d2f51a7016f52312f4b49de2",
+    "hash": "e0c0d0adcc917179314b9c9101d7b5c1",
     "packages": [
         {
             "name": "evenement/evenement",
@@ -2416,25 +2416,31 @@
         },
         {
             "name": "vectorface/dunit",
-            "version": "v1.4.0",
+            "version": "v2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Vectorface/dunit.git",
-                "reference": "52b2654b0eca7830f42fd854fa22bc3cc4f92900"
+                "reference": "3f04c7a8bef5ff100666e92db96e93f80a6640bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Vectorface/dunit/zipball/52b2654b0eca7830f42fd854fa22bc3cc4f92900",
-                "reference": "52b2654b0eca7830f42fd854fa22bc3cc4f92900",
+                "url": "https://api.github.com/repos/Vectorface/dunit/zipball/3f04c7a8bef5ff100666e92db96e93f80a6640bf",
+                "reference": "3f04c7a8bef5ff100666e92db96e93f80a6640bf",
                 "shasum": ""
             },
             "require-dev": {
-                "phpunit/phpunit": "*"
+                "phpunit/phpunit": "~4.3",
+                "symfony/console": "~2.5"
             },
             "bin": [
-                "dunit"
+                "bin/dunit"
             ],
             "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Vectorface\\Dunit\\": "src"
+                }
+            },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
                 "MIT"
@@ -2459,7 +2465,7 @@
                 "phpunit",
                 "testing"
             ],
-            "time": "2014-11-05 19:29:53"
+            "time": "2015-03-31 19:30:02"
         }
     ],
     "aliases": [],

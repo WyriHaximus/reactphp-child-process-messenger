@@ -36,14 +36,6 @@ class Messenger extends EventEmitter
     protected $outstandingRpcCalls;
 
     /**
-     * @var string[]
-     */
-    protected $buffers = [
-        'stdout' => '',
-        'stderr' => '',
-    ];
-
-    /**
      * @param Process $process
      */
     public function __construct(Process $process)

@@ -38,13 +38,6 @@ class Recipient extends EventEmitter
     protected $rpcs = [];
 
     /**
-     * @var string[]
-     */
-    protected $buffers = [
-        'in' => '',
-    ];
-
-    /**
      * @param LoopInterface $loop
      */
     public function __construct(LoopInterface $loop)
@@ -70,7 +63,7 @@ class Recipient extends EventEmitter
         $this->err = new Stream(STDERR, $this->loop);
 
         $this->in->on('data', function ($data) {
-            $this->onData($data, 'in');
+            $this->onData($data, 'stdin');
         });
     }
 
@@ -90,7 +83,7 @@ class Recipient extends EventEmitter
         $this->err->write($data);
     }
 
-    protected function handleMessage($message)
+    protected function handleMessage(array $message, $source)
     {
         switch ($message['type']) {
             case 'rpc':

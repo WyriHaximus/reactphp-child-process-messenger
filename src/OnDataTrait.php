@@ -8,6 +8,14 @@ namespace WyriHaximus\React\ChildProcess\Messenger;
 trait OnDataTrait
 {
     /**
+     * @var string[]
+     */
+    protected $buffers = [
+        'stdin' => '',
+        'stdout' => '',
+        'stderr' => '',
+    ];
+    /**
      * @param string $data
      * @param string $source
      */
@@ -32,4 +40,11 @@ trait OnDataTrait
             $this->handleMessage(json_decode($message, true), $source);
         }
     }
+
+    /**
+     * @param array $message
+     * @param $source
+     * @return void
+     */
+    abstract function handleMessage(array $message, $source);
 }
