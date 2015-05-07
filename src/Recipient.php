@@ -20,17 +20,17 @@ class Recipient extends EventEmitter
     /**
      * @var Stream
      */
-    protected $in;
+    protected $stdin;
 
     /**
      * @var Stream
      */
-    protected $out;
+    protected $stdout;
 
     /**
      * @var Stream
      */
-    protected $err;
+    protected $stderr;
 
     /**
      * @var array
@@ -58,11 +58,11 @@ class Recipient extends EventEmitter
 
     protected function setupStreams()
     {
-        $this->in = new Stream(STDIN, $this->loop);
-        $this->out = new Stream(STDOUT, $this->loop);
-        $this->err = new Stream(STDERR, $this->loop);
+        $this->stdin = new Stream(STDIN, $this->loop);
+        $this->stdout = new Stream(STDOUT, $this->loop);
+        $this->stderr = new Stream(STDERR, $this->loop);
 
-        $this->in->on('data', function ($data) {
+        $this->stdin->on('data', function ($data) {
             $this->onData($data, 'stdin');
         });
     }
@@ -72,7 +72,7 @@ class Recipient extends EventEmitter
      */
     public function write($data)
     {
-        $this->out->write($data);
+        $this->stdout->write($data);
     }
 
     /**
@@ -80,7 +80,7 @@ class Recipient extends EventEmitter
      */
     public function error($data)
     {
-        $this->err->write($data);
+        $this->stderr->write($data);
     }
 
     protected function handleMessage(array $message, $source)
@@ -110,7 +110,7 @@ class Recipient extends EventEmitter
 
     protected function rpcError($uniqid, $message)
     {
-        $this->err->write(json_encode([
+        $this->stderr->write(json_encode([
             'uniqid' => $uniqid,
             'payload' => $message,
         ]) . PHP_EOL);
@@ -118,7 +118,7 @@ class Recipient extends EventEmitter
 
     protected function rpcSuccess($uniqid, $payload)
     {
-        $this->out->write(json_encode([
+        $this->stdout->write(json_encode([
             'type' => 'rpc_result',
             'uniqid' => $uniqid,
             'payload' => $payload,
@@ -127,7 +127,7 @@ class Recipient extends EventEmitter
 
     protected function rpcNotify($uniqid, $payload)
     {
-        $this->out->write(json_encode([
+        $this->stdout->write(json_encode([
             'type' => 'rpc_notify',
             'uniqid' => $uniqid,
             'payload' => $payload,
