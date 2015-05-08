@@ -31,7 +31,7 @@ class Messenger extends EventEmitter
     protected $interval;
 
     /**
-     * @var array
+     * @var OutstandingCalls
      */
     protected $outstandingRpcCalls;
 
