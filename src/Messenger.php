@@ -76,7 +76,7 @@ class Messenger extends EventEmitter
      * @param array $message
      * @param string $source
      */
-    protected function handleMessage($message, $source)
+    protected function handleMessage(array $message, $source)
     {
         if ($message === null) {
             return;
