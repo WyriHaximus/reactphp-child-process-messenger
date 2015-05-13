@@ -86,6 +86,12 @@ class Recipient extends EventEmitter
     protected function handleMessage(array $message, $source)
     {
         switch ($message['type']) {
+            case 'message':
+                $this->emit('message', [
+                    $message['payload'],
+                    $this,
+                ]);
+                break;
             case 'rpc':
                 $this->handleRpc($message['target'], $message['payload'], $message['uniqid']);
                 break;
