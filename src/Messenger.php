@@ -14,16 +14,12 @@ class Messenger extends EventEmitter
     const INTERVAL = 0.1;
 
     use OnDataTrait;
+    use LoopAwareTrait;
 
     /**
      * @var Process
      */
     protected $process;
-
-    /**
-     * @var LoopInterface
-     */
-    protected $loop;
 
     /**
      * @var float

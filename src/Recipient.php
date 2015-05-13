@@ -11,11 +11,7 @@ use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 class Recipient extends EventEmitter
 {
     use OnDataTrait;
-
-    /**
-     * @var LoopInterface
-     */
-    protected $loop;
+    use LoopAwareTrait;
 
     /**
      * @var Stream
