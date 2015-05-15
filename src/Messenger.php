@@ -7,6 +7,7 @@ use React\ChildProcess\Process;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Call;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Line;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 
 class Messenger extends EventEmitter
@@ -115,10 +116,10 @@ class Messenger extends EventEmitter
      */
     public function message(Payload $message)
     {
-        $this->process->stdin->write(json_encode([
+        $this->process->stdin->write(new Line([
             'type' => 'message',
             'payload' => $message->getPayload(),
-        ]) . PHP_EOL);
+        ]));
     }
 
     public function rpc(Call $call)
@@ -127,12 +128,12 @@ class Messenger extends EventEmitter
 
         });
 
-        $this->process->stdin->write(json_encode([
+        $this->process->stdin->write(new Line([
             'type' => 'rpc',
             'uniqid' => $callReference->getUniqid(),
             'target' => $call->getTarget(),
             'payload' => $call->getMessage()->getPayload(),
-        ]) . PHP_EOL);
+        ]));
 
         return $callReference->getDeferred()->promise();
     }

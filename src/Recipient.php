@@ -6,6 +6,7 @@ use Evenement\EventEmitter;
 use React\EventLoop\LoopInterface;
 use React\Stream\Stream;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Invoke;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Line;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 
 class Recipient extends EventEmitter
@@ -112,27 +113,27 @@ class Recipient extends EventEmitter
 
     protected function rpcError($uniqid, $message)
     {
-        $this->stderr->write(json_encode([
+        $this->stderr->write(new Line([
             'uniqid' => $uniqid,
             'payload' => $message,
-        ]) . PHP_EOL);
+        ]));
     }
 
     protected function rpcSuccess($uniqid, $payload)
     {
-        $this->stdout->write(json_encode([
+        $this->stdout->write(new Line([
             'type' => 'rpc_result',
             'uniqid' => $uniqid,
             'payload' => $payload,
-        ]) . PHP_EOL);
+        ]));
     }
 
     protected function rpcNotify($uniqid, $payload)
     {
-        $this->stdout->write(json_encode([
+        $this->stdout->write(new Line([
             'type' => 'rpc_notify',
             'uniqid' => $uniqid,
             'payload' => $payload,
-        ]) . PHP_EOL);
+        ]));
     }
 }
