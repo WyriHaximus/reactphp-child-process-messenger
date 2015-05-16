@@ -2,6 +2,8 @@
 
 namespace WyriHaximus\React\ChildProcess\Messenger;
 
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Line;
+
 /**
  * @todo code smell with $source
  */
@@ -23,8 +25,8 @@ trait OnDataTrait
     {
         $this->buffers[$source] .= $data;
 
-        if (strpos($this->buffers[$source], PHP_EOL) !== false) {
-            $messages = explode(PHP_EOL, $this->buffers[$source]);
+        if (strpos($this->buffers[$source], Line::EOL) !== false) {
+            $messages = explode(Line::EOL, $this->buffers[$source]);
             $this->buffers[$source] = array_pop($messages);
             $this->iterateMessages($messages, $source);
         }
