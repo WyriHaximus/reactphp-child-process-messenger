@@ -2,7 +2,7 @@
 
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
-class Payload
+class Payload implements \JsonSerializable
 {
     /**
      * @var array
@@ -18,6 +18,14 @@ class Payload
      * @return array
      */
     public function getPayload()
+    {
+        return $this->payload;
+    }
+
+    /**
+     * @return string
+     */
+    public function jsonSerialize()
     {
         return $this->payload;
     }
