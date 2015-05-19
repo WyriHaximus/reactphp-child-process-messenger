@@ -2,7 +2,7 @@
 
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
-class Payload implements \JsonSerializable
+class Payload implements \JsonSerializable, \ArrayAccess
 {
     /**
      * @var array
@@ -28,5 +28,29 @@ class Payload implements \JsonSerializable
     public function jsonSerialize()
     {
         return $this->payload;
+    }
+
+    public function offsetSet($offset, $value)
+    {
+        if (is_null($offset)) {
+            $this->payload[] = $value;
+        } else {
+            $this->payload[$offset] = $value;
+        }
+    }
+
+    public function offsetExists($offset)
+    {
+        return isset($this->payload[$offset]);
+    }
+
+    public function offsetUnset($offset)
+    {
+        unset($this->payload[$offset]);
+    }
+
+    public function offsetGet($offset)
+    {
+        return isset($this->payload[$offset]) ? $this->payload[$offset] : null;
     }
 }
