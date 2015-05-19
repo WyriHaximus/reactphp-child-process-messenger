@@ -7,16 +7,24 @@ class Line
     const EOL = PHP_EOL;
 
     /**
-     * @var array
+     * @var \JsonSerializable
      */
     protected $payload;
 
     /**
-     * @param array $payload
+     * @param \JsonSerializable $payload
      */
-    public function __construct(array $payload)
+    public function __construct(\JsonSerializable $payload)
     {
         $this->payload = $payload;
+    }
+
+    /**
+     * @return \JsonSerializable
+     */
+    public function getPayload()
+    {
+        return $this->payload;
     }
 
     /**
