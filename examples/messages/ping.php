@@ -11,13 +11,13 @@ use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
 $loop = EventLoopFactory::create();
 
-$messenger = new Messenger(new Process('exec php ' . dirname(dirname(__DIR__)) . '/examples/messages/pong.php'));
+$process = new Process('exec php ' . dirname(dirname(__DIR__)) . '/examples/messages/pong.php');
 
-$messenger->on('message', function (Payload $payload) {
-    echo $payload['time'], PHP_EOL;
-});
+\WyriHaximus\React\ChildProcess\Messenger\Factory::parent($process, $loop)->then(function (Messenger $messenger) use ($loop) {
+    $messenger->on('message', function (Payload $payload) {
+        echo $payload['time'], PHP_EOL;
+    });
 
-$messenger->start($loop)->then(function (Messenger $messenger) use ($loop) {
     $i = 0;
     $loop->addPeriodicTimer(1, function (Timer $timer) use (&$i, $messenger) {
         if ($i >= 133) {

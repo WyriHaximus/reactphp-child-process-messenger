@@ -3,14 +3,16 @@
 require dirname(dirname(__DIR__)) . '/vendor/autoload.php';
 
 use React\EventLoop\Factory;
+use React\Promise\Deferred;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Invoke;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Recipient;
 
 $loop = Factory::create();
 
-$recipient = new Recipient($loop);
-$recipient->registerRpc('format', function (Invoke $invoke) use ($loop) {
-    $invoke->getDeferred()->resolve((new DateTime('@' . $invoke->getPayload()['unixTime']))->format('c'));
+$recipient = \WyriHaximus\React\ChildProcess\Messenger\Factory::child($loop);
+$recipient->registerRpc('format', function (Payload $payload, Deferred $deferred) use ($loop) {
+    $deferred->resolve((new DateTime('@' . $payload['unixTime']))->format('c'));
 });
 
 $loop->run();
