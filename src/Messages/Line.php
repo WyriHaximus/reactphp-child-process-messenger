@@ -2,7 +2,7 @@
 
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
-class Line
+class Line implements LineInterface
 {
     const EOL = PHP_EOL;
 
