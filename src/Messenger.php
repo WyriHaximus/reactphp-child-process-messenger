@@ -3,29 +3,23 @@
 namespace WyriHaximus\React\ChildProcess\Messenger;
 
 use Evenement\EventEmitter;
-use React\ChildProcess\Process;
-use React\EventLoop\LoopInterface;
-use React\Promise\PromiseInterface;
-use WyriHaximus\React\ChildProcess\Messenger\Messages\Call;
+use React\Stream\Stream;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\ActionableMessageInterface;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessageFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Line;
-use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\LineInterface;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Message;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc;
 
 class Messenger extends EventEmitter
 {
     const INTERVAL = 0.1;
 
-    use OnDataTrait;
     use LoopAwareTrait;
 
-    /**
-     * @var Process
-     */
-    protected $process;
-
-    /**
-     * @var float
-     */
-    protected $interval;
+    protected $stdin;
+    protected $stdout;
+    protected $stderr;
 
     /**
      * @var OutstandingCalls
@@ -33,173 +27,168 @@ class Messenger extends EventEmitter
     protected $outstandingRpcCalls;
 
     /**
-     * @param Process $process
+     * @var array
      */
-    public function __construct(Process $process)
+    protected $rpcs = [];
+
+    /**
+     * @var array
+     */
+    protected $options = [];
+
+    /**
+     * @var string[]
+     */
+    protected $buffers = [
+        'stdin' => '',
+        'stdout' => '',
+        'stderr' => '',
+    ];
+
+    protected $defaultOptions = [
+        'lineCLass' => 'WyriHaximus\React\ChildProcess\Messenger\Messages\SecureLine',
+        //'lineCLass' => 'WyriHaximus\React\ChildProcess\Messenger\Messages\Line',
+        'lineOptions' => [
+            'key' => 'awlue yfo9q28p 8f92093y o139823y r9823y r23h9',
+        ],
+    ];
+
+    /**
+     * @param Stream $stdin
+     * @param Stream $stdout
+     * @param Stream $stderr
+     * @param array $options
+     */
+    public function __construct(Stream $stdin, Stream $stdout, Stream $stderr, array $options)
     {
-        $this->process = $process;
+        $this->stdin  = $stdin;
+        $this->stdout = $stdout;
+        $this->stderr = $stderr;
+        $this->options = $this->defaultOptions + $options;
+
         $this->outstandingRpcCalls = new OutstandingCalls();
+
+        $this->attachMessenger();
     }
 
     /**
-     * @param LoopInterface $loop
-     * @param float $interval
-     * @return PromiseInterface
+     * @param $target
+     * @param callable $listener
      */
-    public function start(LoopInterface $loop, $interval = self::INTERVAL)
+    public function registerRpc($target, callable $listener)
     {
-        $this->loop = $loop;
-        $this->interval = $interval;
-
-        $this->process->start($this->loop, $this->interval);
-        $this->attachMessenger();
-
-        return \WyriHaximus\React\tickingPromise($this->loop, $this->interval, [$this, 'isRunning'])->then(function () {
-            return \React\Promise\resolve($this);
-        });
+        $this->rpcs[$target] = $listener;
     }
 
     protected function attachMessenger()
     {
-        $this->process->stdout->on('data', function ($data) {
-            $this->onData($data, 'stdout');
-        });
-        $this->process->stderr->on('data', function ($data) {
-            $this->onData($data, 'stderr');
-        });
+        /**
+         * @todo duplicated code much?
+         */
+        if (isset($this->options['read_err'])) {
+            $streamName = $this->options['read_err'];
+            $this->$streamName->on('data', function ($data) use ($streamName) {
+                $this->onData($data, $streamName);
+            });
+            unset($streamName);
+        }
+
+        if (isset($this->options['read'])) {
+            $streamName = $this->options['read'];
+            $this->$streamName->on('data', function ($data) use ($streamName) {
+                $this->onData($data, $streamName);
+            });
+            unset($streamName);
+        }
+    }
+
+    protected function write($line)
+    {
+        if (isset($this->options['write'])) {
+            $streamName = $this->options['write'];
+            $this->$streamName->write($line);
+            unset($streamName);
+        }
+    }
+
+    protected function writeErr(LineInterface $line)
+    {
+        if (isset($this->options['write_err'])) {
+            $streamName = $this->options['write_err'];
+            $this->$streamName->write($line);
+            unset($streamName);
+        }
+    }
+
+    public function message(Message $message)
+    {
+        $this->write($this->createLine($message));
     }
 
     /**
-     * @param array $message
-     * @param string $source
+     * @param Rpc $rpc
+     * @return \React\Promise\Promise
      */
-    protected function handleMessage(array $message, $source)
-    {
-        if ($message === null) {
-            return;
-        }
-
-        if ($source == 'stderr' && isset($message['uniqid'])) {
-            $this->outstandingRpcCalls->getCall($message['uniqid'])->getDeferred()->reject($message['payload']);
-            return;
-        }
-
-        if ($source == 'stderr' && !isset($message['uniqid'])) {
-            $this->emit('error', [
-                $message['payload'],
-                $this,
-            ]);
-            return;
-        }
-
-        switch ($message['type']) {
-            case 'message':
-                $this->emit('message', [
-                    $message['payload'],
-                    $this,
-                ]);
-                break;
-            case 'rpc_result':
-                $this->outstandingRpcCalls->getCall($message['uniqid'])->getDeferred()->resolve($message['payload']);
-                break;
-            case 'rpc_error':
-                $this->outstandingRpcCalls->getCall($message['uniqid'])->getDeferred()->reject($message['payload']);
-                break;
-            case 'rpc_notify':
-                $this->outstandingRpcCalls->getCall($message['uniqid'])->getDeferred()->notify($message['payload']);
-                break;
-        }
-    }
-
-    /**
-     * @param array $message
-     */
-    public function message(Payload $message)
-    {
-        $this->process->stdin->write(new Line([
-            'type' => 'message',
-            'payload' => $message->getPayload(),
-        ]));
-    }
-
-    public function rpc(Call $call)
+    public function rpc(Rpc $rpc)
     {
         $callReference = $this->outstandingRpcCalls->newCall(function () {
 
         });
 
-        $this->process->stdin->write(new Line([
-            'type' => 'rpc',
-            'uniqid' => $callReference->getUniqid(),
-            'target' => $call->getTarget(),
-            'payload' => $call->getMessage()->getPayload(),
-        ]));
+        $this->write($this->createLine($rpc->setUniqid($callReference->getUniqid())));
 
         return $callReference->getDeferred()->promise();
     }
 
-    public function close()
+    /**
+     * @param string $data
+     * @param string $source
+     */
+    protected function onData($data, $source)
     {
-        $this->process->close();
+        $this->buffers[$source] .= $data;
+
+        if (strpos($this->buffers[$source], LineInterface::EOL) !== false) {
+            $messages = explode(LineInterface::EOL, $this->buffers[$source]);
+            $this->buffers[$source] = array_pop($messages);
+            $this->iterateMessages($messages, $source);
+        }
     }
 
-    public function terminate($signal = null)
+    /**
+     * @param array $messages
+     * @param string $source
+     */
+    protected function iterateMessages(array $messages, $source)
     {
-        return $this->process->terminate($signal);
+        foreach ($messages as $message) {
+            MessageFactory::fromLine($message, $this->options['lineOptions'])->handle($this, $source);
+        }
     }
 
-    public function getCommand()
+    /**
+     * @param ActionableMessageInterface $line
+     * @return LineInterface
+     */
+    protected function createLine(ActionableMessageInterface $line)
     {
-        return $this->process->getCommand();
+        $lineCLass = $this->options['lineCLass'];
+        return (string) new $lineCLass($line, $this->options['lineOptions']);
     }
 
-    final public function getEnhanceSigchildCompatibility()
+    /**
+     * Forward any unknown calls when there is a call forward possible.
+     *
+     * @param string $name
+     * @param array $arguments
+     *
+     * @return mixed
+     */
+    public function __call($name, array $arguments)
     {
-        return $this->process->getEnhanceSigchildCompatibility();
-    }
-
-    final public function setEnhanceSigchildCompatibility($enhance)
-    {
-        return $this->process->setEnhanceSigchildCompatibility($enhance);
-    }
-
-    public function getExitCode()
-    {
-        return $this->process->getExitCode();
-    }
-
-    public function getPid()
-    {
-        return $this->process->getPid();
-    }
-
-    public function getStopSignal()
-    {
-        return $this->process->getStopSignal();
-    }
-
-    public function getTermSignal()
-    {
-        return $this->process->getTermSignal();
-    }
-
-    public function isRunning()
-    {
-        return $this->process->isRunning();
-    }
-
-    public function isStopped()
-    {
-        return $this->process->isStopped();
-    }
-
-    public function isTerminated()
-    {
-        return $this->process->isTerminated();
-    }
-
-    public function getProcess()
-    {
-        return $this->process;
+        if (isset($this->options['callForward'])) {
+            $call = $this->options['callForward'];
+            return $call($name, $arguments);
+        }
     }
 }

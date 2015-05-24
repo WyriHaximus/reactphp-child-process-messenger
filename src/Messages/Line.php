@@ -4,8 +4,6 @@ namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
 class Line implements LineInterface
 {
-    const EOL = PHP_EOL;
-
     /**
      * @var \JsonSerializable
      */
@@ -14,7 +12,7 @@ class Line implements LineInterface
     /**
      * @param \JsonSerializable $payload
      */
-    public function __construct(\JsonSerializable $payload)
+    public function __construct(\JsonSerializable $payload, array $options)
     {
         $this->payload = $payload;
     }
@@ -32,6 +30,6 @@ class Line implements LineInterface
      */
     public function __toString()
     {
-        return json_encode($this->payload) . self::EOL;
+        return json_encode($this->payload) . LineInterface::EOL;
     }
 }
