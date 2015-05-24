@@ -11,7 +11,7 @@ class Factory
     const INTERVAL = 0.1;
     const TIMEOUT = 13;
 
-    public static function parent(Process $process, LoopInterface $loop, $interval = self::INTERVAL, array $options = [])
+    public static function parent(Process $process, LoopInterface $loop, array $options = [], $interval = self::INTERVAL)
     {
         $process->start($loop, $interval);
 
