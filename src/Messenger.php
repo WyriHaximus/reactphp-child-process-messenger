@@ -46,11 +46,8 @@ class Messenger extends EventEmitter
     ];
 
     protected $defaultOptions = [
-        'lineCLass' => 'WyriHaximus\React\ChildProcess\Messenger\Messages\SecureLine',
-        //'lineCLass' => 'WyriHaximus\React\ChildProcess\Messenger\Messages\Line',
-        'lineOptions' => [
-            'key' => 'awlue yfo9q28p 8f92093y o139823y r9823y r23h9',
-        ],
+        'lineCLass' => 'WyriHaximus\React\ChildProcess\Messenger\Messages\Line',
+        'lineOptions' => [],
     ];
 
     /**
