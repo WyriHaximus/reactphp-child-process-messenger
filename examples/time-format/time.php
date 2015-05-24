@@ -3,15 +3,16 @@
 require dirname(dirname(__DIR__)) . '/vendor/autoload.php';
 
 use React\ChildProcess\Process;
-use React\EventLoop\Factory;
+use React\EventLoop\Factory as LoopFactory;
 use React\EventLoop\Timer\Timer;
+use WyriHaximus\React\ChildProcess\Messenger\Factory as MessengerFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessageFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
-$loop = Factory::create();
+$loop = LoopFactory::create();
 $process = new Process('exec php ' . dirname(dirname(__DIR__)) . '/examples/time-format/format.php');
 
-\WyriHaximus\React\ChildProcess\Messenger\Factory::parent($process, $loop)->then(function (Messenger $messenger) use ($loop) {
+MessengerFactory::parent($process, $loop)->then(function (Messenger $messenger) use ($loop) {
     $i = 0;
 
     $loop->addPeriodicTimer(1, function (Timer $timer) use ($messenger, &$i) {
@@ -24,7 +25,7 @@ $process = new Process('exec php ' . dirname(dirname(__DIR__)) . '/examples/time
         $messenger->rpc(MessageFactory::rpc('format', [
             'unixTime' => time(),
         ]))->then(function ($formattedTime) {
-            echo $formattedTime, PHP_EOL;
+            echo $formattedTime['formattedTime'], PHP_EOL;
         });
         $i++;
     });

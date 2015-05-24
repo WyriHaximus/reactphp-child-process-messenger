@@ -17,9 +17,9 @@ class Messenger extends EventEmitter
 
     use LoopAwareTrait;
 
-    protected $stdin;
-    protected $stdout;
-    protected $stderr;
+    public $stdin;
+    public $stdout;
+    public $stderr;
 
     /**
      * @var OutstandingCalls
@@ -80,6 +80,16 @@ class Messenger extends EventEmitter
         $this->rpcs[$target] = $listener;
     }
 
+    public function hasRpc($target)
+    {
+        return isset($this->rpcs[$target]);
+    }
+
+    public function callRpc($target, $payload, $deferred)
+    {
+        $this->rpcs[$target]($payload, $deferred);
+    }
+
     protected function attachMessenger()
     {
         /**
@@ -123,6 +133,11 @@ class Messenger extends EventEmitter
     public function message(Message $message)
     {
         $this->write($this->createLine($message));
+    }
+
+    public function getOutstandingCall($uniqid)
+    {
+        return $this->outstandingRpcCalls->getCall($uniqid);
     }
 
     /**
@@ -170,7 +185,7 @@ class Messenger extends EventEmitter
      * @param ActionableMessageInterface $line
      * @return LineInterface
      */
-    protected function createLine(ActionableMessageInterface $line)
+    public function createLine(ActionableMessageInterface $line)
     {
         $lineCLass = $this->options['lineCLass'];
         return (string) new $lineCLass($line, $this->options['lineOptions']);

@@ -22,6 +22,14 @@ class Factory
         throw new \Exception('Unknown message type: ' . $line['type']);
     }
 
+    /**
+     * @param string $line
+     * @param array $lineOptions
+     *
+     * @return mixed
+     *
+     * @throws \Exception
+     */
     protected static function secureFromLine($line, array $lineOptions)
     {
         return SecureLine::fromLine($line, $lineOptions);
@@ -53,9 +61,9 @@ class Factory
      *
      * @return Rpc
      */
-    public static function rpc($target, array $payload = [])
+    public static function rpc($target, array $payload = [], $uniqid = '')
     {
-        return new Rpc($target, new Payload($payload));
+        return new Rpc($target, new Payload($payload), $uniqid);
     }
 
     /**
@@ -65,8 +73,47 @@ class Factory
      */
     protected static function rpcFromLine(array $line)
     {
-        return static::rpc($line['target'], $line['payload']);
+        return static::rpc($line['target'], $line['payload'], $line['uniqid']);
     }
 
-    //rpc_success
+    /**
+     * @param string $target
+     * @param array $payload
+     *
+     * @return Rpc
+     */
+    public static function rpc_error($uniqid, array $payload = [])
+    {
+        return new RpcError($uniqid, new Payload($payload));
+    }
+
+    /**
+     * @param array $line
+     *
+     * @return Rpc
+     */
+    protected static function rpc_errorFromLine(array $line)
+    {
+        return static::rpc_error($line['uniqid'], $line['payload']);
+    }
+
+    /**
+     * @param string $uniqid
+     * @param array $payload
+     *
+     * @return RpcSuccess
+     */
+    public static function rpc_success($uniqid, array $payload = [])
+    {
+        return new RpcSuccess($uniqid, new Payload($payload));
+    }
+
+    /**
+     * @param array $line
+     * @return RpcSuccess
+     */
+    protected static function rpc_successFromLine(array $line)
+    {
+        return static::rpc_success($line['uniqid'], $line['payload']);
+    }
 }

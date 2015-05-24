@@ -70,24 +70,24 @@ class Rpc implements \JsonSerializable, ActionableMessageInterface
     public function handle($bindTo, $source)
     {
         $cb = function ($target, $payload, $uniqid) {
-            if (!isset($this->rpcs[$target])) {
-                $this->stderr->write((string) new Line(new RpcError($uniqid, new Payload([
+            if (!$this->hasRpc($target)) {
+                $this->stderr->write($this->createLine(Factory::rpc_error($uniqid, [
                     'message' => 'Target doesn\'t exist',
-                ]))));
+                ])));
                 return;
             }
 
             $deferred = new Deferred();
 
             $deferred->promise()->then(function (array $payload) use ($uniqid) {
-                $this->getProcess()->stdout->write((string) new Line(new RpcSuccess($uniqid, new Payload($payload))));
+                $this->stdout->write($this->createLine(Factory::rpc_success($uniqid, $payload)));
             }, function (array $payload) use ($uniqid) {
-                $this->getProcess()->stdout->write((string) new Line(new RpcNotify($uniqid, new Payload($payload))));
+                $this->stdout->write($this->createLine(Factory::rpc_notify($uniqid, $payload)));
             }, function (array $payload) use ($uniqid) {
-                $this->getProcess()->stderr->write((string) new Line(new RpcError($uniqid, new Payload($payload))));
+                $this->stderr->write($this->createLine(Factory::rpc_error($uniqid, $payload)));
             });
 
-            $this->rpcs[$target]($payload, $deferred);
+            $this->callRpc($target, $payload, $deferred);
         };
         $cb = $cb->bindTo($bindTo);
         $cb($this->target, $this->payload, $this->uniqid);

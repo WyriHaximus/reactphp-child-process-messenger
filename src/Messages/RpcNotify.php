@@ -51,7 +51,7 @@ class RpcNotify implements \JsonSerializable, ActionableMessageInterface
     public function handle($bindTo, $source)
     {
         $cb = function ($payload, $uniqid) {
-            $this->outstandingRpcCalls->getCall($uniqid)->getDeferred()->notify($payload);
+            $this->getOutstandingCall($uniqid)->getDeferred()->notify($payload);
         };
         $cb = $cb->bindTo($bindTo);
         $cb($this->payload, $this->uniqid);

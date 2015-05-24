@@ -12,7 +12,9 @@ $loop = Factory::create();
 
 $recipient = \WyriHaximus\React\ChildProcess\Messenger\Factory::child($loop);
 $recipient->registerRpc('format', function (Payload $payload, Deferred $deferred) use ($loop) {
-    $deferred->resolve((new DateTime('@' . $payload['unixTime']))->format('c'));
+    $deferred->resolve([
+        'formattedTime' => (new DateTime('@' . $payload['unixTime']))->format('c'),
+    ]);
 });
 
 $loop->run();
