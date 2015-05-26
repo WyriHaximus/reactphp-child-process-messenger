@@ -46,7 +46,7 @@ class Messenger extends EventEmitter
     ];
 
     protected $defaultOptions = [
-        'lineCLass' => 'WyriHaximus\React\ChildProcess\Messenger\Messages\Line',
+        'lineClass' => 'WyriHaximus\React\ChildProcess\Messenger\Messages\Line',
         'lineOptions' => [],
     ];
 
@@ -184,7 +184,7 @@ class Messenger extends EventEmitter
      */
     public function createLine(ActionableMessageInterface $line)
     {
-        $lineCLass = $this->options['lineCLass'];
+        $lineCLass = $this->options['lineClass'];
         return (string) new $lineCLass($line, $this->options['lineOptions']);
     }
 

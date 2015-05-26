@@ -11,7 +11,7 @@ use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
 $options = [
-    'lineCLass' => 'WyriHaximus\React\ChildProcess\Messenger\Messages\SecureLine',
+    'lineClass' => 'WyriHaximus\React\ChildProcess\Messenger\Messages\SecureLine',
     'lineOptions' => [
         'key' => 'abc123',
     ],
