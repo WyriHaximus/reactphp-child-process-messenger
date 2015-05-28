@@ -87,7 +87,11 @@ class Rpc implements \JsonSerializable, ActionableMessageInterface
                 $this->stderr->write($this->createLine(Factory::rpcError($uniqid, $payload)));
             });
 
-            $this->callRpc($target, $payload, $deferred);
+            try {
+                $this->callRpc($target, $payload, $deferred);
+            } catch (Exception $exception) {
+                $deferred->reject($exception);
+            }
         };
         $cb = $cb->bindTo($bindTo);
         $cb($this->target, $this->payload, $this->uniqid);
