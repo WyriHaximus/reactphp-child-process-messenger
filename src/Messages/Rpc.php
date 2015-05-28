@@ -71,7 +71,7 @@ class Rpc implements \JsonSerializable, ActionableMessageInterface
     {
         $cb = function ($target, $payload, $uniqid) {
             if (!$this->hasRpc($target)) {
-                $this->stderr->write($this->createLine(Factory::rpc_error($uniqid, [
+                $this->stderr->write($this->createLine(Factory::rpcError($uniqid, [
                     'message' => 'Target doesn\'t exist',
                 ])));
                 return;
@@ -80,11 +80,11 @@ class Rpc implements \JsonSerializable, ActionableMessageInterface
             $deferred = new Deferred();
 
             $deferred->promise()->then(function (array $payload) use ($uniqid) {
-                $this->stdout->write($this->createLine(Factory::rpc_success($uniqid, $payload)));
+                $this->stdout->write($this->createLine(Factory::rpcSuccess($uniqid, $payload)));
             }, function (array $payload) use ($uniqid) {
-                $this->stdout->write($this->createLine(Factory::rpc_notify($uniqid, $payload)));
+                $this->stdout->write($this->createLine(Factory::rpcNotify($uniqid, $payload)));
             }, function (array $payload) use ($uniqid) {
-                $this->stderr->write($this->createLine(Factory::rpc_error($uniqid, $payload)));
+                $this->stderr->write($this->createLine(Factory::rpcError($uniqid, $payload)));
             });
 
             $this->callRpc($target, $payload, $deferred);

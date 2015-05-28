@@ -2,6 +2,8 @@
 
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
+use Doctrine\Common\Inflector\Inflector;
+
 class Factory
 {
     /**
@@ -14,7 +16,7 @@ class Factory
     public static function fromLine($line, array $lineOptions)
     {
         $line = json_decode($line, true);
-        $method = $line['type'] . 'FromLine';
+        $method = Inflector::camelize($line['type']) . 'FromLine';
         if (method_exists(static::class, $method)) {
             return static::$method($line, $lineOptions);
         }
@@ -82,7 +84,7 @@ class Factory
      *
      * @return Rpc
      */
-    public static function rpc_error($uniqid, array $payload = [])
+    public static function rpcError($uniqid, array $payload = [])
     {
         return new RpcError($uniqid, new Payload($payload));
     }
@@ -92,9 +94,9 @@ class Factory
      *
      * @return Rpc
      */
-    protected static function rpc_errorFromLine(array $line)
+    protected static function rpcErrorFromLine(array $line)
     {
-        return static::rpc_error($line['uniqid'], $line['payload']);
+        return static::rpcError($line['uniqid'], $line['payload']);
     }
 
     /**
@@ -103,7 +105,7 @@ class Factory
      *
      * @return RpcSuccess
      */
-    public static function rpc_success($uniqid, array $payload = [])
+    public static function rpcSuccess($uniqid, array $payload = [])
     {
         return new RpcSuccess($uniqid, new Payload($payload));
     }
@@ -112,8 +114,28 @@ class Factory
      * @param array $line
      * @return RpcSuccess
      */
-    protected static function rpc_successFromLine(array $line)
+    protected static function rpcSuccessFromLine(array $line)
     {
-        return static::rpc_success($line['uniqid'], $line['payload']);
+        return static::rpcSuccess($line['uniqid'], $line['payload']);
+    }
+
+    /**
+     * @param string $uniqid
+     * @param array $payload
+     *
+     * @return RpcSuccess
+     */
+    public static function rpcNotify($uniqid, array $payload = [])
+    {
+        return new RpcNotify($uniqid, new Payload($payload));
+    }
+
+    /**
+     * @param array $line
+     * @return RpcSuccess
+     */
+    protected static function rpcNotifyFromLine(array $line)
+    {
+        return static::rpcNotify($line['uniqid'], $line['payload']);
     }
 }
