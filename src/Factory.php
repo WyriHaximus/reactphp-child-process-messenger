@@ -11,22 +11,28 @@ class Factory
     const INTERVAL = 0.1;
     const TIMEOUT = 13;
 
-    public static function parent(Process $process, LoopInterface $loop, array $options = [], $interval = self::INTERVAL)
-    {
+    public static function parent(
+        Process $process,
+        LoopInterface $loop,
+        array $options = [],
+        $interval = self::INTERVAL
+    ) {
         $process->start($loop, $interval);
 
-        return \WyriHaximus\React\tickingPromise($loop, $interval, [$process, 'isRunning'])->then(function () use ($process, $options) {
-            $messenger = new Messenger($process->stdin, $process->stdout, $process->stderr, [
-                'read_err' => 'stderr',
-                'read' => 'stdout',
-                'write_err' => 'stdin',
-                'write' => 'stdin',
-                'callForward' => function ($name, $arguments) use ($process) {
-                    return call_user_func_array([$process, $name], $arguments);
-                },
-            ] + $options);
-            return \React\Promise\resolve($messenger);
-        });
+        return \WyriHaximus\React\tickingPromise($loop, $interval, [$process, 'isRunning'])->
+            then(function () use ($process, $options) {
+                $messenger = new Messenger($process->stdin, $process->stdout, $process->stderr, [
+                    'read_err' => 'stderr',
+                    'read' => 'stdout',
+                    'write_err' => 'stdin',
+                    'write' => 'stdin',
+                    'callForward' => function ($name, $arguments) use ($process) {
+                        return call_user_func_array([$process, $name], $arguments);
+                    },
+                ] + $options);
+                return \React\Promise\resolve($messenger);
+            })
+        ;
     }
 
     public static function child(LoopInterface $loop, array $options = [])
