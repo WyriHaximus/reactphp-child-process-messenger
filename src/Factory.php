@@ -24,7 +24,6 @@ class Factory
                 $messenger = new Messenger($process->stdin, $process->stdout, $process->stderr, [
                     'read_err' => 'stderr',
                     'read' => 'stdout',
-                    'write_err' => 'stdin',
                     'write' => 'stdin',
                     'callForward' => function ($name, $arguments) use ($process) {
                         return call_user_func_array([$process, $name], $arguments);
@@ -38,7 +37,6 @@ class Factory
     public static function child(LoopInterface $loop, array $options = [])
     {
         return new Messenger(new Stream(STDIN, $loop), new Stream(STDOUT, $loop), new Stream(STDERR, $loop), [
-            'read_err' => 'stdin',
             'read' => 'stdin',
             'write_err' => 'stderr',
             'write' => 'stdout',
