@@ -41,6 +41,8 @@ class LineTest extends \PHPUnit_Framework_TestCase
      */
     public function testBasic(\JsonSerializable $input, $output)
     {
-        $this->assertEquals($output, (string)new Line($input, []));
+        $line = new Line($input, []);
+        $this->assertSame($input, $line->getPayload());
+        $this->assertEquals($output, (string)$line);
     }
 }
