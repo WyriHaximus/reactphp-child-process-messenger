@@ -17,9 +17,9 @@ class Messenger extends EventEmitter
 
     use LoopAwareTrait;
 
-    public $stdin;
-    public $stdout;
-    public $stderr;
+    protected $stdin;
+    protected $stdout;
+    protected $stderr;
 
     /**
      * @var OutstandingCalls
@@ -186,6 +186,30 @@ class Messenger extends EventEmitter
     {
         $lineCLass = $this->options['lineClass'];
         return (string) new $lineCLass($line, $this->options['lineOptions']);
+    }
+
+    /**
+     * @return Stream
+     */
+    public function getStdin()
+    {
+        return $this->stdin;
+    }
+
+    /**
+     * @return Stream
+     */
+    public function getStdout()
+    {
+        return $this->stdout;
+    }
+
+    /**
+     * @return Stream
+     */
+    public function getStderr()
+    {
+        return $this->stderr;
     }
 
     /**

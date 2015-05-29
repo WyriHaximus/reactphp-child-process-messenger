@@ -80,11 +80,11 @@ class Rpc implements \JsonSerializable, ActionableMessageInterface
             $deferred = new Deferred();
 
             $deferred->promise()->then(function (array $payload) use ($uniqid) {
-                $this->stdout->write($this->createLine(Factory::rpcSuccess($uniqid, $payload)));
+                $this->getStdout()->write($this->createLine(Factory::rpcSuccess($uniqid, $payload)));
             }, function (array $payload) use ($uniqid) {
-                $this->stdout->write($this->createLine(Factory::rpcNotify($uniqid, $payload)));
+                $this->getStdout()->write($this->createLine(Factory::rpcNotify($uniqid, $payload)));
             }, function (array $payload) use ($uniqid) {
-                $this->stderr->write($this->createLine(Factory::rpcError($uniqid, $payload)));
+                $this->getStderr()->write($this->createLine(Factory::rpcError($uniqid, $payload)));
             });
 
             try {
