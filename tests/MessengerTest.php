@@ -3,41 +3,37 @@
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 
 use Phake;
-use WyriHaximus\React\ChildProcess\Messenger\Messenger;
+use React\EventLoop\Factory as EventLoopFactory;
+use React\Promise\Deferred;
+use WyriHaximus\React\ChildProcess\Messenger\Factory;
 
 class MessengerTest extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * @var React\EventLoop\LoopInterface
-     */
-    protected $loop;
 
-    /**
-     * @var React\ChildProcess\Process
-     */
-    protected $process;
-
-    public function setUp()
+    public function testSetAndHasRpc()
     {
-        $this->loop = Phake::mock('React\EventLoop\LoopInterface');
-        $this->process = Phake::mock('React\ChildProcess\Process');
-        $this->process->stdin = Phake::mock('React\Stream\Stream');
-        $this->process->stdout = Phake::mock('React\Stream\Stream');
-        $this->process->stderr = Phake::mock('React\Stream\Stream');
-    }
+        $loop = EventLoopFactory::create();
+        $messenger = Factory::child($loop);
 
-    public function tearDown()
-    {
-        unset($this->process, $this->loop);
-    }
+        $payload = [
+            'a',
+            'b',
+            'c',
+        ];
+        $deferred = new Deferred();
+        $callableFired = false;
+        $callable = function (array $passedPayload, Deferred $passedDeferred) use (&$callableFired, $payload, $deferred) {
+            $this->assertEquals($payload, $passedPayload);
+            $this->assertEquals($deferred, $passedDeferred);
+            $callableFired = true;
+        };
 
-    public function testStart()
-    {
-        (new Messenger($this->process))->start($this->loop);
-        Phake::inOrder(
-            Phake::verify($this->process)->start($this->loop, Messenger::INTERVAL),
-            Phake::verify($this->process->stdout)->on('data', $this->isType('callable')),
-            Phake::verify($this->process->stderr)->on('data', $this->isType('callable'))
-        );
+        $messenger->registerRpc('test', $callable);
+        $this->assertFalse($messenger->hasRpc('tset'));
+        $this->assertTrue($messenger->hasRpc('test'));
+
+        $messenger->callRpc('test', $payload, $deferred);
+
+        $this->assertTrue($callableFired);
     }
 }
