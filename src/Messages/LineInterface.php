@@ -4,8 +4,7 @@ namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
 interface LineInterface
 {
-    //const EOL = PHP_EOL;
-    const EOL = "\n";
+    const EOL = "\r\n";
 
     /**
      * @param ActionableMessageInterface $line
