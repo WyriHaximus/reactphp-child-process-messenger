@@ -58,4 +58,13 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
             Phake::verify($this->process)->isRunning(null)
         );
     }
+
+    public function testChild()
+    {
+        $messenger = Factory::child($this->loop);
+        $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messenger', $messenger);
+        $this->assertInstanceOf('React\Stream\Stream', $messenger->getStdin());
+        $this->assertInstanceOf('React\Stream\Stream', $messenger->getStdout());
+        $this->assertInstanceOf('React\Stream\Stream', $messenger->getStderr());
+    }
 }
