@@ -55,4 +55,16 @@ class SecureLineTest extends \PHPUnit_Framework_TestCase
         ]);
         $this->assertEquals($lineString, json_encode($stringLine));
     }
+
+    /**
+     * @expectedException           \Exception
+     * @expectedExceptionMessage    Signature mismatch!
+     */
+    public function testSignatureMismatch()
+    {
+        $line = '{"type":"secure","line":"{\"type\":\"rpc\",\"uniqid\":1234567890,\"target\":\"foo\",\"payload\":[\"bar\",\"baz\"]}","signature":"r7TvJ\/AuvAY7dKZ+7wQyI0PdyLivANZzPB35j8Xuyps="}';
+        SecureLine::fromLine(json_decode((string)$line, true), [
+            'key' => 'cba',
+        ]);
+    }
 }

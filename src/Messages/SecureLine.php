@@ -53,6 +53,6 @@ class SecureLine implements LineInterface
             return Factory::fromLine($line['line'], $lineOptions);
         }
 
-        throw new \Exception('Signature mis match!');
+        throw new \Exception('Signature mismatch!');
     }
 }
