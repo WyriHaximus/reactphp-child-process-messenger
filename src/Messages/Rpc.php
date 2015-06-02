@@ -71,7 +71,7 @@ class Rpc implements \JsonSerializable, ActionableMessageInterface
     {
         $cb = function ($target, $payload, $uniqid) {
             if (!$this->hasRpc($target)) {
-                $this->stderr->write($this->createLine(Factory::rpcError($uniqid, [
+                $this->getStderr()->write($this->createLine(Factory::rpcError($uniqid, [
                     'message' => 'Target doesn\'t exist',
                 ])));
                 return;
