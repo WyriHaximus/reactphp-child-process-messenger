@@ -89,7 +89,7 @@ class Rpc implements \JsonSerializable, ActionableMessageInterface
 
             try {
                 $this->callRpc($target, $payload, $deferred);
-            } catch (Exception $exception) {
+            } catch (\Exception $exception) {
                 $deferred->reject($exception);
             }
         };
