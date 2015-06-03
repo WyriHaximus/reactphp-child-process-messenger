@@ -3,12 +3,14 @@
 namespace WyriHaximus\React\ChildProcess\Messenger;
 
 use Evenement\EventEmitter;
+use React\Promise\Deferred;
 use React\Stream\Stream;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\ActionableMessageInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessageFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Line;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\LineInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Message;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc;
 
 class Messenger extends EventEmitter
@@ -91,12 +93,21 @@ class Messenger extends EventEmitter
         $this->rpcs[$target] = $listener;
     }
 
+    /**
+     * @param string $target
+     * @return bool
+     */
     public function hasRpc($target)
     {
         return isset($this->rpcs[$target]);
     }
 
-    public function callRpc($target, $payload, $deferred)
+    /**
+     * @param string $target
+     * @param Payload $payload
+     * @param Deferred $deferred
+     */
+    public function callRpc($target, Payload $payload, Deferred $deferred)
     {
         $this->rpcs[$target]($payload, $deferred);
     }
@@ -123,6 +134,9 @@ class Messenger extends EventEmitter
         }
     }
 
+    /**
+     * @param string $line
+     */
     protected function write($line)
     {
         if (isset($this->options['write'])) {
@@ -132,7 +146,10 @@ class Messenger extends EventEmitter
         }
     }
 
-    protected function writeErr(LineInterface $line)
+    /**
+     * @param string $line
+     */
+    protected function writeErr($line)
     {
         if (isset($this->options['write_err'])) {
             $streamName = $this->options['write_err'];
@@ -141,11 +158,18 @@ class Messenger extends EventEmitter
         }
     }
 
+    /**
+     * @param Message $message
+     */
     public function message(Message $message)
     {
         $this->write($this->createLine($message));
     }
 
+    /**
+     * @param string $uniqid
+     * @return OutstandingCall
+     */
     public function getOutstandingCall($uniqid)
     {
         return $this->outstandingRpcCalls->getCall($uniqid);
