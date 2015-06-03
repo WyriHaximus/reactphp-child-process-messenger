@@ -83,8 +83,10 @@ class Rpc implements \JsonSerializable, ActionableMessageInterface
                 function (array $payload) use ($uniqid) {
                     $this->getStdout()->write($this->createLine(Factory::rpcSuccess($uniqid, $payload)));
                 },
-                function ($payload) use ($uniqid) {
-                    $this->getStderr()->write($this->createLine(Factory::rpcError($uniqid, $payload)));
+                function ($error) use ($uniqid) {
+                    $this->getStderr()->write($this->createLine(Factory::rpcError($uniqid, [
+                        'error' => $error,
+                    ])));
                 },
                 function (array $payload) use ($uniqid) {
                     $this->getStdout()->write($this->createLine(Factory::rpcNotify($uniqid, $payload)));
