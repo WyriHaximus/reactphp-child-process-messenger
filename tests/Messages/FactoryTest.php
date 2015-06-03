@@ -30,7 +30,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
      */
     public function testFromLine($input, callable $tests)
     {
-        $line = Factory::fromLine($input);
+        $line = Factory::fromLine($input, []);
         $this->assertTrue($tests($line));
     }
 
