@@ -20,8 +20,19 @@ class Messenger extends EventEmitter
      */
     protected $loop;
 
+    /**
+     * @var Stream
+     */
     protected $stdin;
+
+    /**
+     * @var Stream
+     */
     protected $stdout;
+
+    /**
+     * @var Stream
+     */
     protected $stderr;
 
     /**
