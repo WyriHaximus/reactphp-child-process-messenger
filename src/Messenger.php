@@ -46,7 +46,7 @@ class Messenger extends EventEmitter
     ];
 
     protected $defaultOptions = [
-        'lineClass' => 'WyriHaximus\React\ChildProcess\Messenger\Messages\Line',
+        'lineClass' => Line::class,
         'lineOptions' => [],
     ];
 
