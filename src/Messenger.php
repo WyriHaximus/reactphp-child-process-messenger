@@ -104,10 +104,10 @@ class Messenger extends EventEmitter
 
     /**
      * @param string $target
-     * @param Payload $payload
+     * @param mixed $payload
      * @param Deferred $deferred
      */
-    public function callRpc($target, Payload $payload, Deferred $deferred)
+    public function callRpc($target, $payload, Deferred $deferred)
     {
         $this->rpcs[$target]($payload, $deferred);
     }
