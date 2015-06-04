@@ -58,6 +58,26 @@ class Factory
     }
 
     /**
+     * @param array $payload
+     *
+     * @return Error
+     */
+    public static function error(array $payload = [])
+    {
+        return new Error(new Payload($payload));
+    }
+
+    /**
+     * @param array $line
+     *
+     * @return Error
+     */
+    protected static function errorFromLine(array $line)
+    {
+        return static::error($line['payload']);
+    }
+
+    /**
      * @param string $target
      * @param array $payload
      *
