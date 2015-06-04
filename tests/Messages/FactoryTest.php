@@ -4,7 +4,6 @@ namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Error;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory;
-use WyriHaximus\React\ChildProcess\Messenger\Messages\Line;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\LineInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Message;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
@@ -15,6 +14,8 @@ use WyriHaximus\React\ChildProcess\Messenger\Messages\RpcSuccess;
 
 class FactoryTest extends \PHPUnit_Framework_TestCase
 {
+    const KEY = 'abc';
+
     public function providerFromLine()
     {
         yield [
@@ -106,14 +107,34 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
                 return true;
             },
         ];
+        yield [
+            '{"type":"secure","line":"{\"type\":\"rpc\",\"uniqid\":1234567890,\"target\":\"foo\",\"payload\":[\"bar\",\"baz\"]}","signature":"r7TvJ\/AuvAY7dKZ+7wQyI0PdyLivANZzPB35j8Xuyps="}' . LineInterface::EOL,
+            function ($message) {
+                $this->assertInstanceOf(Rpc::class, $message);
+                $this->assertInstanceOf(Payload::class, $message->getPayload());
+                $this->assertEquals([
+                    'type' => 'rpc',
+                    'uniqid' => 1234567890,
+                    'payload' => new Payload([
+                        'bar',
+                        'baz',
+                    ]),
+                    'target' => 'foo',
+                ], $message->jsonSerialize());
+                return true;
+            },
+            [
+                'key' => static::KEY,
+            ],
+        ];
     }
 
     /**
      * @dataProvider providerFromLine
      */
-    public function testFromLine($input, callable $tests)
+    public function testFromLine($input, callable $tests, array $lineOptions = [])
     {
-        $line = Factory::fromLine($input, []);
+        $line = Factory::fromLine($input, $lineOptions);
         $this->assertTrue($tests($line));
     }
 
