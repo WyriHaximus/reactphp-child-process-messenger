@@ -120,7 +120,7 @@ class RpcTest extends \PHPUnit_Framework_TestCase
         Phake::when($messenger)->createLine($this->isInstanceOf(RpcNotify::class))->thenReturn('');
         $callbackFired = false;
         Phake::when($messenger)->callRpc('foo', $payload, $this->isInstanceOf(Deferred::class))->thenGetReturnByLambda(function ($target, $payload, $deferred) use (&$callbackFired) {
-            $deferred->notify([
+            $deferred->progress([
                 'a',
                 'b',
                 'c',
