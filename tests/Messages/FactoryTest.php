@@ -125,28 +125,4 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
     {
         Factory::fromLine('{"type":"massage","payload":["foo","bar"]}' . LineInterface::EOL, []);
     }
-
-    public function providerMessage()
-    {
-        yield [
-            [],
-        ];
-
-        yield [
-            [
-                'food' => 'truck',
-            ],
-        ];
-    }
-
-    /**
-     * @dataProvider providerMessage
-     */
-    public function testMessage(array $payload)
-    {
-        $message = Factory::message($payload);
-        $this->assertInstanceOf(Message::class, $message);
-        $this->assertInstanceOf(Payload::class, $message->getPayload());
-        $this->assertSame($payload, $message->getPayload()->getPayload());
-    }
 }
