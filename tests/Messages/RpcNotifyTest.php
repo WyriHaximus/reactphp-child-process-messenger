@@ -30,7 +30,7 @@ class RpcNotifyTest extends \PHPUnit_Framework_TestCase
         Phake::inOrder(
             Phake::verify($messenger)->getOutstandingCall('abc'),
             Phake::verify($outstandingCall)->getDeferred(),
-            Phake::verify($deferred)->notify($payload)
+            Phake::verify($deferred)->progress($payload)
         );
 
     }
