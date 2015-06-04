@@ -13,7 +13,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
     public function providerFromLine()
     {
         yield [
-            '{"type":"message","payload":["foo","bar"]}' . Line::EOL,
+            '{"type":"message","payload":["foo","bar"]}' . LineInterface::EOL,
             function ($message) {
                 $this->assertInstanceOf(Message::class, $message);
                 $this->assertInstanceOf(Payload::class, $message->getPayload());
