@@ -4,6 +4,7 @@ namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Line;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\LineInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Message;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 
@@ -32,6 +33,15 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
     {
         $line = Factory::fromLine($input, []);
         $this->assertTrue($tests($line));
+    }
+
+    /**
+     * @expectedException Exception
+     * @expectedExceptionMessage Unknown message type: massage
+     */
+    public function testFromLineException()
+    {
+        Factory::fromLine('{"type":"massage","payload":["foo","bar"]}' . LineInterface::EOL, []);
     }
 
     public function providerMessage()
