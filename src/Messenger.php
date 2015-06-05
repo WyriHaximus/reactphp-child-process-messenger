@@ -18,11 +18,6 @@ class Messenger extends EventEmitter
     const INTERVAL = 0.1;
 
     /**
-     * @var LoopInterface
-     */
-    protected $loop;
-
-    /**
      * @var Stream
      */
     protected $stdin;
@@ -264,13 +259,5 @@ class Messenger extends EventEmitter
             $call = $this->options['callForward'];
             return $call($name, $arguments);
         }
-    }
-
-    /**
-     * @return LoopInterface
-     */
-    public function getLoop()
-    {
-        return $this->loop;
     }
 }
