@@ -52,4 +52,40 @@ class MessengerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($stdout, $messenger->getStdout());
         $this->assertSame($stderr, $messenger->getStderr());
     }
+
+    public function testMessage()
+    {
+        $loop = \React\EventLoop\Factory::create();
+        $stdin = Phake::mock(Stream::class);
+        $stdout = new Stream(STDOUT, $loop);
+        $stderr = new Stream(STDERR, $loop);
+
+        $messenger = new Messenger($stdin, $stdout, $stderr, [
+            'write' => 'stdin',
+        ]);
+
+        $messenger->message(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::message([
+            'foo' => 'bar',
+        ]));
+
+        Phake::verify($stdin)->write($this->isType('string'));
+    }
+
+    public function testRpc()
+    {
+        $loop = \React\EventLoop\Factory::create();
+        $stdin = Phake::mock(Stream::class);
+        $stdout = new Stream(STDOUT, $loop);
+        $stderr = new Stream(STDERR, $loop);
+
+        $messenger = new Messenger($stdin, $stdout, $stderr, [
+            'write' => 'stdin',
+        ]);
+
+        $messenger->rpc(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::rpc('target', [
+            'foo' => 'bar',
+        ]));
+
+        Phake::verify($stdin)->write($this->isType('string'));
+    }
 }
