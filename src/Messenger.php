@@ -58,6 +58,7 @@ class Messenger extends EventEmitter
 
     protected $defaultOptions = [
         'lineClass' => Line::class,
+        'messageFactoryClass' => MessageFactory::class,
         'lineOptions' => [],
     ];
 
@@ -206,8 +207,9 @@ class Messenger extends EventEmitter
      */
     protected function iterateMessages(array $messages, $source)
     {
+        $messageFactory = $this->options['messageFactoryClass'];
         foreach ($messages as $message) {
-            MessageFactory::fromLine($message, $this->options['lineOptions'])->handle($this, $source);
+            $messageFactory::fromLine($message, $this->options['lineOptions'])->handle($this, $source);
         }
     }
 
