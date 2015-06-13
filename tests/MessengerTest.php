@@ -7,6 +7,7 @@ use React\EventLoop\Factory as EventLoopFactory;
 use React\Promise\Deferred;
 use React\Stream\Stream;
 use WyriHaximus\React\ChildProcess\Messenger\Factory;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Line;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
 class MessengerTest extends \PHPUnit_Framework_TestCase
@@ -87,5 +88,23 @@ class MessengerTest extends \PHPUnit_Framework_TestCase
         ]));
 
         Phake::verify($stdin)->write($this->isType('string'));
+    }
+
+    public function testOnData()
+    {
+
+        $loop = \React\EventLoop\Factory::create();
+        $stdin = Phake::mock(Stream::class);
+
+        Phake::when($stdin)->on('data', $this->isType('callable'))->thenGetReturnByLambda(function ($target, $callback) {
+            $callback((string)new Line(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::message([]), []));
+        });
+
+        $stdout = new Stream(STDOUT, $loop);
+        $stderr = new Stream(STDERR, $loop);
+
+        $messenger = new Messenger($stdin, $stdout, $stderr, [
+            'read' => 'stdin',
+        ]);
     }
 }
