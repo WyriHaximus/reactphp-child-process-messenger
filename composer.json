@@ -10,6 +10,7 @@
         }
     ],
     "require": {
+        "php": ">=5.5.0",
         "react/child-process": "^0.4",
         "wyrihaximus/ticking-promise": "~1.4",
         "doctrine/inflector": "^1.0",
