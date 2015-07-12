@@ -42,7 +42,4 @@ before_script:
 
 script: make travis
 
-after_script:
-  - make coveralls
-
-after_script: sh -c " if [ -f ./build/logs/clover.xml ]; then php vendor/bin/coveralls; fi"
+after_script: make travis-coverage
