@@ -17,7 +17,7 @@
         "indigophp/hash-compat": "^1.0"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.6.0",
+        "phpunit/phpunit": "~4.5.0",
         "phake/phake": "^1.0.6",
         "vectorface/dunit": "^2.0",
         "squizlabs/php_codesniffer": "^1.5"
