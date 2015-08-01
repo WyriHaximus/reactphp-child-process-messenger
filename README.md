@@ -1,5 +1,28 @@
 # ChildProcessMessenger
+[![Build Status](https://travis-ci.org/WyriHaximus/reactphp-child-process-messenger.png)](https://travis-ci.org/WyriHaximus/ReactGuzzleRing)
+[![Latest Stable Version](https://poser.pugx.org/WyriHaximus/react-child-process-messenger/v/stable.png)](https://packagist.org/packages/WyriHaximus/react-child-process-messenger)
+[![Total Downloads](https://poser.pugx.org/WyriHaximus/react-child-process-messenger/downloads.png)](https://packagist.org/packages/WyriHaximus/react-child-process-messenger)
+[![Code Coverage](https://scrutinizer-ci.com/g/WyriHaximus/reactphp-child-process-messenger/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/WyriHaximus/reactphp-child-process-messenger/?branch=master)
+[![License](https://poser.pugx.org/wyrihaximus/react-guzzle-ring/license.png)](https://packagist.org/packages/wyrihaximus/react-guzzle-ring)
 [![PHP 7 ready](http://php7ready.timesplinter.ch/WyriHaximus/reactphp-child-process-messenger/badge.svg)](https://travis-ci.org/WyriHaximus/reactphp-child-process-messenger)
+
+Plain messages and RPC style STDIN/OUT/ERR wrapper around [`react/child-process`](https://github.com/reactphp/child-process)
+
+### Installation ###
+
+To install via [Composer](http://getcomposer.org/), use the command below, it will automatically detect the latest version and bind it with `~`.
+
+```
+composer require wyrihaximus/react-child-process-messenger 
+```
+
+## Exampless ##
+
+For both message and RPC examples seee the [examples](https://github.com/WyriHaximus/reactphp-child-process-messenger/tree/master/examples) directory
+
+## Contributing ##
+
+Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## License ##
 
