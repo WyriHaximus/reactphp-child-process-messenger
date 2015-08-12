@@ -139,10 +139,10 @@ class RpcTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($callbackFired);
 
         Phake::inOrder(
-        Phake::verify($messenger)->hasRpc('foo'),
-        Phake::verify($messenger)->getStdout(),
-        Phake::verify($messenger)->createLine($this->isInstanceOf(RpcNotify::class)),
-        Phake::verify($stream)->write($this->isType('string'))
+            Phake::verify($messenger)->hasRpc('foo'),
+            Phake::verify($messenger)->getStdout(),
+            Phake::verify($messenger)->createLine($this->isInstanceOf(RpcNotify::class)),
+            Phake::verify($stream)->write($this->isType('string'))
         );
     }
 }
