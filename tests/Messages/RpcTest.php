@@ -4,6 +4,8 @@ namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
 use Phake;
 use React\Promise\Deferred;
+use React\Promise\Promise;
+use React\Promise\RejectedPromise;
 use React\Stream\Stream;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc;
@@ -61,13 +63,13 @@ class RpcTest extends \PHPUnit_Framework_TestCase
         Phake::when($messenger)->getStdout()->thenReturn($stream);
         Phake::when($messenger)->createLine($this->isInstanceOf(RpcSuccess::class))->thenReturn('');
         $callbackFired = false;
-        Phake::when($messenger)->callRpc('foo', $payload, $this->isInstanceOf(Deferred::class))->thenGetReturnByLambda(function ($target, $payload, $deferred) use (&$callbackFired) {
-            $deferred->resolve([
+        Phake::when($messenger)->callRpc('foo', $payload)->thenGetReturnByLambda(function ($target, $payload) use (&$callbackFired) {
+            $callbackFired = true;
+            return \React\Promise\resolve([
                 'a',
                 'b',
                 'c',
             ]);
-            $callbackFired = true;
         });
 
         $message->handle($messenger, '');
@@ -94,7 +96,7 @@ class RpcTest extends \PHPUnit_Framework_TestCase
         Phake::when($messenger)->hasRpc('foo')->thenReturn(true);
         Phake::when($messenger)->getStderr()->thenReturn($stream);
         Phake::when($messenger)->createLine($this->isInstanceOf(RpcError::class))->thenReturn('');
-        Phake::when($messenger)->callRpc('foo', $payload, $this->isInstanceOf(Deferred::class))->thenThrow(new \Exception());
+        Phake::when($messenger)->callRpc('foo', $payload)->thenReturn(new RejectedPromise(new \Exception()));
 
         $message->handle($messenger, '');
 
@@ -119,13 +121,17 @@ class RpcTest extends \PHPUnit_Framework_TestCase
         Phake::when($messenger)->getStdout()->thenReturn($stream);
         Phake::when($messenger)->createLine($this->isInstanceOf(RpcNotify::class))->thenReturn('');
         $callbackFired = false;
-        Phake::when($messenger)->callRpc('foo', $payload, $this->isInstanceOf(Deferred::class))->thenGetReturnByLambda(function ($target, $payload, $deferred) use (&$callbackFired) {
-            $deferred->progress([
-                'a',
-                'b',
-                'c',
-            ]);
+        Phake::when($messenger)->callRpc('foo', $payload)->thenGetReturnByLambda(function ($target, $payload) use (&$callbackFired) {
             $callbackFired = true;
+            $promise = Phake::partialMock(Promise::class, function () {});
+            Phake::when($promise)->then($this->isType('callable'), $this->isType('callable'), $this->isType('callable'))->thenGetReturnByLambda(function ($yes, $no, $notify) {
+                return $notify([
+                    'a',
+                    'b',
+                    'c',
+                ]);
+            });
+            return $promise;
         });
 
         $message->handle($messenger, '');

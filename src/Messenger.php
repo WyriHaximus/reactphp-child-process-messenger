@@ -4,6 +4,8 @@ namespace WyriHaximus\React\ChildProcess\Messenger;
 
 use Evenement\EventEmitter;
 use React\Promise\Deferred;
+use React\Promise\PromiseInterface;
+use React\Promise\RejectedPromise;
 use React\Stream\Stream;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\ActionableMessageInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessageFactory;
@@ -99,13 +101,22 @@ class Messenger extends EventEmitter
     }
 
     /**
-     * @param string $target
-     * @param mixed $payload
-     * @param Deferred $deferred
+     * @param $target
+     * @param $payload
+     * @return React\Promise\PromiseInterface
      */
-    public function callRpc($target, $payload, Deferred $deferred)
+    public function callRpc($target, $payload)
     {
-        $this->rpcs[$target]($payload, $deferred);
+        try {
+            $promise = $this->rpcs[$target]($payload);
+            if ($promise instanceof PromiseInterface) {
+                return $promise;
+            }
+
+            throw new \Exception('RPC must return promise');
+        } catch (\Exception $exception) {
+            return new RejectedPromise($exception);
+        }
     }
 
     protected function attachMessenger()

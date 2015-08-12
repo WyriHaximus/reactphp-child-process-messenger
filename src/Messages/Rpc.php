@@ -3,6 +3,7 @@
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
 use React\Promise\Deferred;
+use React\Promise\RejectedPromise;
 
 class Rpc implements \JsonSerializable, ActionableMessageInterface
 {
@@ -77,9 +78,7 @@ class Rpc implements \JsonSerializable, ActionableMessageInterface
                 return;
             }
 
-            $deferred = new Deferred();
-
-            $deferred->promise()->then(
+            $this->callRpc($target, $payload)->then(
                 function (array $payload) use ($uniqid) {
                     $this->getStdout()->write($this->createLine(Factory::rpcSuccess($uniqid, $payload)));
                 },
@@ -92,12 +91,6 @@ class Rpc implements \JsonSerializable, ActionableMessageInterface
                     $this->getStdout()->write($this->createLine(Factory::rpcNotify($uniqid, $payload)));
                 }
             );
-
-            try {
-                $this->callRpc($target, $payload, $deferred);
-            } catch (\Exception $exception) {
-                $deferred->reject($exception);
-            }
         };
         $cb = $cb->bindTo($bindTo);
         $cb($this->target, $this->payload, $this->uniqid);

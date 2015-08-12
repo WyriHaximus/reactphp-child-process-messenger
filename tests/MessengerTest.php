@@ -23,11 +23,9 @@ class MessengerTest extends \PHPUnit_Framework_TestCase
             'b',
             'c',
         ];
-        $deferred = new Deferred();
         $callableFired = false;
-        $callable = function (array $passedPayload, Deferred $passedDeferred) use (&$callableFired, $payload, $deferred) {
+        $callable = function (array $passedPayload) use (&$callableFired, $payload) {
             $this->assertEquals($payload, $passedPayload);
-            $this->assertEquals($deferred, $passedDeferred);
             $callableFired = true;
         };
 
@@ -35,7 +33,7 @@ class MessengerTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($messenger->hasRpc('tset'));
         $this->assertTrue($messenger->hasRpc('test'));
 
-        $messenger->callRpc('test', $payload, $deferred);
+        $messenger->callRpc('test', $payload);
 
         $this->assertTrue($callableFired);
     }
