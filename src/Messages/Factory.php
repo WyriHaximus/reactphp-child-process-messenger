@@ -17,7 +17,7 @@ class Factory
     {
         $line = json_decode($line, true);
         $method = Inflector::camelize($line['type']) . 'FromLine';
-        if (method_exists(static::class, $method)) {
+        if (method_exists(static::class, $method) && $method !== 'FromLine') {
             return static::$method($line, $lineOptions);
         }
 
