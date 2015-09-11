@@ -51,7 +51,7 @@ class RpcError implements \JsonSerializable, ActionableMessageInterface
     public function handle($bindTo, $source)
     {
         $cb = function ($payload, $uniqid) {
-            $this->getOutstandingCall($uniqid)->getDeferred()->reject($payload);
+            $this->getOutstandingCall($uniqid)->reject($payload);
         };
         $cb = $cb->bindTo($bindTo);
         $cb($this->payload, $this->uniqid);

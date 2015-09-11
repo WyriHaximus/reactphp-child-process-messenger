@@ -17,7 +17,9 @@ class OutstandingCalls
     {
         $uniqid = $this->getNewUniqid();
 
-        $this->calls[$uniqid] = new OutstandingCall($uniqid, $canceller);
+        $this->calls[$uniqid] = new OutstandingCall($uniqid, $canceller, function (OutstandingCall $call) {
+            unset($this->calls[$call->getUniqid()]);
+        });
 
         return $this->calls[$uniqid];
     }

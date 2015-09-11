@@ -19,9 +19,7 @@ class RpcSuccessTest extends \PHPUnit_Framework_TestCase
 
         $this->assertEquals('{"type":"rpc_success","uniqid":"abc","payload":{"foo":"bar"}}', json_encode($message));
 
-        $deferred = Phake::mock('React\Promise\Deferred');
         $outstandingCall = Phake::mock('WyriHaximus\React\ChildProcess\Messenger\Messenger');
-        Phake::when($outstandingCall)->getDeferred()->thenReturn($deferred);
         $messenger = Phake::mock('WyriHaximus\React\ChildProcess\Messenger\Messenger');
         Phake::when($messenger)->getOutstandingCall('abc')->thenReturn($outstandingCall);
 
@@ -29,8 +27,7 @@ class RpcSuccessTest extends \PHPUnit_Framework_TestCase
 
         Phake::inOrder(
             Phake::verify($messenger)->getOutstandingCall('abc'),
-            Phake::verify($outstandingCall)->getDeferred(),
-            Phake::verify($deferred)->resolve($payload)
+            Phake::verify($outstandingCall)->resolve($payload)
         );
 
     }

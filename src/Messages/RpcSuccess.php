@@ -51,7 +51,7 @@ class RpcSuccess implements \JsonSerializable, ActionableMessageInterface
     public function handle($bindTo, $source)
     {
         $cb = function ($payload, $uniqid) {
-            $this->getOutstandingCall($uniqid)->getDeferred()->resolve($payload);
+            $this->getOutstandingCall($uniqid)->resolve($payload);
         };
         $cb = $cb->bindTo($bindTo);
         $cb($this->payload, $this->uniqid);
