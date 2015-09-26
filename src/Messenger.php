@@ -220,7 +220,11 @@ class Messenger extends EventEmitter
     {
         $messageFactory = $this->options['messageFactoryClass'];
         foreach ($messages as $message) {
-            $messageFactory::fromLine($message, $this->options['lineOptions'])->handle($this, $source);
+            try {
+                $messageFactory::fromLine($message, $this->options['lineOptions'])->handle($this, $source);
+            } catch (\Exception $exception) {
+                $this->emit('error', [$exception, $this]);
+            }
         }
     }
 
