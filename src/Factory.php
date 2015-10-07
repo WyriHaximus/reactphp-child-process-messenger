@@ -5,6 +5,7 @@ namespace WyriHaximus\React\ChildProcess\Messenger;
 use React\ChildProcess\Process;
 use React\EventLoop\LoopInterface;
 use React\Stream\Stream;
+use React\Stream\Util;
 
 class Factory
 {
@@ -29,6 +30,11 @@ class Factory
                         return call_user_func_array([$process, $name], $arguments);
                     },
                 ] + $options);
+
+                Util::forwardEvents($process, $messenger, [
+                    'exit',
+                ]);
+
                 return \React\Promise\resolve($messenger);
             })
         ;
