@@ -108,7 +108,7 @@ class Messenger extends EventEmitter
     public function callRpc($target, $payload)
     {
         try {
-            $promise = $this->rpcs[$target]($payload);
+            $promise = $this->rpcs[$target]($payload, $this);
             if ($promise instanceof PromiseInterface) {
                 return $promise;
             }
@@ -236,6 +236,14 @@ class Messenger extends EventEmitter
     {
         $lineCLass = $this->options['lineClass'];
         return (string) new $lineCLass($line, $this->options['lineOptions']);
+    }
+
+    /**
+     * @return \React\Promise\Promise
+     */
+    public function softTerminate()
+    {
+        return $this->rpc(MessageFactory::rpc('wyrihaximus.react.child-process.messenger.terminate'));
     }
 
     /**

@@ -4,8 +4,10 @@ namespace WyriHaximus\React\ChildProcess\Messenger;
 
 use React\ChildProcess\Process;
 use React\EventLoop\LoopInterface;
+use React\Promise\FulfilledPromise;
 use React\Stream\Stream;
 use React\Stream\Util;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 
 class Factory
 {
@@ -42,10 +44,20 @@ class Factory
 
     public static function child(LoopInterface $loop, array $options = [])
     {
-        return new Messenger(new Stream(STDIN, $loop), new Stream(STDOUT, $loop), new Stream(STDERR, $loop), [
+        $messenger = new Messenger(new Stream(STDIN, $loop), new Stream(STDOUT, $loop), new Stream(STDERR, $loop), [
             'read' => 'stdin',
             'write_err' => 'stderr',
             'write' => 'stdout',
         ] + $options);
+
+        $messenger->registerRpc('wyrihaximus.react.child-process.messenger.terminate', function (Payload $payload, Messenger $messenger) use ($loop) {
+            $messenger->emit('terminate', [
+                $messenger,
+            ]);
+            $loop->addTimer(1, [$loop, 'stop']);
+            return new FulfilledPromise();
+        });
+
+        return $messenger;
     }
 }
