@@ -50,13 +50,16 @@ class Factory
             'write' => 'stdout',
         ] + $options);
 
-        $messenger->registerRpc('wyrihaximus.react.child-process.messenger.terminate', function (Payload $payload, Messenger $messenger) use ($loop) {
-            $messenger->emit('terminate', [
-                $messenger,
-            ]);
-            $loop->addTimer(1, [$loop, 'stop']);
-            return new FulfilledPromise();
-        });
+        $messenger->registerRpc(
+            'wyrihaximus.react.child-process.messenger.terminate',
+            function (Payload $payload, Messenger $messenger) use ($loop) {
+                $messenger->emit('terminate', [
+                    $messenger,
+                ]);
+                $loop->addTimer(1, [$loop, 'stop']);
+                return new FulfilledPromise();
+            }
+        );
 
         return $messenger;
     }
