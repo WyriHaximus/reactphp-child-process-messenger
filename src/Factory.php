@@ -14,6 +14,13 @@ class Factory
     const INTERVAL = 0.1;
     const TIMEOUT = 13;
 
+    /**
+     * @param Process $process
+     * @param LoopInterface $loop
+     * @param array $options
+     * @param float $interval
+     * @return \React\Promise\PromiseInterface
+     */
     public static function parent(
         Process $process,
         LoopInterface $loop,
@@ -42,6 +49,12 @@ class Factory
         ;
     }
 
+    /**
+     * @param LoopInterface $loop
+     * @param array $options
+     * @param null $termiteCallable
+     * @return Messenger
+     */
     public static function child(LoopInterface $loop, array $options = [], $termiteCallable = null)
     {
         $messenger = new Messenger(new Stream(STDIN, $loop), new Stream(STDOUT, $loop), new Stream(STDERR, $loop), [
