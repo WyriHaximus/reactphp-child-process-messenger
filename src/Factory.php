@@ -68,7 +68,7 @@ class Factory
                 $messenger->emit('terminate', [
                     $messenger,
                 ]);
-                $termiteCallable();
+                $termiteCallable($payload, $messenger);
                 return new FulfilledPromise();
             }
         );
