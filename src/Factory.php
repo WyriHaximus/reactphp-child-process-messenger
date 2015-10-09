@@ -13,6 +13,7 @@ class Factory
 {
     const INTERVAL = 0.1;
     const TIMEOUT = 13;
+    const TERMINATE_TIMEOUT = 1;
 
     /**
      * @param Process $process
@@ -66,7 +67,7 @@ class Factory
         if ($termiteCallable === null) {
             $termiteCallable = function () use ($loop) {
                 $loop->addTimer(
-                    1,
+                    self::TERMINATE_TIMEOUT,
                     [
                         $loop,
                         'stop',
