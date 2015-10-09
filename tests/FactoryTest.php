@@ -4,6 +4,7 @@ namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 
 use \Phake;
 use WyriHaximus\React\ChildProcess\Messenger\Factory;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 
 class FactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -61,10 +62,19 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testChild()
     {
+        $this->loop = Phake::mock('React\EventLoop\LoopInterface');
         $messenger = Factory::child($this->loop);
         $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messenger', $messenger);
         $this->assertInstanceOf('React\Stream\Stream', $messenger->getStdin());
         $this->assertInstanceOf('React\Stream\Stream', $messenger->getStdout());
         $this->assertInstanceOf('React\Stream\Stream', $messenger->getStderr());
+        $messenger->callRpc('wyrihaximus.react.child-process.messenger.terminate', new Payload([]));
+        Phake::verify($this->loop)->addTimer(
+            1,
+            [
+                $this->loop,
+                'stop',
+            ]
+        );
     }
 }

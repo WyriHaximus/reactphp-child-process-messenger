@@ -42,7 +42,7 @@ class Factory
         ;
     }
 
-    public static function child(LoopInterface $loop, array $options = [])
+    public static function child(LoopInterface $loop, array $options = [], $termiteCallable = null)
     {
         $messenger = new Messenger(new Stream(STDIN, $loop), new Stream(STDOUT, $loop), new Stream(STDERR, $loop), [
             'read' => 'stdin',
@@ -50,13 +50,25 @@ class Factory
             'write' => 'stdout',
         ] + $options);
 
+        if ($termiteCallable === null) {
+            $termiteCallable = function () use ($loop) {
+                $loop->addTimer(
+                    1,
+                    [
+                        $loop,
+                        'stop',
+                    ]
+                );
+            };
+        }
+
         $messenger->registerRpc(
             'wyrihaximus.react.child-process.messenger.terminate',
-            function (Payload $payload, Messenger $messenger) use ($loop) {
+            function (Payload $payload, Messenger $messenger) use ($loop, $termiteCallable) {
                 $messenger->emit('terminate', [
                     $messenger,
                 ]);
-                $loop->addTimer(1, [$loop, 'stop']);
+                $termiteCallable();
                 return new FulfilledPromise();
             }
         );
