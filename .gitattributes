@@ -8,3 +8,4 @@ tests/ export-ignore
 .scrutinizer.yml export-ignore
 phpunit.xml.dist export-ignore
 Makefile export-ignore
+CONTRIBUTING.md export-ignore
