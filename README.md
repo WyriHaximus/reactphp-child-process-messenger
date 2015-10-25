@@ -16,7 +16,7 @@ To install via [Composer](http://getcomposer.org/), use the command below, it wi
 composer require wyrihaximus/react-child-process-messenger 
 ```
 
-## Exampless ##
+## Examples ##
 
 For both message and RPC examples seee the [examples](https://github.com/WyriHaximus/reactphp-child-process-messenger/tree/master/examples) directory
 
