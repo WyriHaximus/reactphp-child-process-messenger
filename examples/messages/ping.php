@@ -19,6 +19,10 @@ MessengerFactory::parent($process, $loop)->then(function (Messenger $messenger) 
         echo $payload['time'], PHP_EOL;
     });
 
+    $messenger->on('error', function ($e) {
+        echo 'Error: ', var_export($e, true), PHP_EOL;
+    });
+
     $i = 0;
     $loop->addPeriodicTimer(0.001, function (Timer $timer) use (&$i, $messenger) {
         if ($i >= 1300000) {
