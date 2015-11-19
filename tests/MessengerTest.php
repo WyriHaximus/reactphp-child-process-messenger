@@ -6,6 +6,7 @@ use Phake;
 use React\EventLoop\Factory as EventLoopFactory;
 use React\Promise\Deferred;
 use React\Stream\Stream;
+use React\Stream\ThroughStream;
 use WyriHaximus\React\ChildProcess\Messenger\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Line;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
@@ -104,5 +105,27 @@ class MessengerTest extends \PHPUnit_Framework_TestCase
         $messenger = new Messenger($stdin, $stdout, $stderr, [
             'read' => 'stdin',
         ]);
+    }
+
+    public function testEmitOnData()
+    {
+        $loop = \React\EventLoop\Factory::create();
+
+        $stdin = new Stream(STDOUT, $loop);
+        $stdout = new Stream(STDOUT, $loop);
+        $stderr = new Stream(STDERR, $loop);
+
+        $cbCalled = false;
+        (new Messenger($stdin, $stdout, $stderr, [
+            'read' => 'stdin',
+        ]))->on('data', function ($source, $data) use (&$cbCalled, $loop) {
+            $this->assertEquals('stdin', $source);
+            $this->assertEquals('bar.foo', $data);
+            $cbCalled = true;
+        });
+
+        $stdin->emit('data', ['bar.foo']);
+
+        $this->assertTrue($cbCalled);
     }
 }

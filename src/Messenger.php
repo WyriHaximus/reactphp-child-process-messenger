@@ -203,6 +203,8 @@ class Messenger extends EventEmitter
      */
     protected function onData($data, $source)
     {
+        $this->emit('data', [$source, $data]);
+
         $this->buffers[$source] .= $data;
 
         if (strpos($this->buffers[$source], LineInterface::EOL) !== false) {
