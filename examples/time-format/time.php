@@ -15,6 +15,10 @@ $process = new Process('exec php ' . dirname(dirname(__DIR__)) . '/examples/time
 MessengerFactory::parent($process, $loop)->then(function (Messenger $messenger) use ($loop) {
     $i = 0;
 
+    $messenger->on('error', function ($e) {
+        echo 'Error: ', var_export($e, true), PHP_EOL;
+    });
+
     $loop->addPeriodicTimer(1, function (Timer $timer) use ($messenger, &$i) {
         if ($i >= 13) {
             $messenger->terminate();
