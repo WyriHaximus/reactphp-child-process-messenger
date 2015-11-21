@@ -3,16 +3,9 @@
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
 use Phake;
-use React\Promise\Deferred;
-use React\Promise\Promise;
 use React\Promise\RejectedPromise;
-use React\Stream\Stream;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc;
-use WyriHaximus\React\ChildProcess\Messenger\Messages\RpcError;
-use WyriHaximus\React\ChildProcess\Messenger\Messages\RpcNotify;
-use WyriHaximus\React\ChildProcess\Messenger\Messages\RpcSuccess;
-use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
 class RpcTest extends \PHPUnit_Framework_TestCase
 {
@@ -36,11 +29,11 @@ class RpcTest extends \PHPUnit_Framework_TestCase
         ]);
         $message = new Rpc('foo', $payload, 'bar');
 
-        $stream = Phake::mock(Stream::class);
-        $messenger = Phake::mock(Messenger::class);
+        $stream = Phake::mock('React\Stream\Stream');
+        $messenger = Phake::mock('WyriHaximus\React\ChildProcess\Messenger\Messenger');
         Phake::when($messenger)->hasRpc('foo')->thenReturn(false);
         Phake::when($messenger)->getStderr()->thenReturn($stream);
-        Phake::when($messenger)->createLine($this->isInstanceOf(RpcError::class))->thenReturn('');
+        Phake::when($messenger)->createLine($this->isInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcError'))->thenReturn('');
 
         $message->handle($messenger, '');
 
@@ -57,11 +50,11 @@ class RpcTest extends \PHPUnit_Framework_TestCase
         ]);
         $message = new Rpc('foo', $payload, 'bar');
 
-        $stream = Phake::mock(Stream::class);
-        $messenger = Phake::mock(Messenger::class);
+        $stream = Phake::mock('React\Stream\Stream');
+        $messenger = Phake::mock('WyriHaximus\React\ChildProcess\Messenger\Messenger');
         Phake::when($messenger)->hasRpc('foo')->thenReturn(true);
         Phake::when($messenger)->getStdout()->thenReturn($stream);
-        Phake::when($messenger)->createLine($this->isInstanceOf(RpcSuccess::class))->thenReturn('');
+        Phake::when($messenger)->createLine($this->isInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcSuccess'))->thenReturn('');
         $callbackFired = false;
         Phake::when($messenger)->callRpc('foo', $payload)->thenGetReturnByLambda(function ($target, $payload) use (&$callbackFired) {
             $callbackFired = true;
@@ -79,7 +72,7 @@ class RpcTest extends \PHPUnit_Framework_TestCase
         Phake::inOrder(
             Phake::verify($messenger)->hasRpc('foo'),
             Phake::verify($messenger)->getStdout(),
-            Phake::verify($messenger)->createLine($this->isInstanceOf(RpcSuccess::class)),
+            Phake::verify($messenger)->createLine($this->isInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcSuccess')),
             Phake::verify($stream)->write($this->isType('string'))
         );
     }
@@ -91,11 +84,11 @@ class RpcTest extends \PHPUnit_Framework_TestCase
         ]);
         $message = new Rpc('foo', $payload, 'bar');
 
-        $stream = Phake::mock(Stream::class);
-        $messenger = Phake::mock(Messenger::class);
+        $stream = Phake::mock('React\Stream\Stream');
+        $messenger = Phake::mock('WyriHaximus\React\ChildProcess\Messenger\Messenger');
         Phake::when($messenger)->hasRpc('foo')->thenReturn(true);
         Phake::when($messenger)->getStderr()->thenReturn($stream);
-        Phake::when($messenger)->createLine($this->isInstanceOf(RpcError::class))->thenReturn('');
+        Phake::when($messenger)->createLine($this->isInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcError'))->thenReturn('');
         Phake::when($messenger)->callRpc('foo', $payload)->thenReturn(new RejectedPromise(new \Exception()));
 
         $message->handle($messenger, '');
@@ -103,7 +96,7 @@ class RpcTest extends \PHPUnit_Framework_TestCase
         Phake::inOrder(
             Phake::verify($messenger)->hasRpc('foo'),
             Phake::verify($messenger)->getStderr(),
-            Phake::verify($messenger)->createLine($this->isInstanceOf(RpcError::class)),
+            Phake::verify($messenger)->createLine($this->isInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcError')),
             Phake::verify($stream)->write($this->isType('string'))
         );
     }
@@ -115,15 +108,15 @@ class RpcTest extends \PHPUnit_Framework_TestCase
         ]);
         $message = new Rpc('foo', $payload, 'bar');
 
-        $stream = Phake::mock(Stream::class);
-        $messenger = Phake::mock(Messenger::class);
+        $stream = Phake::mock('React\Stream\Stream');
+        $messenger = Phake::mock('WyriHaximus\React\ChildProcess\Messenger\Messenger');
         Phake::when($messenger)->hasRpc('foo')->thenReturn(true);
         Phake::when($messenger)->getStdout()->thenReturn($stream);
-        Phake::when($messenger)->createLine($this->isInstanceOf(RpcNotify::class))->thenReturn('');
+        Phake::when($messenger)->createLine($this->isInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcNotify'))->thenReturn('');
         $callbackFired = false;
         Phake::when($messenger)->callRpc('foo', $payload)->thenGetReturnByLambda(function ($target, $payload) use (&$callbackFired) {
             $callbackFired = true;
-            $promise = Phake::partialMock(Promise::class, function () {});
+            $promise = Phake::partialMock('React\Promise\Promise', function () {});
             Phake::when($promise)->then($this->isType('callable'), $this->isType('callable'), $this->isType('callable'))->thenGetReturnByLambda(function ($yes, $no, $notify) {
                 return $notify([
                     'a',
@@ -141,7 +134,7 @@ class RpcTest extends \PHPUnit_Framework_TestCase
         Phake::inOrder(
             Phake::verify($messenger)->hasRpc('foo'),
             Phake::verify($messenger)->getStdout(),
-            Phake::verify($messenger)->createLine($this->isInstanceOf(RpcNotify::class)),
+            Phake::verify($messenger)->createLine($this->isInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcNotify')),
             Phake::verify($stream)->write($this->isType('string'))
         );
     }

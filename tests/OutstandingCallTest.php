@@ -2,7 +2,6 @@
 
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 
-use React\Promise\Deferred;
 use WyriHaximus\React\ChildProcess\Messenger\OutstandingCall;
 
 class OutstandingCallTest extends \PHPUnit_Framework_TestCase
@@ -11,6 +10,6 @@ class OutstandingCallTest extends \PHPUnit_Framework_TestCase
     {
         $oc = new OutstandingCall('abc', function () {});
         $this->assertEquals('abc', $oc->getUniqid());
-        $this->assertInstanceOf(Deferred::class, $oc->getDeferred());
+        $this->assertInstanceOf('React\Promise\Deferred', $oc->getDeferred());
     }
 }

@@ -3,7 +3,6 @@
 namespace WyriHaximus\React\ChildProcess\Messenger;
 
 use React\Promise\Deferred;
-use React\Promise\PromiseInterface;
 
 class OutstandingCall
 {
@@ -29,7 +28,7 @@ class OutstandingCall
     public function __construct($uniqid, callable $canceller = null, callable $cleanup = null)
     {
         if ($canceller !== null) {
-            $canceller = \Closure::bind($canceller, $this, static::class);
+            $canceller = \Closure::bind($canceller, $this, 'WyriHaximus\React\ChildProcess\Messenger\OutstandingCall');
         }
 
         $this->uniqid = $uniqid;

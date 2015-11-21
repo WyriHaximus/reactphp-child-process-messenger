@@ -13,29 +13,30 @@ class SecureLineTest extends \PHPUnit_Framework_TestCase
 
     public function providerBasic()
     {
-        yield [
-            new Rpc(
-                'foo',
-                new Payload([
-                    'bar' => 'baz'
-                ]),
-                1234567890
-            ),
-            '{"type":"secure","line":"{\"type\":\"rpc\",\"uniqid\":1234567890,\"target\":\"foo\",\"payload\":{\"bar\":\"baz\"}}","signature":"\/HYFhnhlrlzYUjEjb7WFIBoNeZeIoSSLagFBj1GbzlY="}' . LineInterface::EOL,
-            '{"type":"rpc","uniqid":1234567890,"target":"foo","payload":{"bar":"baz"}}',
-        ];
-
-        yield [
-            new Rpc(
-                'foo',
-                new Payload([
-                    'bar',
-                    'baz',
-                ]),
-                1234567890
-            ),
-            '{"type":"secure","line":"{\"type\":\"rpc\",\"uniqid\":1234567890,\"target\":\"foo\",\"payload\":[\"bar\",\"baz\"]}","signature":"r7TvJ\/AuvAY7dKZ+7wQyI0PdyLivANZzPB35j8Xuyps="}' . LineInterface::EOL,
-            '{"type":"rpc","uniqid":1234567890,"target":"foo","payload":["bar","baz"]}',
+        return [
+            [
+                new Rpc(
+                    'foo',
+                    new Payload([
+                        'bar' => 'baz'
+                    ]),
+                    1234567890
+                ),
+                '{"type":"secure","line":"{\"type\":\"rpc\",\"uniqid\":1234567890,\"target\":\"foo\",\"payload\":{\"bar\":\"baz\"}}","signature":"\/HYFhnhlrlzYUjEjb7WFIBoNeZeIoSSLagFBj1GbzlY="}' . LineInterface::EOL,
+                '{"type":"rpc","uniqid":1234567890,"target":"foo","payload":{"bar":"baz"}}',
+            ],
+            [
+                new Rpc(
+                    'foo',
+                    new Payload([
+                        'bar',
+                        'baz',
+                    ]),
+                    1234567890
+                ),
+                '{"type":"secure","line":"{\"type\":\"rpc\",\"uniqid\":1234567890,\"target\":\"foo\",\"payload\":[\"bar\",\"baz\"]}","signature":"r7TvJ\/AuvAY7dKZ+7wQyI0PdyLivANZzPB35j8Xuyps="}' . LineInterface::EOL,
+                '{"type":"rpc","uniqid":1234567890,"target":"foo","payload":["bar","baz"]}',
+            ],
         ];
     }
 

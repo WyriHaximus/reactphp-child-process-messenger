@@ -3,16 +3,12 @@
 namespace WyriHaximus\React\ChildProcess\Messenger;
 
 use Evenement\EventEmitter;
-use React\Promise\Deferred;
 use React\Promise\PromiseInterface;
 use React\Promise\RejectedPromise;
 use React\Stream\Stream;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\ActionableMessageInterface;
-use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessageFactory;
-use WyriHaximus\React\ChildProcess\Messenger\Messages\Line;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\LineInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Message;
-use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc;
 
 class Messenger extends EventEmitter
@@ -59,8 +55,8 @@ class Messenger extends EventEmitter
     ];
 
     protected $defaultOptions = [
-        'lineClass' => Line::class,
-        'messageFactoryClass' => MessageFactory::class,
+        'lineClass' => 'WyriHaximus\React\ChildProcess\Messenger\Messages\Line',
+        'messageFactoryClass' => 'WyriHaximus\React\ChildProcess\Messenger\Messages\Factory',
         'lineOptions' => [],
     ];
 

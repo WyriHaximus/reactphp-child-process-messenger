@@ -4,9 +4,7 @@ namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 
 use Phake;
 use React\EventLoop\Factory as EventLoopFactory;
-use React\Promise\Deferred;
 use React\Stream\Stream;
-use React\Stream\ThroughStream;
 use WyriHaximus\React\ChildProcess\Messenger\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Line;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
@@ -56,7 +54,7 @@ class MessengerTest extends \PHPUnit_Framework_TestCase
     public function testMessage()
     {
         $loop = \React\EventLoop\Factory::create();
-        $stdin = Phake::mock(Stream::class);
+        $stdin = Phake::mock('React\Stream\Stream');
         $stdout = new Stream(STDOUT, $loop);
         $stderr = new Stream(STDERR, $loop);
 
@@ -74,7 +72,7 @@ class MessengerTest extends \PHPUnit_Framework_TestCase
     public function testRpc()
     {
         $loop = \React\EventLoop\Factory::create();
-        $stdin = Phake::mock(Stream::class);
+        $stdin = Phake::mock('React\Stream\Stream');
         $stdout = new Stream(STDOUT, $loop);
         $stderr = new Stream(STDERR, $loop);
 
@@ -93,7 +91,7 @@ class MessengerTest extends \PHPUnit_Framework_TestCase
     {
 
         $loop = \React\EventLoop\Factory::create();
-        $stdin = Phake::mock(Stream::class);
+        $stdin = Phake::mock('React\Stream\Stream');
 
         Phake::when($stdin)->on('data', $this->isType('callable'))->thenGetReturnByLambda(function ($target, $callback) {
             $callback((string)new Line(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::message([]), []));
