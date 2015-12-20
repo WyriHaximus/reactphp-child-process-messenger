@@ -14,6 +14,7 @@ use WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc;
 class Messenger extends EventEmitter
 {
     const INTERVAL = 0.1;
+    const TERMINATE_RPC = 'wyrihaximus.react.child-process.messenger.terminate';
 
     /**
      * @var Stream
@@ -241,7 +242,7 @@ class Messenger extends EventEmitter
      */
     public function softTerminate()
     {
-        return $this->rpc(MessageFactory::rpc('wyrihaximus.react.child-process.messenger.terminate'));
+        return $this->rpc(MessageFactory::rpc(static::TERMINATE_RPC));
     }
 
     /**

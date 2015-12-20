@@ -77,7 +77,7 @@ class Factory
         }
 
         $messenger->registerRpc(
-            'wyrihaximus.react.child-process.messenger.terminate',
+            Messenger::TERMINATE_RPC,
             function (Payload $payload, Messenger $messenger) use ($loop, $termiteCallable) {
                 $messenger->emit('terminate', [
                     $messenger,
