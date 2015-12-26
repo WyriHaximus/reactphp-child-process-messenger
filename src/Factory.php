@@ -111,7 +111,12 @@ class Factory
             throw new \Exception('Given class doesn\'t implement ChildInterface');
         }
 
-        $process = new Process(self::getProcessForCurrentOS());
+        $template = '%s';
+        if (isset($options['cmdTemplate'])) {
+            $template = $options['cmdTemplate'];
+        }
+
+        $process = new Process(sprintf($template, self::getProcessForCurrentOS()));
         return static::parent(
             $process,
             $loop,
