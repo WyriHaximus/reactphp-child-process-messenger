@@ -94,7 +94,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
         $ranMessengerCreateCallback = false;
         $ranChildProcessCallback = false;
         $loop = \React\EventLoop\Factory::create();
-        Factory::parentFromClass('WyriHaximus\React\Tests\ChildProcess\Messenger\ReturnChild', $loop)->then(function (Messenger $messenger) use (&$ranMessengerCreateCallback, &$ranChildProcessCallback) {
+        Factory::parentFromClass('WyriHaximus\React\ChildProcess\Messenger\ReturnChild', $loop)->then(function (Messenger $messenger) use (&$ranMessengerCreateCallback, &$ranChildProcessCallback) {
             $ranMessengerCreateCallback = true;
             $messenger->rpc(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::rpc('return', [
                 'foo' => 'bar',

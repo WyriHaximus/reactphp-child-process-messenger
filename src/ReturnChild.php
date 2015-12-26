@@ -1,11 +1,9 @@
 <?php
 
-namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
+namespace WyriHaximus\React\ChildProcess\Messenger;
 
 use React\EventLoop\LoopInterface;
-use WyriHaximus\React\ChildProcess\Messenger\ChildInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
-use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
 class ReturnChild implements ChildInterface
 {

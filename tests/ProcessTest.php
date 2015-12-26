@@ -20,7 +20,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
         $messenger = Phake::mock('WyriHaximus\React\ChildProcess\Messenger\Messenger');
         Phake::when($messenger)->registerRpc(Factory::PROCESS_REGISTER, $this->isType('callable'))->thenGetReturnByLambda(function ($rpcName, $callable) {
             $callable(new Payload([
-                'className' => 'WyriHaximus\React\Tests\ChildProcess\Messenger\ReturnChild',
+                'className' => 'WyriHaximus\React\ChildProcess\Messenger\ReturnChild',
             ]));
         });
         Process::create($loop, $messenger);
