@@ -7,6 +7,7 @@ use React\Promise\PromiseInterface;
 use React\Promise\RejectedPromise;
 use React\Stream\Stream;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\ActionableMessageInterface;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessageFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\LineInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Message;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc;
