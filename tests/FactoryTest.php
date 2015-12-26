@@ -6,6 +6,7 @@ use \Phake;
 use Tivie\OS\Detector;
 use WyriHaximus\React\ChildProcess\Messenger\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
+use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
 class FactoryTest extends \PHPUnit_Framework_TestCase
 {
@@ -77,6 +78,37 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
                 'stop',
             ]
         );
+    }
+
+    /**
+     * @expectedException \Exception
+     * @expectedExceptionMessage Given class doesn't implement ChildInterface
+     */
+    public function testParentFromClassException()
+    {
+        Factory::parentFromClass('stdClass', Phake::mock('React\EventLoop\LoopInterface'));
+    }
+
+    public function testParentFromClassActualRun()
+    {
+        $ranMessengerCreateCallback = false;
+        $ranChildProcessCallback = false;
+        $loop = \React\EventLoop\Factory::create();
+        Factory::parentFromClass('WyriHaximus\React\Tests\ChildProcess\Messenger\ReturnChild', $loop)->then(function (Messenger $messenger) use (&$ranMessengerCreateCallback, &$ranChildProcessCallback) {
+            $ranMessengerCreateCallback = true;
+            $messenger->rpc(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::rpc('return', [
+                'foo' => 'bar',
+            ]))->then(function (Payload $payload) use (&$ranChildProcessCallback, $messenger) {
+                $this->assertSame([
+                    'foo' => 'bar',
+                ], $payload->getPayload());
+                $ranChildProcessCallback = true;
+                $messenger->softTerminate();
+            });
+        });
+        $loop->run();
+        $this->assertTrue($ranMessengerCreateCallback);
+        $this->assertTrue($ranChildProcessCallback);
     }
 
     public function testGetProcessForCurrentOSUnix()

@@ -94,6 +94,34 @@ class Factory
     }
 
     /**
+     * @param string $className
+     * @param LoopInterface $loop
+     * @param array $options
+     * @param float $interval
+     * @return \React\Promise\PromiseInterface
+     * @throws \Exception
+     */
+    public static function parentFromClass(
+        $className,
+        LoopInterface $loop,
+        array $options = [],
+        $interval = self::INTERVAL
+    ) {
+        if (!is_subclass_of($className, 'WyriHaximus\React\ChildProcess\Messenger\ChildInterface')) {
+            throw new \Exception('Given class doesn\'t implement ChildInterface');
+        }
+
+        $process = new Process(self::getProcessForCurrentOS());
+        return static::parent($process, $loop, $options, $interval)->then(function (Messenger $messenger) use ($className) {
+            return $messenger->rpc(MessengesFactory::rpc(Factory::PROCESS_REGISTER, [
+                'className' => $className,
+            ]))->then(function () use ($messenger) {
+                return \React\Promise\resolve($messenger);
+            });
+        });
+    }
+
+    /**
      * @param Detector|null $detector
      * @return string
      * @throws \Exception
