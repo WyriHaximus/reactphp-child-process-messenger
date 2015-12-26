@@ -7,6 +7,8 @@ use React\EventLoop\LoopInterface;
 use React\Promise\FulfilledPromise;
 use React\Stream\Stream;
 use React\Stream\Util;
+use Tivie\OS\Detector;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessengesFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 
 class Factory
@@ -14,6 +16,7 @@ class Factory
     const INTERVAL = 0.1;
     const TIMEOUT = 13;
     const TERMINATE_TIMEOUT = 1;
+    const PROCESS_REGISTER = 'wyrihaximus.react.child-process.messenger.child.register';
 
     /**
      * @param Process $process
@@ -88,5 +91,27 @@ class Factory
         );
 
         return $messenger;
+    }
+
+    /**
+     * @param Detector|null $detector
+     * @return string
+     * @throws \Exception
+     */
+    public static function getProcessForCurrentOS(Detector $detector = null)
+    {
+        if ($detector === null) {
+            $detector = new Detector();
+        }
+
+        if ($detector->isUnixLike()) {
+            return 'php ' . __DIR__ . DIRECTORY_SEPARATOR . 'process.php';
+        }
+
+        if ($detector->isWindowsLike()) {
+            return 'php.exe ' . __DIR__ . DIRECTORY_SEPARATOR . 'process.php';
+        }
+
+        throw new \Exception('Unknown OS family');
     }
 }
