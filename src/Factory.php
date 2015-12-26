@@ -112,7 +112,12 @@ class Factory
         }
 
         $process = new Process(self::getProcessForCurrentOS());
-        return static::parent($process, $loop, $options, $interval)->then(function (Messenger $messenger) use ($className) {
+        return static::parent(
+            $process,
+            $loop,
+            $options,
+            $interval
+        )->then(function (Messenger $messenger) use ($className) {
             return $messenger->rpc(MessengesFactory::rpc(Factory::PROCESS_REGISTER, [
                 'className' => $className,
             ]))->then(function () use ($messenger) {
