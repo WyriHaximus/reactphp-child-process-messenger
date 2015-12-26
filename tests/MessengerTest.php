@@ -35,6 +35,9 @@ class MessengerTest extends \PHPUnit_Framework_TestCase
         $messenger->callRpc('test', $payload);
 
         $this->assertTrue($callableFired);
+
+        $messenger->deregisterRpc('test');
+        $this->assertFalse($messenger->hasRpc('test'));
     }
 
     public function testGetters()
