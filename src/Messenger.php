@@ -80,12 +80,20 @@ class Messenger extends EventEmitter
     }
 
     /**
-     * @param $target
+     * @param string $target
      * @param callable $listener
      */
     public function registerRpc($target, callable $listener)
     {
         $this->rpcs[$target] = $listener;
+    }
+
+    /**
+     * @param string $target
+     */
+    public function deregisterRpc($target)
+    {
+        unset($this->rpcs[$target]);
     }
 
     /**
