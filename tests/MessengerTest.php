@@ -69,6 +69,24 @@ class MessengerTest extends \PHPUnit_Framework_TestCase
         Phake::verify($stdin)->write($this->isType('string'));
     }
 
+    public function testError()
+    {
+        $loop = \React\EventLoop\Factory::create();
+        $stdin = new Stream(STDIN, $loop);
+        $stdout = new Stream(STDOUT, $loop);
+        $stderr = Phake::mock('React\Stream\Stream');
+
+        $messenger = new Messenger($stdin, $stdout, $stderr, [
+            'write_err' => 'stderr',
+        ]);
+
+        $messenger->error(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::error([
+            'foo' => 'bar',
+        ]));
+
+        Phake::verify($stderr)->write($this->isType('string'));
+    }
+
     public function testRpc()
     {
         $loop = \React\EventLoop\Factory::create();

@@ -7,6 +7,7 @@ use React\Promise\PromiseInterface;
 use React\Promise\RejectedPromise;
 use React\Stream\Stream;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\ActionableMessageInterface;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Error;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessageFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\LineInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Message;
@@ -177,6 +178,14 @@ class Messenger extends EventEmitter
     public function message(Message $message)
     {
         $this->write($this->createLine($message));
+    }
+
+    /**
+     * @param Error $error
+     */
+    public function error(Error $error)
+    {
+        $this->writeErr($this->createLine($error));
     }
 
     /**
