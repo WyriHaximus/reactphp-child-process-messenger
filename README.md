@@ -1,5 +1,6 @@
 # ChildProcessMessenger
-[![Build Status](https://travis-ci.org/WyriHaximus/reactphp-child-process-messenger.png)](https://travis-ci.org/WyriHaximus/ReactGuzzleRing)
+[![Linux Build Status](https://travis-ci.org/WyriHaximus/reactphp-child-process-messenger.png)](https://travis-ci.org/WyriHaximus/ReactGuzzleRing)
+[![Windows Build status](https://ci.appveyor.com/api/projects/status/1sfdh9g2pvbuw4pp?svg=true)](https://ci.appveyor.com/project/WyriHaximus/reactphp-child-process-messenger)
 [![Latest Stable Version](https://poser.pugx.org/WyriHaximus/react-child-process-messenger/v/stable.png)](https://packagist.org/packages/WyriHaximus/react-child-process-messenger)
 [![Total Downloads](https://poser.pugx.org/WyriHaximus/react-child-process-messenger/downloads.png)](https://packagist.org/packages/WyriHaximus/react-child-process-messenger)
 [![Code Coverage](https://scrutinizer-ci.com/g/WyriHaximus/reactphp-child-process-messenger/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/WyriHaximus/reactphp-child-process-messenger/?branch=master)
