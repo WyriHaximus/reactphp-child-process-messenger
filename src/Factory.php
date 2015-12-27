@@ -114,9 +114,16 @@ class Factory
         $template = '%s';
         if (isset($options['cmdTemplate'])) {
             $template = $options['cmdTemplate'];
+            unset($options['cmdTemplate']);
         }
 
-        $process = new Process(sprintf($template, self::getProcessForCurrentOS()));
+        $process = new Process(
+            sprintf(
+                $template,
+                self::getProcessForCurrentOS() . ' ' . ArgvEncoder::encode($options)
+            )
+        );
+
         return static::parent(
             $process,
             $loop,
