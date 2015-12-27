@@ -150,11 +150,11 @@ class Factory
         }
 
         if ($detector->isUnixLike()) {
-            return 'php ' . __DIR__ . DIRECTORY_SEPARATOR . 'process.php';
+            return 'php ' . __DIR__ . DIRECTORY_SEPARATOR . 'child-process.php';
         }
 
         if ($detector->isWindowsLike()) {
-            return 'php.exe ' . __DIR__ . DIRECTORY_SEPARATOR . 'process.php';
+            return 'php.exe ' . __DIR__ . DIRECTORY_SEPARATOR . 'child-process.php';
         }
 
         throw new \Exception('Unknown OS family');
