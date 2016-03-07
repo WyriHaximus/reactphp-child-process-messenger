@@ -115,7 +115,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
     {
         $detector = Phake::mock('Tivie\OS\Detector');
         Phake::when($detector)->isUnixLike()->thenReturn(true);
-        $this->assertSame('php ' . dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'process.php', Factory::getProcessForCurrentOS($detector));
+        $this->assertSame('php ' . dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'child-process.php', Factory::getProcessForCurrentOS($detector));
     }
 
     public function testGetProcessForCurrentOSWindows()
@@ -123,7 +123,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
         $detector = Phake::mock('Tivie\OS\Detector');
         Phake::when($detector)->isUnixLike()->thenReturn(false);
         Phake::when($detector)->isWindowsLike()->thenReturn(true);
-        $this->assertSame('php.exe ' . dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'process.php', Factory::getProcessForCurrentOS($detector));
+        $this->assertSame('php.exe ' . dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'child-process.php', Factory::getProcessForCurrentOS($detector));
     }
 
     /**
@@ -140,10 +140,10 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
 
     public function testGetProcessForCurrentOSActual()
     {
-        $process = 'php ' . dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'process.php';
+        $process = 'php ' . dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'child-process.php';
         $detector = new Detector();
         if ($detector->isWindowsLike()) {
-            $process = 'php.exe ' . dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'process.php';
+            $process = 'php.exe ' . dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'child-process.php';
         }
         $this->assertSame($process, Factory::getProcessForCurrentOS());
     }
