@@ -42,7 +42,7 @@ class ExampleChild implements ChildInterface
 On the parent side you only need need to call to spawn a child running that class:
 
 ```php
-MessengerFactory::parentFromClass('ExampleChild', $loop)->then(function (Messenger $messenger) use ($loop) {
+MessengerFactory::parentFromClass('ExampleChild', $loop)->then(function (Messenger $messenger) {
     $messenger->rpc(/* etc etc */);
 });
 ```
