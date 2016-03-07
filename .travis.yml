@@ -10,7 +10,6 @@ cache:
 ## OSes to test on
 os:
   - linux
-  - osx
 
 ## PHP versions we test against
 php:
@@ -22,8 +21,6 @@ php:
 
 ## Build matrix for lowest and highest possible targets
 matrix:
-  allow_failures:
-    - os: osx
   include:
     - php: 5.4
       env: dependencies=lowest
