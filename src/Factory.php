@@ -86,7 +86,7 @@ class Factory
                     $messenger,
                 ]);
                 $termiteCallable($payload, $messenger);
-                return new FulfilledPromise();
+                return new FulfilledPromise([]);
             }
         );
 
