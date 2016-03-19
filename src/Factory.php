@@ -61,11 +61,22 @@ class Factory
      */
     public static function child(LoopInterface $loop, array $options = [], $termiteCallable = null)
     {
-        $messenger = new Messenger(new Stream(STDIN, $loop), new Stream(STDOUT, $loop), new Stream(STDERR, $loop), [
+        $stdin  = new Stream(STDIN, $loop);
+        $stdout = new Stream(STDOUT, $loop);
+        $stderr = new Stream(STDERR, $loop);
+
+        $messenger = new Messenger($stdin, $stdout, $stderr, [
             'read' => 'stdin',
             'write_err' => 'stderr',
             'write' => 'stdout',
         ] + $options);
+
+        $closeNStop = function () use ($loop) {
+            $loop->stop();
+        };
+        $stdin->on('close', $closeNStop);
+        $stdout->on('close', $closeNStop);
+        $stderr->on('close', $closeNStop);
 
         if ($termiteCallable === null) {
             $termiteCallable = function () use ($loop) {
