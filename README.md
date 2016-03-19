@@ -7,7 +7,7 @@
 [![License](https://poser.pugx.org/WyriHaximus/react-child-process-messenger/license.png)](https://packagist.org/packages/wyrihaximus/react-child-process-messenger)
 [![PHP 7 ready](http://php7ready.timesplinter.ch/WyriHaximus/reactphp-child-process-messenger/badge.svg)](https://travis-ci.org/WyriHaximus/reactphp-child-process-messenger)
 
-Plain messages and RPC style STDIN/OUT/ERR wrapper around [`react/child-process`](https://github.com/reactphp/child-process)
+Plain messages and RPC style STDIN/OUT/ERR wrapper around [`react/child-process`](https://github.com/reactphp/child-process). For pooling messengers take a look at [`wyrihaximus/react-child-process-pool`](https://github.com/WyriHaximus/reactphp-child-process-pool)
 
 ### Installation ###
 
