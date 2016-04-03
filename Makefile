@@ -1,7 +1,8 @@
 current_dir = $(shell pwd)
 
-all: cs dunit unit
+all: cs dunit unit benchmark
 travis: cs unit-travis
+travis-after-script: travis-coverage benchmark
 contrib: cs dunit unit
 
 init:
@@ -21,3 +22,6 @@ dunit: init
 
 travis-coverage: init
 	if [ -f ./build/logs/clover.xml ]; then wget https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover ./build/logs/clover.xml; fi
+
+benchmark: init
+	php benchmark/memory.php

@@ -54,4 +54,4 @@ before_script:
 ## Run the actual test
 script: make travis
 
-after_script: make travis-coverage
+after_script: make travis-after-script
