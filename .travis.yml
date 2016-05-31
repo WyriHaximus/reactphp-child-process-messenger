@@ -5,6 +5,7 @@ sudo: false
 cache:
   directories:
     - $HOME/.composer/cache
+    - /Library/Caches/Homebrew
 
 ## OSes to test on
 os:
