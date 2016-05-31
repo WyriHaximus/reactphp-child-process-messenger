@@ -10,18 +10,20 @@ cache:
 os:
   - linux
 
-## PHP versions we test against
-php:
-  - 5.4
-  - 5.5
-  - 5.6
-  - 7
-  - hhvm
-
 ## Build matrix for lowest and highest possible targets
 matrix:
   include:
     - php: 5.4
+      os: linux
+    - php: 5.5
+      os: linux
+    - php: 5.6
+      os: linux
+    - php: 7
+      os: linux
+    - php: hhvm
+      os: linux
+    - php: 5.4
       env: dependencies=lowest
     - php: 5.5
       env: dependencies=lowest
@@ -41,17 +43,44 @@ matrix:
       env: dependencies=highest
     - php: hhvm
       env: dependencies=highest
+    - os: osx
+      osx_image: xcode7.3
+      language: generic
+      env:
+        - _OSX=10.11
+        - _PHP: php56
+    - os: osx
+      osx_image: xcode7.3
+      language: generic
+      env:
+        - _OSX=10.11
+        - _PHP: php56
+        - dependencies=lowest
+    - os: osx
+      osx_image: xcode7.3
+      language: generic
+      env:
+        - _OSX=10.11
+        - _PHP: php56
+        - dependencies=highest
+
+before_install:
+  - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then /usr/bin/env bash build/prepare_osx_env.sh ; fi
 
 ## Update composer and run the appropriate composer command
-before_script:
-  - composer self-update -q
-  - composer config github-oauth.github.com ${GH_TOKEN}
+install:
+  - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then /usr/bin/env bash build/handle_brew_pkg.sh "${_PHP}" ; fi
+  - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then /usr/bin/env bash build/osx_install_composer.sh "${_PHP}" ; fi
   - if [ -z "$dependencies" ]; then composer install; fi;
   - if [ "$dependencies" = "lowest" ]; then composer update --prefer-lowest -n; fi;
   - if [ "$dependencies" = "highest" ]; then composer update -n; fi;
-  - composer show -i
+
+## Show installed dependencies
+before_script:
+  - composer show
 
 ## Run the actual test
 script: make travis
 
+## Run after script tasks like upload code coverage
 after_script: make travis-after-script
