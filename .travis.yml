@@ -46,6 +46,12 @@ matrix:
       language: generic
       env:
         - _OSX=10.11
+        - _PHP: php54
+    - os: osx
+      osx_image: xcode7.3
+      language: generic
+      env:
+        - _OSX=10.11
         - _PHP: php55
     - os: osx
       osx_image: xcode7.3
