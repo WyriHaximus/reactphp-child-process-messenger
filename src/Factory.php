@@ -7,7 +7,6 @@ use React\EventLoop\LoopInterface;
 use React\Promise\FulfilledPromise;
 use React\Stream\Stream;
 use React\Stream\Util;
-use Tivie\OS\Detector;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessengesFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 
@@ -19,10 +18,10 @@ class Factory
     const PROCESS_REGISTER = 'wyrihaximus.react.child-process.messenger.child.register';
 
     /**
-     * @param  Process                         $process
-     * @param  LoopInterface                   $loop
-     * @param  array                           $options
-     * @param  float                           $interval
+     * @param Process $process
+     * @param LoopInterface $loop
+     * @param array $options
+     * @param float $interval
      * @return \React\Promise\PromiseInterface
      */
     public static function parent(
@@ -54,9 +53,9 @@ class Factory
     }
 
     /**
-     * @param  LoopInterface $loop
-     * @param  array         $options
-     * @param  null          $termiteCallable
+     * @param LoopInterface $loop
+     * @param array $options
+     * @param null $termiteCallable
      * @return Messenger
      */
     public static function child(LoopInterface $loop, array $options = [], $termiteCallable = null)
@@ -97,7 +96,6 @@ class Factory
                     $messenger,
                 ]);
                 $termiteCallable($payload, $messenger);
-
                 return new FulfilledPromise([]);
             }
         );
@@ -106,12 +104,12 @@ class Factory
     }
 
     /**
-     * @param  string                          $className
-     * @param  LoopInterface                   $loop
-     * @param  array                           $options
-     * @param  float                           $interval
-     * @throws \Exception
+     * @param string $className
+     * @param LoopInterface $loop
+     * @param array $options
+     * @param float $interval
      * @return \React\Promise\PromiseInterface
+     * @throws \Exception
      */
     public static function parentFromClass(
         $className,
@@ -129,10 +127,11 @@ class Factory
             unset($options['cmdTemplate']);
         }
 
+        $command = PHP_BINARY . ' ' . __DIR__ . DIRECTORY_SEPARATOR . 'child-process.php';
         $process = new Process(
             sprintf(
                 $template,
-                self::getProcessForCurrentOS() . ' ' . ArgvEncoder::encode($options)
+                $command . ' ' . ArgvEncoder::encode($options)
             )
         );
 
@@ -148,27 +147,5 @@ class Factory
                 return \React\Promise\resolve($messenger);
             });
         });
-    }
-
-    /**
-     * @param  Detector|null $detector
-     * @throws \Exception
-     * @return string
-     */
-    public static function getProcessForCurrentOS(Detector $detector = null)
-    {
-        if ($detector === null) {
-            $detector = new Detector();
-        }
-
-        if ($detector->isUnixLike()) {
-            return 'php ' . __DIR__ . DIRECTORY_SEPARATOR . 'child-process.php';
-        }
-
-        if ($detector->isWindowsLike()) {
-            return 'php.exe ' . __DIR__ . DIRECTORY_SEPARATOR . 'child-process.php';
-        }
-
-        throw new \Exception('Unknown OS family');
     }
 }

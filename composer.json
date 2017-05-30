@@ -14,8 +14,7 @@
         "react/child-process": "^0.4",
         "wyrihaximus/ticking-promise": "^1.4",
         "doctrine/inflector": "^1.0",
-        "indigophp/hash-compat": "^1.0",
-        "tivie/php-os-detector": "^1.0"
+        "indigophp/hash-compat": "^1.0"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.0",

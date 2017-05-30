@@ -3,7 +3,6 @@
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 
 use Phake;
-use Tivie\OS\Detector;
 use WyriHaximus\React\ChildProcess\Messenger\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
@@ -109,42 +108,5 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
         $loop->run();
         $this->assertTrue($ranMessengerCreateCallback);
         $this->assertTrue($ranChildProcessCallback);
-    }
-
-    public function testGetProcessForCurrentOSUnix()
-    {
-        $detector = Phake::mock('Tivie\OS\Detector');
-        Phake::when($detector)->isUnixLike()->thenReturn(true);
-        $this->assertSame('php ' . dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'child-process.php', Factory::getProcessForCurrentOS($detector));
-    }
-
-    public function testGetProcessForCurrentOSWindows()
-    {
-        $detector = Phake::mock('Tivie\OS\Detector');
-        Phake::when($detector)->isUnixLike()->thenReturn(false);
-        Phake::when($detector)->isWindowsLike()->thenReturn(true);
-        $this->assertSame('php.exe ' . dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'child-process.php', Factory::getProcessForCurrentOS($detector));
-    }
-
-    /**
-     * @expectedException \Exception
-     * @expectedExceptionMessage Unknown OS family
-     */
-    public function testGetProcessForCurrentOSUnknown()
-    {
-        $detector = Phake::mock('Tivie\OS\Detector');
-        Phake::when($detector)->isUnixLike()->thenReturn(false);
-        Phake::when($detector)->isWindowsLike()->thenReturn(false);
-        Factory::getProcessForCurrentOS($detector);
-    }
-
-    public function testGetProcessForCurrentOSActual()
-    {
-        $process = 'php ' . dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'child-process.php';
-        $detector = new Detector();
-        if ($detector->isWindowsLike()) {
-            $process = 'php.exe ' . dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'child-process.php';
-        }
-        $this->assertSame($process, Factory::getProcessForCurrentOS());
     }
 }
