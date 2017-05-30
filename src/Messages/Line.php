@@ -18,18 +18,18 @@ class Line implements LineInterface
     }
 
     /**
-     * @return \JsonSerializable
-     */
-    public function getPayload()
-    {
-        return $this->payload;
-    }
-
-    /**
      * @return string
      */
     public function __toString()
     {
         return json_encode($this->payload) . LineInterface::EOL;
+    }
+
+    /**
+     * @return \JsonSerializable
+     */
+    public function getPayload()
+    {
+        return $this->payload;
     }
 }

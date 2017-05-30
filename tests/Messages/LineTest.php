@@ -16,7 +16,7 @@ class LineTest extends \PHPUnit_Framework_TestCase
                 new Rpc(
                     'foo',
                     new Payload([
-                        'bar' => 'baz'
+                        'bar' => 'baz',
                     ]),
                     1234567890
                 ),
@@ -38,6 +38,7 @@ class LineTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider providerBasic
+     * @param mixed $output
      */
     public function testBasic(\JsonSerializable $input, $output)
     {

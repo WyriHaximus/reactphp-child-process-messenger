@@ -16,7 +16,7 @@ class SecureLine implements LineInterface
 
     /**
      * @param \JsonSerializable $line
-     * @param array $options
+     * @param array             $options
      */
     public function __construct(\JsonSerializable $line, array $options)
     {
@@ -30,11 +30,21 @@ class SecureLine implements LineInterface
     public function __toString()
     {
         $line = json_encode($this->line);
+
         return json_encode([
             'type' => 'secure',
             'line' => $line,
             'signature' => base64_encode(static::sign($line, $this->key)),
         ]) . LineInterface::EOL;
+    }
+
+    public static function fromLine($line, array $lineOptions)
+    {
+        if (static::validate(base64_decode($line['signature'], true), $line['line'], $lineOptions['key'])) {
+            return Factory::fromLine($line['line'], $lineOptions);
+        }
+
+        throw new \Exception('Signature mismatch!');
     }
 
     protected static function sign($line, $key)
@@ -45,14 +55,5 @@ class SecureLine implements LineInterface
     protected static function validate($signature, $line, $key)
     {
         return hash_equals($signature, static::sign($line, $key));
-    }
-
-    public static function fromLine($line, array $lineOptions)
-    {
-        if (static::validate(base64_decode($line['signature']), $line['line'], $lineOptions['key'])) {
-            return Factory::fromLine($line['line'], $lineOptions);
-        }
-
-        throw new \Exception('Signature mismatch!');
     }
 }

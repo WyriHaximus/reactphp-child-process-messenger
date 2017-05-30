@@ -7,7 +7,6 @@ interface ActionableMessageInterface
     /**
      * @param $bindTo
      * @param $source
-     * @return void
      */
     public function handle($bindTo, $source);
 }

@@ -2,7 +2,7 @@
 
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 
-use \Phake;
+use Phake;
 use Tivie\OS\Detector;
 use WyriHaximus\React\ChildProcess\Messenger\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;

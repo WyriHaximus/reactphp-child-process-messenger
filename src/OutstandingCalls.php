@@ -10,7 +10,7 @@ class OutstandingCalls
     protected $calls = [];
 
     /**
-     * @param callable $canceller
+     * @param  callable        $canceller
      * @return OutstandingCall
      */
     public function newCall(callable $canceller = null)

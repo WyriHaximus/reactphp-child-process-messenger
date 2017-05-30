@@ -58,6 +58,7 @@ class RpcTest extends \PHPUnit_Framework_TestCase
         $callbackFired = false;
         Phake::when($messenger)->callRpc('foo', $payload)->thenGetReturnByLambda(function ($target, $payload) use (&$callbackFired) {
             $callbackFired = true;
+
             return \React\Promise\resolve([
                 'a',
                 'b',
@@ -116,7 +117,8 @@ class RpcTest extends \PHPUnit_Framework_TestCase
         $callbackFired = false;
         Phake::when($messenger)->callRpc('foo', $payload)->thenGetReturnByLambda(function ($target, $payload) use (&$callbackFired) {
             $callbackFired = true;
-            $promise = Phake::partialMock('React\Promise\Promise', function () {});
+            $promise = Phake::partialMock('React\Promise\Promise', function () {
+            });
             Phake::when($promise)->then($this->isType('callable'), $this->isType('callable'), $this->isType('callable'))->thenGetReturnByLambda(function ($yes, $no, $notify) {
                 return $notify([
                     'a',
@@ -124,6 +126,7 @@ class RpcTest extends \PHPUnit_Framework_TestCase
                     'c',
                 ]);
             });
+
             return $promise;
         });
 

@@ -8,7 +8,8 @@ class OutstandingCallTest extends \PHPUnit_Framework_TestCase
 {
     public function testBasic()
     {
-        $oc = new OutstandingCall('abc', function () {});
+        $oc = new OutstandingCall('abc', function () {
+        });
         $this->assertEquals('abc', $oc->getUniqid());
         $this->assertInstanceOf('React\Promise\Deferred', $oc->getDeferred());
     }

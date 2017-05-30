@@ -1,88 +1,76 @@
 language: php
-sudo: false
 
 ## Cache composer bits
 cache:
   directories:
-    - $HOME/.composer/cache
-
-## OSes to test on
-os:
-  - linux
-
-## PHP versions we test against
-php:
-  - 5.4
-  - 5.5
-  - 5.6
-  - 7
-  - hhvm
+    - $HOME/.composer/cache/files
 
 ## Build matrix for lowest and highest possible targets
 matrix:
   include:
     - php: 5.4
-      env: dependencies=lowest
+      env:
+        - qaExtended=true
     - php: 5.5
-      env: dependencies=lowest
     - php: 5.6
-      env: dependencies=lowest
-    - php: 7
-      env: dependencies=lowest
-    - php: hhvm
-      env: dependencies=lowest
+    - php: 7.0
+    - php: 7.1
+    - php: nightly
+      env:
+        - dropPlatform=false
     - php: 5.4
-      env: dependencies=highest
+      env:
+        - dependencies=lowest
     - php: 5.5
-      env: dependencies=highest
+      env:
+        - dependencies=lowest
     - php: 5.6
-      env: dependencies=highest
-    - php: 7
-      env: dependencies=highest
-    - php: hhvm
-      env: dependencies=highest
-    - os: osx
-      osx_image: xcode7.3
-      language: generic
       env:
-        - _OSX=10.11
-        - _PHP: php54
-    - os: osx
-      osx_image: xcode7.3
-      language: generic
+        - dependencies=lowest
+    - php: 7.0
       env:
-        - _OSX=10.11
-        - _PHP: php55
-    - os: osx
-      osx_image: xcode7.3
-      language: generic
+        - dependencies=lowest
+    - php: 7.1
       env:
-        - _OSX=10.11
-        - _PHP: php56
-    - os: osx
-      osx_image: xcode7.3
-      language: generic
+        - dependencies=lowest
+    - php: nightly
       env:
-        - _OSX=10.11
-        - _PHP: php70
+        - dependencies=lowest
+        - dropPlatform=false
+    - php: 5.4
+      env:
+        - dependencies=highest
+    - php: 5.5
+      env:
+        - dependencies=highest
+    - php: 5.6
+      env:
+        - dependencies=highest
+    - php: 7.0
+      env:
+        - dependencies=highest
+    - php: 7.1
+      env:
+        - dependencies=highest
+    - php: nightly
+      env:
+        - dependencies=highest
+        - dropPlatform=false
 
-before_install:
-  - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then /usr/bin/env bash build/prepare_osx_env.sh ; fi
-
-## Update composer and run the appropriate composer command
+## Install or update dependencies
 install:
-  - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then /usr/bin/env bash build/handle_brew_pkg.sh "${_PHP}" ; fi
-  - if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then /usr/bin/env bash build/osx_install_composer.sh ; fi
+  - composer validate
+  - if [ -z "$dropPlatform" ]; then composer config --unset platform.php; fi;
+  - if [ -z "$qaExtended" ]; then phpenv config-rm xdebug.ini || :; fi;
   - if [ -z "$dependencies" ]; then composer install --prefer-dist; fi;
-  - if [ "$dependencies" = "lowest" ]; then composer update --prefer-dist --prefer-lowest -n; fi;
+  - if [ "$dependencies" = "lowest" ]; then composer update --prefer-lowest --prefer-dist -n; fi;
   - if [ "$dependencies" = "highest" ]; then composer update --prefer-dist -n; fi;
-
-## Show installed dependencies
-before_script:
   - composer show
 
 ## Run the actual test
-script: make travis
+script:
+  - if [ -z "$qaExtended" ]; then make ci; fi;
+  - if [ "$qaExtended" = "true" ]; then make ci-extended; fi;
 
-## Run after script tasks like upload code coverage
-after_script: make travis-after-script
+## Gather coverage and set it to coverage servers
+after_script: if [ "$qaExtended" = "true" ]; then make ci-coverage; fi;

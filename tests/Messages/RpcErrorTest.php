@@ -29,6 +29,5 @@ class RpcErrorTest extends \PHPUnit_Framework_TestCase
             Phake::verify($messenger)->getOutstandingCall('abc'),
             Phake::verify($outstandingCall)->reject($payload)
         );
-
     }
 }

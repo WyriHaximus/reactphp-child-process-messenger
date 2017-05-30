@@ -22,6 +22,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
                         'foo',
                         'bar',
                     ], $message->getPayload()->getPayload());
+
                     return true;
                 },
             ],
@@ -34,6 +35,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
                         'foo',
                         'bar',
                     ], $message->getPayload()->getPayload());
+
                     return true;
                 },
             ],
@@ -51,6 +53,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
                             'bar',
                         ]),
                     ], $message->jsonSerialize());
+
                     return true;
                 },
             ],
@@ -67,6 +70,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
                             'bar',
                         ]),
                     ], $message->jsonSerialize());
+
                     return true;
                 },
             ],
@@ -83,6 +87,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
                             'bar',
                         ]),
                     ], $message->jsonSerialize());
+
                     return true;
                 },
             ],
@@ -99,6 +104,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
                             'bar',
                         ]),
                     ], $message->jsonSerialize());
+
                     return true;
                 },
             ],
@@ -116,6 +122,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
                         ]),
                         'target' => 'foo',
                     ], $message->jsonSerialize());
+
                     return true;
                 },
                 [
@@ -127,6 +134,7 @@ class FactoryTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider providerFromLine
+     * @param mixed $input
      */
     public function testFromLine($input, callable $tests, array $lineOptions = [])
     {

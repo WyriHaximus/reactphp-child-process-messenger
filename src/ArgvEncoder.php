@@ -14,6 +14,7 @@ class ArgvEncoder
         if (strlen($argv) == 0) {
             return [];
         }
-        return unserialize(base64_decode($argv));
+
+        return unserialize(base64_decode($argv, true));
     }
 }

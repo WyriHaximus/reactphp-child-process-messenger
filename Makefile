@@ -1,27 +1,32 @@
-current_dir = $(shell pwd)
+all:
+	composer run-script qa-all --timeout=0
 
-all: cs dunit unit benchmark
-travis: cs unit-travis
-travis-after-script: travis-coverage
-contrib: cs dunit unit
+all-coverage:
+	composer run-script qa-all-coverage --timeout=0
+
+ci:
+	composer run-script qa-ci --timeout=0
+
+ci-extended:
+	composer run-script qa-ci-extended --timeout=0
+
+contrib:
+	composer run-script qa-contrib --timeout=0
 
 init:
-	if [ ! -d vendor ]; then composer install; fi;
+	composer ensure-installed
 
-cs: init
-	$(current_dir)/vendor/bin/phpcs --standard=PSR2 src/
+cs:
+	composer cs
 
-unit: init
-	$(current_dir)/vendor/bin/phpunit --coverage-text --coverage-html covHtml
+cs-fix:
+	composer cs-fix
 
-unit-travis: init
-	$(current_dir)/vendor/bin/phpunit --coverage-text --coverage-clover ./build/logs/clover.xml
+unit:
+	composer run-script unit --timeout=0
 
-dunit: init
-	$(current_dir)/vendor/bin/dunit
+unit-coverage:
+	composer run-script unit-coverage --timeout=0
 
-travis-coverage: init
-	if [ -f ./build/logs/clover.xml ]; then wget https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover ./build/logs/clover.xml; fi
-
-benchmark: init
-	php benchmark/memory.php
+ci-coverage: init
+	composer ci-coverage

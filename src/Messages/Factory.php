@@ -9,9 +9,9 @@ class Factory
     /**
      * @param string $line
      *
+     * @throws \Exception
      * @return mixed
      *
-     * @throws \Exception
      */
     public static function fromLine($line, array $lineOptions)
     {
@@ -25,19 +25,6 @@ class Factory
     }
 
     /**
-     * @param string $line
-     * @param array $lineOptions
-     *
-     * @return mixed
-     *
-     * @throws \Exception
-     */
-    protected static function secureFromLine($line, array $lineOptions)
-    {
-        return SecureLine::fromLine($line, $lineOptions);
-    }
-
-    /**
      * @param array $payload
      *
      * @return Message
@@ -45,16 +32,6 @@ class Factory
     public static function message(array $payload = [])
     {
         return new Message(new Payload($payload));
-    }
-
-    /**
-     * @param array $line
-     *
-     * @return Message
-     */
-    protected static function messageFromLine(array $line)
-    {
-        return static::message($line['payload']);
     }
 
     /**
@@ -68,6 +45,75 @@ class Factory
     }
 
     /**
+     * @param string $target
+     * @param array  $payload
+     * @param mixed  $uniqid
+     *
+     * @return Rpc
+     */
+    public static function rpc($target, array $payload = [], $uniqid = '')
+    {
+        return new Rpc($target, new Payload($payload), $uniqid);
+    }
+
+    /**
+     * @param string $target
+     * @param array  $payload
+     * @param mixed  $uniqid
+     *
+     * @return Rpc
+     */
+    public static function rpcError($uniqid, array $payload = [])
+    {
+        return new RpcError($uniqid, new Payload($payload));
+    }
+
+    /**
+     * @param string $uniqid
+     * @param array  $payload
+     *
+     * @return RpcSuccess
+     */
+    public static function rpcSuccess($uniqid, array $payload = [])
+    {
+        return new RpcSuccess($uniqid, new Payload($payload));
+    }
+
+    /**
+     * @param string $uniqid
+     * @param array  $payload
+     *
+     * @return RpcSuccess
+     */
+    public static function rpcNotify($uniqid, array $payload = [])
+    {
+        return new RpcNotify($uniqid, new Payload($payload));
+    }
+
+    /**
+     * @param string $line
+     * @param array  $lineOptions
+     *
+     * @throws \Exception
+     * @return mixed
+     *
+     */
+    protected static function secureFromLine($line, array $lineOptions)
+    {
+        return SecureLine::fromLine($line, $lineOptions);
+    }
+
+    /**
+     * @param array $line
+     *
+     * @return Message
+     */
+    protected static function messageFromLine(array $line)
+    {
+        return static::message($line['payload']);
+    }
+
+    /**
      * @param array $line
      *
      * @return Error
@@ -75,17 +121,6 @@ class Factory
     protected static function errorFromLine(array $line)
     {
         return static::error($line['payload']);
-    }
-
-    /**
-     * @param string $target
-     * @param array $payload
-     *
-     * @return Rpc
-     */
-    public static function rpc($target, array $payload = [], $uniqid = '')
-    {
-        return new Rpc($target, new Payload($payload), $uniqid);
     }
 
     /**
@@ -99,17 +134,6 @@ class Factory
     }
 
     /**
-     * @param string $target
-     * @param array $payload
-     *
-     * @return Rpc
-     */
-    public static function rpcError($uniqid, array $payload = [])
-    {
-        return new RpcError($uniqid, new Payload($payload));
-    }
-
-    /**
      * @param array $line
      *
      * @return Rpc
@@ -120,18 +144,7 @@ class Factory
     }
 
     /**
-     * @param string $uniqid
-     * @param array $payload
-     *
-     * @return RpcSuccess
-     */
-    public static function rpcSuccess($uniqid, array $payload = [])
-    {
-        return new RpcSuccess($uniqid, new Payload($payload));
-    }
-
-    /**
-     * @param array $line
+     * @param  array      $line
      * @return RpcSuccess
      */
     protected static function rpcSuccessFromLine(array $line)
@@ -140,18 +153,7 @@ class Factory
     }
 
     /**
-     * @param string $uniqid
-     * @param array $payload
-     *
-     * @return RpcSuccess
-     */
-    public static function rpcNotify($uniqid, array $payload = [])
-    {
-        return new RpcNotify($uniqid, new Payload($payload));
-    }
-
-    /**
-     * @param array $line
+     * @param  array      $line
      * @return RpcSuccess
      */
     protected static function rpcNotifyFromLine(array $line)

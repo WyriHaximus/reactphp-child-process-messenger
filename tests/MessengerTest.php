@@ -11,7 +11,6 @@ use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
 class MessengerTest extends \PHPUnit_Framework_TestCase
 {
-
     public function testSetAndHasRpc()
     {
         $loop = EventLoopFactory::create();
@@ -110,7 +109,6 @@ class MessengerTest extends \PHPUnit_Framework_TestCase
 
     public function testOnData()
     {
-
         $loop = \React\EventLoop\Factory::create();
         $stdin = Phake::mock('React\Stream\Stream');
 

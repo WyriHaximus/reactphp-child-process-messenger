@@ -6,7 +6,6 @@ use React\EventLoop\LoopInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Factory as MessengerFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessagesFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
-use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
 class Process
 {
@@ -21,32 +20,9 @@ class Process
     protected $messenger;
 
     /**
-     * @param LoopInterface $loop
-     * @param Messenger $messenger
-     * @return Process
-     */
-    public static function create(LoopInterface $loop, Messenger $messenger)
-    {
-        try {
-            return new Process($loop, $messenger);
-        } catch (\Exception $exeption) {
-            $messenger->error(MessagesFactory::error([
-                'message' => $exeption->getMessage(),
-                'code' => $exeption->getCode(),
-                'line' => $exeption->getLine(),
-                'file' => $exeption->getFile(),
-            ]));
-            $loop->addTimer(1, function () use ($loop) {
-                $loop->stop();
-            });
-        }
-
-    }
-
-    /**
      * Process constructor.
      * @param LoopInterface $loop
-     * @param Messenger $messenger
+     * @param Messenger     $messenger
      */
     protected function __construct(LoopInterface $loop, Messenger $messenger)
     {
@@ -65,6 +41,28 @@ class Process
                 return \React\Promise\resolve([]);
             }
         );
+    }
+
+    /**
+     * @param  LoopInterface $loop
+     * @param  Messenger     $messenger
+     * @return Process
+     */
+    public static function create(LoopInterface $loop, Messenger $messenger)
+    {
+        try {
+            return new Process($loop, $messenger);
+        } catch (\Exception $exeption) {
+            $messenger->error(MessagesFactory::error([
+                'message' => $exeption->getMessage(),
+                'code' => $exeption->getCode(),
+                'line' => $exeption->getLine(),
+                'file' => $exeption->getFile(),
+            ]));
+            $loop->addTimer(1, function () use ($loop) {
+                $loop->stop();
+            });
+        }
     }
 
     /**

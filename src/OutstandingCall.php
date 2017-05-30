@@ -22,7 +22,7 @@ class OutstandingCall
     protected $cleanup;
 
     /**
-     * @param string $uniqid
+     * @param string   $uniqid
      * @param callable $canceller
      */
     public function __construct($uniqid, callable $canceller = null, callable $cleanup = null)
@@ -64,6 +64,7 @@ class OutstandingCall
     {
         $cleanup = $this->cleanup;
         $cleanup($this);
+
         return $this->deferred->resolve($value);
     }
 
@@ -74,6 +75,7 @@ class OutstandingCall
     {
         $cleanup = $this->cleanup;
         $cleanup($this);
+
         return $this->deferred->progress($value);
     }
 
@@ -84,6 +86,7 @@ class OutstandingCall
     {
         $cleanup = $this->cleanup;
         $cleanup($this);
+
         return $this->deferred->reject($value);
     }
 }

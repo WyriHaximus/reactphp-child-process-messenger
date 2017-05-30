@@ -15,7 +15,7 @@ class RpcNotify implements \JsonSerializable, ActionableMessageInterface
     protected $payload;
 
     /**
-     * @param string $uniqid
+     * @param string  $uniqid
      * @param Payload $payload
      */
     public function __construct($uniqid, Payload $payload)

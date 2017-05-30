@@ -8,7 +8,7 @@ interface LineInterface
 
     /**
      * @param ActionableMessageInterface $line
-     * @param array $options
+     * @param array                      $options
      */
     public function __construct(\JsonSerializable $line, array $options);
 

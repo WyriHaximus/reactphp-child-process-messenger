@@ -2,9 +2,6 @@
 
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
-use React\Promise\Deferred;
-use React\Promise\RejectedPromise;
-
 class Rpc implements \JsonSerializable, ActionableMessageInterface
 {
     /**
@@ -23,9 +20,9 @@ class Rpc implements \JsonSerializable, ActionableMessageInterface
     protected $uniqid;
 
     /**
-     * @param string $target
+     * @param string  $target
      * @param Payload $payload
-     * @param string $uniqid
+     * @param string  $uniqid
      */
     public function __construct($target, Payload $payload, $uniqid = '')
     {
@@ -75,6 +72,7 @@ class Rpc implements \JsonSerializable, ActionableMessageInterface
                 $this->getStderr()->write($this->createLine(Factory::rpcError($uniqid, [
                     'message' => 'Target doesn\'t exist',
                 ])));
+
                 return;
             }
 

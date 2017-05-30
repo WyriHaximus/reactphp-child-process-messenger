@@ -2,10 +2,10 @@
 
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
-use WyriHaximus\React\ChildProcess\Messenger\Messages\SecureLine;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\LineInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\SecureLine;
 
 class SecureLineTest extends \PHPUnit_Framework_TestCase
 {
@@ -18,7 +18,7 @@ class SecureLineTest extends \PHPUnit_Framework_TestCase
                 new Rpc(
                     'foo',
                     new Payload([
-                        'bar' => 'baz'
+                        'bar' => 'baz',
                     ]),
                     1234567890
                 ),
@@ -42,6 +42,8 @@ class SecureLineTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @dataProvider providerBasic
+     * @param mixed $output
+     * @param mixed $lineString
      */
     public function testBasic(\JsonSerializable $input, $output, $lineString)
     {

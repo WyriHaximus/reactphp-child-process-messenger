@@ -67,7 +67,7 @@ class Messenger extends EventEmitter
      * @param Stream $stdin
      * @param Stream $stdout
      * @param Stream $stderr
-     * @param array $options
+     * @param array  $options
      */
     public function __construct(Stream $stdin, Stream $stdout, Stream $stderr, array $options)
     {
@@ -82,7 +82,24 @@ class Messenger extends EventEmitter
     }
 
     /**
-     * @param string $target
+     * Forward any unknown calls when there is a call forward possible.
+     *
+     * @param string $name
+     * @param array  $arguments
+     *
+     * @return mixed
+     */
+    public function __call($name, array $arguments)
+    {
+        if (isset($this->options['callForward'])) {
+            $call = $this->options['callForward'];
+
+            return $call($name, $arguments);
+        }
+    }
+
+    /**
+     * @param string   $target
      * @param callable $listener
      */
     public function registerRpc($target, callable $listener)
@@ -99,7 +116,7 @@ class Messenger extends EventEmitter
     }
 
     /**
-     * @param string $target
+     * @param  string $target
      * @return bool
      */
     public function hasRpc($target)
@@ -124,6 +141,88 @@ class Messenger extends EventEmitter
         } catch (\Exception $exception) {
             return new RejectedPromise($exception);
         }
+    }
+
+    /**
+     * @param Message $message
+     */
+    public function message(Message $message)
+    {
+        $this->write($this->createLine($message));
+    }
+
+    /**
+     * @param Error $error
+     */
+    public function error(Error $error)
+    {
+        $this->writeErr($this->createLine($error));
+    }
+
+    /**
+     * @param  string          $uniqid
+     * @return OutstandingCall
+     */
+    public function getOutstandingCall($uniqid)
+    {
+        return $this->outstandingRpcCalls->getCall($uniqid);
+    }
+
+    /**
+     * @param  Rpc                    $rpc
+     * @return \React\Promise\Promise
+     */
+    public function rpc(Rpc $rpc)
+    {
+        $callReference = $this->outstandingRpcCalls->newCall(function () {
+        });
+
+        $this->write($this->createLine($rpc->setUniqid($callReference->getUniqid())));
+
+        return $callReference->getDeferred()->promise();
+    }
+
+    /**
+     * @param  ActionableMessageInterface $line
+     * @return LineInterface
+     */
+    public function createLine(ActionableMessageInterface $line)
+    {
+        $lineCLass = $this->options['lineClass'];
+
+        return (string) new $lineCLass($line, $this->options['lineOptions']);
+    }
+
+    /**
+     * @return \React\Promise\Promise
+     */
+    public function softTerminate()
+    {
+        return $this->rpc(MessageFactory::rpc(static::TERMINATE_RPC));
+    }
+
+    /**
+     * @return Stream
+     */
+    public function getStdin()
+    {
+        return $this->stdin;
+    }
+
+    /**
+     * @return Stream
+     */
+    public function getStdout()
+    {
+        return $this->stdout;
+    }
+
+    /**
+     * @return Stream
+     */
+    public function getStderr()
+    {
+        return $this->stderr;
     }
 
     protected function attachMessenger()
@@ -173,46 +272,6 @@ class Messenger extends EventEmitter
     }
 
     /**
-     * @param Message $message
-     */
-    public function message(Message $message)
-    {
-        $this->write($this->createLine($message));
-    }
-
-    /**
-     * @param Error $error
-     */
-    public function error(Error $error)
-    {
-        $this->writeErr($this->createLine($error));
-    }
-
-    /**
-     * @param string $uniqid
-     * @return OutstandingCall
-     */
-    public function getOutstandingCall($uniqid)
-    {
-        return $this->outstandingRpcCalls->getCall($uniqid);
-    }
-
-    /**
-     * @param Rpc $rpc
-     * @return \React\Promise\Promise
-     */
-    public function rpc(Rpc $rpc)
-    {
-        $callReference = $this->outstandingRpcCalls->newCall(function () {
-
-        });
-
-        $this->write($this->createLine($rpc->setUniqid($callReference->getUniqid())));
-
-        return $callReference->getDeferred()->promise();
-    }
-
-    /**
      * @param string $data
      * @param string $source
      */
@@ -230,7 +289,7 @@ class Messenger extends EventEmitter
     }
 
     /**
-     * @param array $messages
+     * @param array  $messages
      * @param string $source
      */
     protected function iterateMessages(array $messages, $source)
@@ -242,64 +301,6 @@ class Messenger extends EventEmitter
             } catch (\Exception $exception) {
                 $this->emit('error', [$exception, $this]);
             }
-        }
-    }
-
-    /**
-     * @param ActionableMessageInterface $line
-     * @return LineInterface
-     */
-    public function createLine(ActionableMessageInterface $line)
-    {
-        $lineCLass = $this->options['lineClass'];
-        return (string) new $lineCLass($line, $this->options['lineOptions']);
-    }
-
-    /**
-     * @return \React\Promise\Promise
-     */
-    public function softTerminate()
-    {
-        return $this->rpc(MessageFactory::rpc(static::TERMINATE_RPC));
-    }
-
-    /**
-     * @return Stream
-     */
-    public function getStdin()
-    {
-        return $this->stdin;
-    }
-
-    /**
-     * @return Stream
-     */
-    public function getStdout()
-    {
-        return $this->stdout;
-    }
-
-    /**
-     * @return Stream
-     */
-    public function getStderr()
-    {
-        return $this->stderr;
-    }
-
-    /**
-     * Forward any unknown calls when there is a call forward possible.
-     *
-     * @param string $name
-     * @param array $arguments
-     *
-     * @return mixed
-     */
-    public function __call($name, array $arguments)
-    {
-        if (isset($this->options['callForward'])) {
-            $call = $this->options['callForward'];
-            return $call($name, $arguments);
         }
     }
 }
