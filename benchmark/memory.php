@@ -41,7 +41,9 @@ MessengerFactory::parentFromClass('WyriHaximus\React\ChildProcess\Messenger\Retu
 
             show_memory('Completed messaging');
 
-            $loop->addTimer(5, function () {});
+            $loop->addTimer(5, function () {
+            });
+
             return;
         }
 
