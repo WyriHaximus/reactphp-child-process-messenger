@@ -7,7 +7,6 @@ use React\EventLoop\LoopInterface;
 use React\Promise\FulfilledPromise;
 use React\Stream\Stream;
 use React\Stream\Util;
-use Tivie\OS\Detector;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessengesFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 
@@ -128,10 +127,11 @@ class Factory
             unset($options['cmdTemplate']);
         }
 
+        $command = PHP_BINARY . ' ' . __DIR__ . DIRECTORY_SEPARATOR . 'child-process.php';
         $process = new Process(
             sprintf(
                 $template,
-                self::getProcessForCurrentOS() . ' ' . ArgvEncoder::encode($options)
+                $command . ' ' . ArgvEncoder::encode($options)
             )
         );
 
@@ -147,27 +147,5 @@ class Factory
                 return \React\Promise\resolve($messenger);
             });
         });
-    }
-
-    /**
-     * @param Detector|null $detector
-     * @return string
-     * @throws \Exception
-     */
-    public static function getProcessForCurrentOS(Detector $detector = null)
-    {
-        if ($detector === null) {
-            $detector = new Detector();
-        }
-
-        if ($detector->isUnixLike()) {
-            return 'php ' . __DIR__ . DIRECTORY_SEPARATOR . 'child-process.php';
-        }
-
-        if ($detector->isWindowsLike()) {
-            return 'php.exe ' . __DIR__ . DIRECTORY_SEPARATOR . 'child-process.php';
-        }
-
-        throw new \Exception('Unknown OS family');
     }
 }
