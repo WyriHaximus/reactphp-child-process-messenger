@@ -28,6 +28,7 @@ MessengerFactory::parent($process, $loop)->then(function (Messenger $messenger) 
         if ($i >= 1300000) {
             $timer->cancel();
             $messenger->terminate();
+
             return;
         }
 

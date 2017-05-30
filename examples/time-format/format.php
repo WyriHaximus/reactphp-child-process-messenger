@@ -3,10 +3,7 @@
 require dirname(dirname(__DIR__)) . '/vendor/autoload.php';
 
 use React\EventLoop\Factory;
-use React\Promise\Deferred;
-use WyriHaximus\React\ChildProcess\Messenger\Messages\Invoke;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
-use WyriHaximus\React\ChildProcess\Messenger\Recipient;
 
 $loop = Factory::create();
 

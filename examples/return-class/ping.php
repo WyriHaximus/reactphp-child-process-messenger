@@ -21,6 +21,7 @@ MessengerFactory::parentFromClass('WyriHaximus\React\ChildProcess\Messenger\Retu
         if ($i >= 13) {
             $timer->cancel();
             $messenger->softTerminate();
+
             return;
         }
 

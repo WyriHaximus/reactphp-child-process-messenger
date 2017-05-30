@@ -7,6 +7,7 @@ $paths = [
     $path . 'src',
     $path . 'tests',
     $path . 'examples',
+    $path . 'benchmark',
 ];
 
 return Config::create()

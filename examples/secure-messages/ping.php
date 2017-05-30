@@ -35,6 +35,7 @@ MessengerFactory::parent($process, $loop, $options)->then(function (Messenger $m
         if ($i >= 13) {
             $timer->cancel();
             $messenger->terminate();
+
             return;
         }
 

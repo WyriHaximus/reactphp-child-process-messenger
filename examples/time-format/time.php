@@ -23,6 +23,7 @@ MessengerFactory::parent($process, $loop)->then(function (Messenger $messenger) 
         if ($i >= 13) {
             $messenger->terminate();
             $timer->cancel();
+
             return;
         }
 
@@ -33,7 +34,6 @@ MessengerFactory::parent($process, $loop)->then(function (Messenger $messenger) 
         });
         $i++;
     });
-
 });
 
 $loop->run();

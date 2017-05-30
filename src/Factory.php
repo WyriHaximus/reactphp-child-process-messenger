@@ -18,10 +18,10 @@ class Factory
     const PROCESS_REGISTER = 'wyrihaximus.react.child-process.messenger.child.register';
 
     /**
-     * @param Process $process
-     * @param LoopInterface $loop
-     * @param array $options
-     * @param float $interval
+     * @param  Process                         $process
+     * @param  LoopInterface                   $loop
+     * @param  array                           $options
+     * @param  float                           $interval
      * @return \React\Promise\PromiseInterface
      */
     public static function parent(
@@ -53,9 +53,9 @@ class Factory
     }
 
     /**
-     * @param LoopInterface $loop
-     * @param array $options
-     * @param null $termiteCallable
+     * @param  LoopInterface $loop
+     * @param  array         $options
+     * @param  null          $termiteCallable
      * @return Messenger
      */
     public static function child(LoopInterface $loop, array $options = [], $termiteCallable = null)
@@ -96,6 +96,7 @@ class Factory
                     $messenger,
                 ]);
                 $termiteCallable($payload, $messenger);
+
                 return new FulfilledPromise([]);
             }
         );
@@ -104,12 +105,12 @@ class Factory
     }
 
     /**
-     * @param string $className
-     * @param LoopInterface $loop
-     * @param array $options
-     * @param float $interval
-     * @return \React\Promise\PromiseInterface
+     * @param  string                          $className
+     * @param  LoopInterface                   $loop
+     * @param  array                           $options
+     * @param  float                           $interval
      * @throws \Exception
+     * @return \React\Promise\PromiseInterface
      */
     public static function parentFromClass(
         $className,
