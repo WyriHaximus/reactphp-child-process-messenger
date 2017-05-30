@@ -46,7 +46,7 @@ class ProcessTest extends \PHPUnit_Framework_TestCase
             $this->assertSame([
                 'message' => 'Given class doesn\'t implement ChildInterface',
                 'code' => 0,
-                'line' => 59,
+                'line' => 35,
                 'file' => dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Process.php',
             ], $error->getPayload()->getPayload());
         });
