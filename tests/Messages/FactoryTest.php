@@ -2,11 +2,12 @@
 
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
+use PHPUnit\Framework\TestCase;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\LineInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 
-class FactoryTest extends \PHPUnit_Framework_TestCase
+class FactoryTest extends TestCase
 {
     const KEY = 'abc';
 

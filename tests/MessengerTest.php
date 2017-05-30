@@ -3,13 +3,14 @@
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 
 use Phake;
+use PHPUnit\Framework\TestCase;
 use React\EventLoop\Factory as EventLoopFactory;
 use React\Stream\Stream;
 use WyriHaximus\React\ChildProcess\Messenger\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Line;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
-class MessengerTest extends \PHPUnit_Framework_TestCase
+class MessengerTest extends TestCase
 {
     public function testSetAndHasRpc()
     {

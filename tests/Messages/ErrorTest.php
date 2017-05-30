@@ -3,10 +3,11 @@
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
 use Phake;
+use PHPUnit\Framework\TestCase;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Error;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 
-class ErrorTest extends \PHPUnit_Framework_TestCase
+class ErrorTest extends TestCase
 {
     public function testBasic()
     {

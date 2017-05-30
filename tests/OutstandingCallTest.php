@@ -2,9 +2,10 @@
 
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 
+use PHPUnit\Framework\TestCase;
 use WyriHaximus\React\ChildProcess\Messenger\OutstandingCall;
 
-class OutstandingCallTest extends \PHPUnit_Framework_TestCase
+class OutstandingCallTest extends TestCase
 {
     public function testBasic()
     {

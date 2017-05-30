@@ -2,12 +2,13 @@
 
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
+use PHPUnit\Framework\TestCase;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\LineInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\SecureLine;
 
-class SecureLineTest extends \PHPUnit_Framework_TestCase
+class SecureLineTest extends TestCase
 {
     const KEY = 'abc';
 

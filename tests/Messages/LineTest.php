@@ -2,12 +2,13 @@
 
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
+use PHPUnit\Framework\TestCase;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Line;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\LineInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc;
 
-class LineTest extends \PHPUnit_Framework_TestCase
+class LineTest extends TestCase
 {
     public function providerBasic()
     {

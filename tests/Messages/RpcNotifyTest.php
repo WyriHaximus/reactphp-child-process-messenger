@@ -3,10 +3,11 @@
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
 use Phake;
+use PHPUnit\Framework\TestCase;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\RpcNotify;
 
-class RpcNotifyTest extends \PHPUnit_Framework_TestCase
+class RpcNotifyTest extends TestCase
 {
     public function testBasic()
     {
