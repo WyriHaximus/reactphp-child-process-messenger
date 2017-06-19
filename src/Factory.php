@@ -128,7 +128,8 @@ class Factory
             unset($options['cmdTemplate']);
         }
 
-        $command = PHP_BINARY . ' ' . __DIR__ . DIRECTORY_SEPARATOR . 'child-process.php';
+        $phpBinary = PHP_BINARY . (PHP_SAPI === 'phpdbg' ? ' -qrr --' : '');
+        $command = $phpBinary . ' ' . __DIR__ . DIRECTORY_SEPARATOR . 'child-process.php';
         $process = new Process(
             sprintf(
                 $template,
