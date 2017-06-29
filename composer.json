@@ -31,7 +31,8 @@
     "autoload-dev": {
         "psr-4": {
             "WyriHaximus\\React\\Tests\\ChildProcess\\Messenger\\": "tests/"
-        }
+        },
+        "files": ["examples/prime/Optimus.php"]
     },
     "config": {
         "sort-packages": true,
