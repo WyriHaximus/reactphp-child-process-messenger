@@ -140,6 +140,8 @@ class Messenger extends EventEmitter
             throw new \Exception('RPC must return promise');
         } catch (\Exception $exception) {
             return new RejectedPromise($exception);
+        } catch (\Throwable $exception) {
+            return new RejectedPromise($exception);
         }
     }
 
@@ -299,6 +301,8 @@ class Messenger extends EventEmitter
             try {
                 $messageFactory::fromLine($message, $this->options['lineOptions'])->handle($this, $source);
             } catch (\Exception $exception) {
+                $this->emit('error', [$exception, $this]);
+            } catch (\Throwable $exception) {
                 $this->emit('error', [$exception, $this]);
             }
         }

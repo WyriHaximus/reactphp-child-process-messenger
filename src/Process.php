@@ -50,9 +50,7 @@ class Process
      */
     public static function create(LoopInterface $loop, Messenger $messenger)
     {
-        try {
-            return new Process($loop, $messenger);
-        } catch (\Exception $exeption) {
+        $reject = function ($exeption) use ($messenger, $loop) {
             $messenger->error(MessagesFactory::error([
                 'message' => $exeption->getMessage(),
                 'code' => $exeption->getCode(),
@@ -62,6 +60,13 @@ class Process
             $loop->addTimer(1, function () use ($loop) {
                 $loop->stop();
             });
+        };
+        try {
+            return new Process($loop, $messenger);
+        } catch (\Exception $exeption) {
+            $reject($exeption);
+        } catch (\Throwable $exeption) {
+            $reject($exeption);
         }
     }
 
