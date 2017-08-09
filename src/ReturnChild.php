@@ -25,6 +25,9 @@ class ReturnChild implements ChildInterface
         new static($messenger, $loop);
     }
 
+    /**
+     * @return bool
+     */
     public function getRan()
     {
         return $this->ran;
