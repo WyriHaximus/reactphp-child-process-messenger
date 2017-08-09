@@ -129,7 +129,8 @@ class Factory
         }
 
         $phpBinary = PHP_BINARY . (PHP_SAPI === 'phpdbg' ? ' -qrr --' : '');
-        $command = $phpBinary . ' ' . __DIR__ . DIRECTORY_SEPARATOR . 'child-process.php';
+        $childProcessPath = \escapeshellarg(__DIR__ . DIRECTORY_SEPARATOR . 'child-process.php');
+        $command = $phpBinary . ' ' . $childProcessPath;
         $process = new Process(
             sprintf(
                 $template,
