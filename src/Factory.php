@@ -128,7 +128,7 @@ class Factory
             unset($options['cmdTemplate']);
         }
 
-        $phpBinary = PHP_BINARY . (PHP_SAPI === 'phpdbg' ? ' -qrr --' : '');
+        $phpBinary = \escapeshellarg(PHP_BINARY . (PHP_SAPI === 'phpdbg' ? ' -qrr --' : ''));
         $childProcessPath = \escapeshellarg(__DIR__ . DIRECTORY_SEPARATOR . 'child-process.php');
         $command = $phpBinary . ' ' . $childProcessPath;
         $process = new Process(
