@@ -19,6 +19,8 @@ class Optimus implements ChildInterface
     private static function isPrime($n)
     {
         // Source: https://stackoverflow.com/a/39743570
-        for($i=$n>>1;$i&&$n%$i--;);return!$i&&$n>1;
+        for ($i=$n>>1;$i&&$n%$i--;);
+
+        return!$i&&$n>1;
     }
 }
