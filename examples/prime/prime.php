@@ -23,6 +23,7 @@ MessengerFactory::parentFromClass(\Optimus::class, $loop)->then(function (Messen
 })->done(function (Payload $result) {
     if ($result['isPrime']) {
         echo 'Prime', PHP_EOL;
+
         return;
     }
 
