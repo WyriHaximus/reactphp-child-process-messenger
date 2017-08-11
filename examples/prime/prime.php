@@ -14,7 +14,7 @@ $prime = isset($argv[1]) ? (int)$argv[1] : mt_rand(1, 1337);
 
 echo 'Checking if ', $prime, ' is a prime or not', PHP_EOL;
 
-MessengerFactory::parentFromClass(\Optimus::class, $loop)->then(function (Messenger $messenger) use ($prime) {
+MessengerFactory::parentFromClass(Optimus::class, $loop)->then(function (Messenger $messenger) use ($prime) {
     return $messenger->rpc(
         MessageFactory::rpc('isPrime', ['number' => $prime])
     )->always(function () use ($messenger) {
