@@ -11,10 +11,11 @@
     ],
     "require": {
         "php": "^5.4||^7.0",
-        "react/child-process": "^0.5",
-        "wyrihaximus/ticking-promise": "^1.4",
         "doctrine/inflector": "^1.0",
-        "indigophp/hash-compat": "^1.0"
+        "indigophp/hash-compat": "^1.0",
+        "react/child-process": "^0.5",
+        "react/socket": "^0.8.1",
+        "wyrihaximus/ticking-promise": "^1.4"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^2.2",
