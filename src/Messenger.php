@@ -5,7 +5,9 @@ namespace WyriHaximus\React\ChildProcess\Messenger;
 use Evenement\EventEmitter;
 use React\Promise\PromiseInterface;
 use React\Promise\RejectedPromise;
+use React\Stream\ReadableStreamInterface;
 use React\Stream\Stream;
+use React\Stream\WritableStreamInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\ActionableMessageInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Error;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessageFactory;
@@ -19,17 +21,17 @@ class Messenger extends EventEmitter
     const TERMINATE_RPC = 'wyrihaximus.react.child-process.messenger.terminate';
 
     /**
-     * @var Stream
+     * @var ReadableStreamInterface
      */
     protected $stdin;
 
     /**
-     * @var Stream
+     * @var WritableStreamInterface
      */
     protected $stdout;
 
     /**
-     * @var Stream
+     * @var WritableStreamInterface
      */
     protected $stderr;
 
@@ -64,16 +66,21 @@ class Messenger extends EventEmitter
     ];
 
     /**
-     * @param Stream $stdin
-     * @param Stream $stdout
-     * @param Stream $stderr
-     * @param array  $options
+     * @param ReadableStreamInterface $stdin
+     * @param WritableStreamInterface $stdout
+     * @param WritableStreamInterface $stderr
+     * @param array $options
      */
-    public function __construct(Stream $stdin, Stream $stdout, Stream $stderr, array $options)
-    {
-        $this->stdin  = $stdin;
+    public function __construct(
+        ReadableStreamInterface $stdin,
+        WritableStreamInterface $stdout,
+        WritableStreamInterface $stderr,
+        array $options
+    ) {
+        $this->stdin = $stdin;
         $this->stdout = $stdout;
         $this->stderr = $stderr;
+
         $this->options = $this->defaultOptions + $options;
 
         $this->outstandingRpcCalls = new OutstandingCalls();

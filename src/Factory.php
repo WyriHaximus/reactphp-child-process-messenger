@@ -5,8 +5,10 @@ namespace WyriHaximus\React\ChildProcess\Messenger;
 use React\ChildProcess\Process;
 use React\EventLoop\LoopInterface;
 use React\Promise\FulfilledPromise;
+use React\Stream\ReadableResourceStream;
 use React\Stream\Stream;
 use React\Stream\Util;
+use React\Stream\WritableResourceStream;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessengesFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 
@@ -60,9 +62,9 @@ class Factory
      */
     public static function child(LoopInterface $loop, array $options = [], $termiteCallable = null)
     {
-        $stdin  = new Stream(STDIN, $loop);
-        $stdout = new Stream(STDOUT, $loop);
-        $stderr = new Stream(STDERR, $loop);
+        $stdin  = new ReadableResourceStream(STDIN, $loop);
+        $stdout = new WritableResourceStream(STDOUT, $loop);
+        $stderr = new WritableResourceStream(STDERR, $loop);
 
         $messenger = new Messenger($stdin, $stdout, $stderr, [
             'read' => 'stdin',

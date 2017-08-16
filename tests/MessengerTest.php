@@ -5,7 +5,9 @@ namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 use Phake;
 use PHPUnit\Framework\TestCase;
 use React\EventLoop\Factory as EventLoopFactory;
+use React\Stream\ReadableResourceStream;
 use React\Stream\Stream;
+use React\Stream\WritableResourceStream;
 use WyriHaximus\React\ChildProcess\Messenger\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Line;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
@@ -43,9 +45,9 @@ class MessengerTest extends TestCase
     public function testGetters()
     {
         $loop = \React\EventLoop\Factory::create();
-        $stdin = new Stream(STDIN, $loop);
-        $stdout = new Stream(STDOUT, $loop);
-        $stderr = new Stream(STDERR, $loop);
+        $stdin = new ReadableResourceStream(STDIN, $loop);
+        $stdout = new WritableResourceStream(STDOUT, $loop);
+        $stderr = new WritableResourceStream(STDERR, $loop);
 
         $messenger = new Messenger($stdin, $stdout, $stderr, []);
 
@@ -58,8 +60,8 @@ class MessengerTest extends TestCase
     {
         $loop = \React\EventLoop\Factory::create();
         $stdin = Phake::mock('React\Stream\Stream');
-        $stdout = new Stream(STDOUT, $loop);
-        $stderr = new Stream(STDERR, $loop);
+        $stdout = new WritableResourceStream(STDOUT, $loop);
+        $stderr = new WritableResourceStream(STDERR, $loop);
 
         $messenger = new Messenger($stdin, $stdout, $stderr, [
             'write' => 'stdin',
@@ -75,8 +77,8 @@ class MessengerTest extends TestCase
     public function testError()
     {
         $loop = \React\EventLoop\Factory::create();
-        $stdin = new Stream(STDIN, $loop);
-        $stdout = new Stream(STDOUT, $loop);
+        $stdin = new ReadableResourceStream(STDIN, $loop);
+        $stdout = new WritableResourceStream(STDOUT, $loop);
         $stderr = Phake::mock('React\Stream\Stream');
 
         $messenger = new Messenger($stdin, $stdout, $stderr, [
@@ -93,9 +95,9 @@ class MessengerTest extends TestCase
     public function testRpc()
     {
         $loop = \React\EventLoop\Factory::create();
-        $stdin = Phake::mock('React\Stream\Stream');
-        $stdout = new Stream(STDOUT, $loop);
-        $stderr = new Stream(STDERR, $loop);
+        $stdin = Phake::mock('React\Stream\ReadableStreamInterface');
+        $stdout = new WritableResourceStream(STDOUT, $loop);
+        $stderr = new WritableResourceStream(STDERR, $loop);
 
         $messenger = new Messenger($stdin, $stdout, $stderr, [
             'write' => 'stdin',
@@ -111,14 +113,14 @@ class MessengerTest extends TestCase
     public function testOnData()
     {
         $loop = \React\EventLoop\Factory::create();
-        $stdin = Phake::mock('React\Stream\Stream');
+        $stdin = Phake::mock('React\Stream\ReadableStreamInterface');
 
         Phake::when($stdin)->on('data', $this->isType('callable'))->thenGetReturnByLambda(function ($target, $callback) {
             $callback((string)new Line(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::message([]), []));
         });
 
-        $stdout = new Stream(STDOUT, $loop);
-        $stderr = new Stream(STDERR, $loop);
+        $stdout = new WritableResourceStream(STDOUT, $loop);
+        $stderr = new WritableResourceStream(STDERR, $loop);
 
         $messenger = new Messenger($stdin, $stdout, $stderr, [
             'read' => 'stdin',
@@ -129,9 +131,9 @@ class MessengerTest extends TestCase
     {
         $loop = \React\EventLoop\Factory::create();
 
-        $stdin = new Stream(STDOUT, $loop);
-        $stdout = new Stream(STDOUT, $loop);
-        $stderr = new Stream(STDERR, $loop);
+        $stdin = new ReadableResourceStream(STDIN, $loop);
+        $stdout = new WritableResourceStream(STDOUT, $loop);
+        $stderr = new WritableResourceStream(STDERR, $loop);
 
         $cbCalled = false;
         (new Messenger($stdin, $stdout, $stderr, [

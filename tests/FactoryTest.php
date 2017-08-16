@@ -24,9 +24,9 @@ class FactoryTest extends TestCase
     {
         $this->loop = \React\EventLoop\Factory::create();
         $this->process = Phake::mock('React\ChildProcess\Process');
-        $this->process->stdin = Phake::mock('React\Stream\Stream');
-        $this->process->stdout = Phake::mock('React\Stream\Stream');
-        $this->process->stderr = Phake::mock('React\Stream\Stream');
+        $this->process->stdin = Phake::mock('React\Stream\ReadableStreamInterface');
+        $this->process->stdout = Phake::mock('React\Stream\WritableStreamInterface');
+        $this->process->stderr = Phake::mock('React\Stream\WritableStreamInterface');
     }
 
     public function tearDown()
@@ -67,9 +67,9 @@ class FactoryTest extends TestCase
         $this->loop = Phake::mock('React\EventLoop\LoopInterface');
         $messenger = Factory::child($this->loop);
         $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messenger', $messenger);
-        $this->assertInstanceOf('React\Stream\Stream', $messenger->getStdin());
-        $this->assertInstanceOf('React\Stream\Stream', $messenger->getStdout());
-        $this->assertInstanceOf('React\Stream\Stream', $messenger->getStderr());
+        $this->assertInstanceOf('React\Stream\ReadableStreamInterface', $messenger->getStdin());
+        $this->assertInstanceOf('React\Stream\WritableStreamInterface', $messenger->getStdout());
+        $this->assertInstanceOf('React\Stream\WritableStreamInterface', $messenger->getStderr());
         $messenger->callRpc('wyrihaximus.react.child-process.messenger.terminate', new Payload([]));
         Phake::verify($this->loop)->addTimer(
             1,
