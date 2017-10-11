@@ -8,6 +8,7 @@ use WyriHaximus\React\ChildProcess\Messenger\Factory as MessengerFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessagesFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
+use WyriHaximus\React\ChildProcess\Messenger\ReturnChild;
 
 $options = [
     'lineClass' => 'WyriHaximus\React\ChildProcess\Messenger\Messages\SecureLine',
@@ -18,7 +19,7 @@ $options = [
 
 $loop = EventLoopFactory::create();
 
-MessengerFactory::parentFromClass('WyriHaximus\React\ChildProcess\Messenger\ReturnChild', $loop, $options)->then(function (Messenger $messenger) use ($loop) {
+MessengerFactory::parent(ReturnChild::class, $loop, $options)->then(function (Messenger $messenger) use ($loop) {
     $messenger->on('error', function ($e) {
         echo 'Error: ', var_export($e, true), PHP_EOL;
     });

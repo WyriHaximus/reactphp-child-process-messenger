@@ -17,9 +17,11 @@
         "paragonie/random_compat": "^2.0",
         "react/child-process": "^0.5",
         "react/socket": "^0.8.1",
+        "wyrihaximus/json-throwable": "dev-master",
         "wyrihaximus/ticking-promise": "^1.4"
     },
     "require-dev": {
+        "clue/block-react": "^1.2",
         "friendsofphp/php-cs-fixer": "^2.2",
         "jakub-onderka/php-console-highlighter": "^0.3.2",
         "jakub-onderka/php-parallel-lint": "^0.9.2",
@@ -35,7 +37,9 @@
         "psr-4": {
             "WyriHaximus\\React\\Tests\\ChildProcess\\Messenger\\": "tests/"
         },
-        "files": ["examples/prime/Optimus.php"]
+        "files": [
+            "examples/ExamplesChildProcess.php"
+        ]
     },
     "config": {
         "sort-packages": true,

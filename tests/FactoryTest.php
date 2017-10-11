@@ -2,8 +2,11 @@
 
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 
+use Clue\React\Block;
 use Phake;
 use PHPUnit\Framework\TestCase;
+use React\EventLoop\Factory as EventLoopFactory;
+use React\Socket\Server;
 use WyriHaximus\React\ChildProcess\Messenger\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
@@ -11,22 +14,19 @@ use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 class FactoryTest extends TestCase
 {
     /**
-     * @var React\EventLoop\LoopInterface
+     * @var \React\EventLoop\LoopInterface
      */
     protected $loop;
 
     /**
-     * @var React\ChildProcess\Process
+     * @var \React\ChildProcess\Process
      */
     protected $process;
 
     public function setUp()
     {
-        $this->loop = \React\EventLoop\Factory::create();
+        $this->loop = EventLoopFactory::create();
         $this->process = Phake::mock('React\ChildProcess\Process');
-        $this->process->stdin = Phake::mock('React\Stream\ReadableStreamInterface');
-        $this->process->stdout = Phake::mock('React\Stream\WritableStreamInterface');
-        $this->process->stderr = Phake::mock('React\Stream\WritableStreamInterface');
     }
 
     public function tearDown()
@@ -34,50 +34,14 @@ class FactoryTest extends TestCase
         unset($this->process, $this->loop);
     }
 
-    public function testParent()
-    {
-        Phake::when($this->process)->isRunning(null)->thenReturn(true);
-        Phake::when($this->process)->getCommand()->thenReturn('abc');
-
-        $messengerPromise = Factory::parent($this->process, $this->loop);
-        $this->assertInstanceOf('React\Promise\PromiseInterface', $messengerPromise);
-        $cbFired = false;
-        $messengerPromise->then(function ($messenger) use (&$cbFired) {
-            $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messenger', $messenger);
-            $this->assertSame($this->process->stdin, $messenger->getStdin());
-            $this->assertSame($this->process->stdout, $messenger->getStdout());
-            $this->assertSame($this->process->stderr, $messenger->getStderr());
-
-            $this->assertEquals('abc', $messenger->getCommand());
-
-            $cbFired = true;
-        });
-
-        $this->loop->run();
-
-        $this->assertTrue($cbFired);
-
-        Phake::inOrder(
-            Phake::verify($this->process)->isRunning(null)
-        );
-    }
-
     public function testChild()
     {
-        $this->loop = Phake::mock('React\EventLoop\LoopInterface');
-        $messenger = Factory::child($this->loop);
+        $server = new Server(0, $this->loop);
+        $messenger = Block\await(Factory::child($this->loop, [
+            'address' => $server->getAddress(),
+        ]), $this->loop);
         $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messenger', $messenger);
-        $this->assertInstanceOf('React\Stream\ReadableStreamInterface', $messenger->getStdin());
-        $this->assertInstanceOf('React\Stream\WritableStreamInterface', $messenger->getStdout());
-        $this->assertInstanceOf('React\Stream\WritableStreamInterface', $messenger->getStderr());
         $messenger->callRpc('wyrihaximus.react.child-process.messenger.terminate', new Payload([]));
-        Phake::verify($this->loop)->addTimer(
-            1,
-            [
-                $this->loop,
-                'stop',
-            ]
-        );
     }
 
     /**
@@ -86,7 +50,7 @@ class FactoryTest extends TestCase
      */
     public function testParentFromClassException()
     {
-        Factory::parentFromClass('stdClass', Phake::mock('React\EventLoop\LoopInterface'));
+        Factory::parent('stdClass', Phake::mock('React\EventLoop\LoopInterface'));
     }
 
     public function testParentFromClassActualRun()
@@ -94,7 +58,7 @@ class FactoryTest extends TestCase
         $ranMessengerCreateCallback = false;
         $ranChildProcessCallback = false;
         $loop = \React\EventLoop\Factory::create();
-        Factory::parentFromClass('WyriHaximus\React\ChildProcess\Messenger\ReturnChild', $loop)->then(function (Messenger $messenger) use (&$ranMessengerCreateCallback, &$ranChildProcessCallback) {
+        Factory::parent('WyriHaximus\React\ChildProcess\Messenger\ReturnChild', $loop)->then(function (Messenger $messenger) use (&$ranMessengerCreateCallback, &$ranChildProcessCallback) {
             $ranMessengerCreateCallback = true;
             $messenger->rpc(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::rpc('return', [
                 'foo' => 'bar',

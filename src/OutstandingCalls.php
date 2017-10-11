@@ -40,7 +40,7 @@ class OutstandingCalls
     protected function getNewUniqid()
     {
         do {
-            $uniqid = bin2hex(random_bytes(32));
+            $uniqid = (string)microtime(true) . '.' . bin2hex(random_bytes(4));
         } while (isset($this->calls[$uniqid]));
 
         return $uniqid;

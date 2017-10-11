@@ -49,7 +49,7 @@ class ProcessTest extends TestCase
                 'code' => 0,
                 'line' => 35,
                 'file' => dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Process.php',
-            ], $error->getPayload()->getPayload());
+            ], $error->getPayload());
         });
         Process::create($loop, $messenger);
     }

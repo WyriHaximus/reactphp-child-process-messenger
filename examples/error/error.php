@@ -10,24 +10,16 @@ use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
 $loop = Factory::create();
 
-$prime = isset($argv[1]) ? (int)$argv[1] : mt_rand(1, 1337);
-
-echo 'Checking if ', $prime, ' is a prime or not', PHP_EOL;
-
-MessengerFactory::parent(ExamplesChildProcess::class, $loop)->then(function (Messenger $messenger) use ($prime) {
+MessengerFactory::parent(ExamplesChildProcess::class, $loop)->then(function (Messenger $messenger) {
     return $messenger->rpc(
-        MessageFactory::rpc('isPrime', ['number' => $prime])
+        MessageFactory::rpc('error')
     )->always(function () use ($messenger) {
         $messenger->softTerminate();
     });
 })->done(function (Payload $result) {
-    if ($result['isPrime']) {
-        echo 'Prime', PHP_EOL;
-
-        return;
-    }
-
-    echo 'Not a prime', PHP_EOL;
+    throw new Exception('Should never reach this!');
+}, function ($et) {
+    echo (string)$et;
 });
 
 $loop->run();

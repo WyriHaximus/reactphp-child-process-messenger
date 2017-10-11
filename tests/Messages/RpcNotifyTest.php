@@ -20,7 +20,7 @@ class RpcNotifyTest extends TestCase
 
         $this->assertEquals('{"type":"rpc_notify","uniqid":"abc","payload":{"foo":"bar"}}', json_encode($message));
 
-        $outstandingCall = Phake::mock('WyriHaximus\React\ChildProcess\Messenger\Messenger');
+        $outstandingCall = Phake::mock('WyriHaximus\React\ChildProcess\Messenger\OutstandingCall');
         $messenger = Phake::mock('WyriHaximus\React\ChildProcess\Messenger\Messenger');
         Phake::when($messenger)->getOutstandingCall('abc')->thenReturn($outstandingCall);
 

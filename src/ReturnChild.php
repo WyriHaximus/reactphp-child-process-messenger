@@ -13,19 +13,19 @@ class ReturnChild implements ChildInterface
     protected $ran = false;
 
     /**
-     * @param Messenger $messenger
+     * @param Messenger     $agent
      * @param LoopInterface $loop
      */
-    protected function __construct(Messenger $messenger, LoopInterface $loop)
+    protected function __construct(Messenger $agent, LoopInterface $loop)
     {
-        $messenger->registerRpc('return', function (Payload $payload) {
+        $agent->registerRpc('return', function (Payload $payload) {
             return \React\Promise\resolve($payload->getPayload());
         });
         $this->ran = true;
     }
 
     /**
-     * @param Messenger $messenger
+     * @param Messenger     $messenger
      * @param LoopInterface $loop
      */
     public static function create(Messenger $messenger, LoopInterface $loop)

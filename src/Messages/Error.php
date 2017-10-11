@@ -2,23 +2,26 @@
 
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
+use Exception;
+use Throwable;
+
 class Error implements \JsonSerializable, ActionableMessageInterface
 {
     /**
-     * @var Payload
+     * @var Exception|Throwable
      */
     protected $payload;
 
     /**
-     * @param Payload $payload
+     * @param Exception|Throwable $payload
      */
-    public function __construct(Payload $payload)
+    public function __construct($payload)
     {
         $this->payload = $payload;
     }
 
     /**
-     * @return Payload
+     * @return Exception|Throwable
      */
     public function getPayload()
     {

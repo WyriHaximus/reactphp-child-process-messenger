@@ -3,6 +3,8 @@
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
 use Doctrine\Common\Inflector\Inflector;
+use Exception;
+use Throwable;
 
 class Factory
 {
@@ -37,11 +39,11 @@ class Factory
     /**
      * @param array $payload
      *
-     * @return Error
+     * @return Exception|Throwable
      */
-    public static function error(array $payload = [])
+    public static function error($payload)
     {
-        return new Error(new Payload($payload));
+        return new Error($payload);
     }
 
     /**
@@ -57,15 +59,15 @@ class Factory
     }
 
     /**
-     * @param string $target
-     * @param array  $payload
-     * @param mixed  $uniqid
+     * @param mixed               $uniqid
+     * @param Exception|Throwable $payload
+     * @param mixed               $et
      *
      * @return Rpc
      */
-    public static function rpcError($uniqid, array $payload = [])
+    public static function rpcError($uniqid, $et)
     {
-        return new RpcError($uniqid, new Payload($payload));
+        return new RpcError($uniqid, $et);
     }
 
     /**
@@ -83,7 +85,7 @@ class Factory
      * @param string $uniqid
      * @param array  $payload
      *
-     * @return RpcSuccess
+     * @return RpcNotify
      */
     public static function rpcNotify($uniqid, array $payload = [])
     {
@@ -120,7 +122,7 @@ class Factory
      */
     protected static function errorFromLine(array $line)
     {
-        return static::error($line['payload']);
+        return static::error(\WyriHaximus\throwable_decode($line['payload']));
     }
 
     /**
@@ -140,7 +142,7 @@ class Factory
      */
     protected static function rpcErrorFromLine(array $line)
     {
-        return static::rpcError($line['uniqid'], $line['payload']);
+        return static::rpcError($line['uniqid'], \WyriHaximus\throwable_decode($line['payload']));
     }
 
     /**

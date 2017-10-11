@@ -5,12 +5,10 @@ namespace WyriHaximus\React\ChildProcess\Messenger;
 use Evenement\EventEmitter;
 use React\Promise\PromiseInterface;
 use React\Promise\RejectedPromise;
-use React\Stream\ReadableStreamInterface;
-use React\Stream\Stream;
-use React\Stream\WritableStreamInterface;
+use React\Socket\ConnectionInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\ActionableMessageInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Error;
-use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessageFactory;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessagesFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\LineInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Message;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc;
@@ -21,19 +19,9 @@ class Messenger extends EventEmitter
     const TERMINATE_RPC = 'wyrihaximus.react.child-process.messenger.terminate';
 
     /**
-     * @var ReadableStreamInterface
+     * @var ConnectionInterface
      */
-    protected $stdin;
-
-    /**
-     * @var WritableStreamInterface
-     */
-    protected $stdout;
-
-    /**
-     * @var WritableStreamInterface
-     */
-    protected $stderr;
+    protected $connection;
 
     /**
      * @var OutstandingCalls
@@ -53,11 +41,7 @@ class Messenger extends EventEmitter
     /**
      * @var string[]
      */
-    protected $buffers = [
-        'stdin' => '',
-        'stdout' => '',
-        'stderr' => '',
-    ];
+    protected $buffer = '';
 
     protected $defaultOptions = [
         'lineClass' => 'WyriHaximus\React\ChildProcess\Messenger\Messages\Line',
@@ -66,43 +50,25 @@ class Messenger extends EventEmitter
     ];
 
     /**
-     * @param ReadableStreamInterface $stdin
-     * @param WritableStreamInterface $stdout
-     * @param WritableStreamInterface $stderr
-     * @param array $options
+     * Messenger constructor.
+     * @param ConnectionInterface $connection
+     * @param array               $options
      */
     public function __construct(
-        ReadableStreamInterface $stdin,
-        WritableStreamInterface $stdout,
-        WritableStreamInterface $stderr,
-        array $options
+        ConnectionInterface $connection,
+        array $options = []
     ) {
-        $this->stdin = $stdin;
-        $this->stdout = $stdout;
-        $this->stderr = $stderr;
+        $this->connection = $connection;
 
         $this->options = $this->defaultOptions + $options;
 
         $this->outstandingRpcCalls = new OutstandingCalls();
 
-        $this->attachMessenger();
-    }
-
-    /**
-     * Forward any unknown calls when there is a call forward possible.
-     *
-     * @param string $name
-     * @param array  $arguments
-     *
-     * @return mixed
-     */
-    public function __call($name, array $arguments)
-    {
-        if (isset($this->options['callForward'])) {
-            $call = $this->options['callForward'];
-
-            return $call($name, $arguments);
-        }
+        $this->connection->on('data', function ($data) {
+            $this->buffer .= $data;
+            $this->emit('data', [$data]);
+            $this->handleData();
+        });
     }
 
     /**
@@ -165,7 +131,7 @@ class Messenger extends EventEmitter
      */
     public function error(Error $error)
     {
-        $this->writeErr($this->createLine($error));
+        $this->write($this->createLine($error));
     }
 
     /**
@@ -207,106 +173,33 @@ class Messenger extends EventEmitter
      */
     public function softTerminate()
     {
-        return $this->rpc(MessageFactory::rpc(static::TERMINATE_RPC));
-    }
-
-    /**
-     * @return Stream
-     */
-    public function getStdin()
-    {
-        return $this->stdin;
-    }
-
-    /**
-     * @return Stream
-     */
-    public function getStdout()
-    {
-        return $this->stdout;
-    }
-
-    /**
-     * @return Stream
-     */
-    public function getStderr()
-    {
-        return $this->stderr;
-    }
-
-    protected function attachMessenger()
-    {
-        /**
-         * @todo duplicated code much?
-         */
-        if (isset($this->options['read_err'])) {
-            $streamName = $this->options['read_err'];
-            $this->$streamName->on('data', function ($data) use ($streamName) {
-                $this->onData($data, $streamName);
-            });
-            unset($streamName);
-        }
-
-        if (isset($this->options['read'])) {
-            $streamName = $this->options['read'];
-            $this->$streamName->on('data', function ($data) use ($streamName) {
-                $this->onData($data, $streamName);
-            });
-            unset($streamName);
-        }
+        return $this->rpc(MessagesFactory::rpc(static::TERMINATE_RPC));
     }
 
     /**
      * @param string $line
      */
-    protected function write($line)
+    public function write($line)
     {
-        if (isset($this->options['write'])) {
-            $streamName = $this->options['write'];
-            $this->$streamName->write($line);
-            unset($streamName);
-        }
+        $this->connection->write($line);
     }
 
-    /**
-     * @param string $line
-     */
-    protected function writeErr($line)
+    private function handleData()
     {
-        if (isset($this->options['write_err'])) {
-            $streamName = $this->options['write_err'];
-            $this->$streamName->write($line);
-            unset($streamName);
+        if (strpos($this->buffer, LineInterface::EOL) === false) {
+            return;
         }
+
+        $messages = explode(LineInterface::EOL, $this->buffer);
+        $this->buffer = array_pop($messages);
+        $this->iterateMessages($messages);
     }
 
-    /**
-     * @param string $data
-     * @param string $source
-     */
-    protected function onData($data, $source)
+    private function iterateMessages(array $messages)
     {
-        $this->emit('data', [$source, $data]);
-
-        $this->buffers[$source] .= $data;
-
-        if (strpos($this->buffers[$source], LineInterface::EOL) !== false) {
-            $messages = explode(LineInterface::EOL, $this->buffers[$source]);
-            $this->buffers[$source] = array_pop($messages);
-            $this->iterateMessages($messages, $source);
-        }
-    }
-
-    /**
-     * @param array  $messages
-     * @param string $source
-     */
-    protected function iterateMessages(array $messages, $source)
-    {
-        $messageFactory = $this->options['messageFactoryClass'];
         foreach ($messages as $message) {
             try {
-                $messageFactory::fromLine($message, $this->options['lineOptions'])->handle($this, $source);
+                MessagesFactory::fromLine($message, [])->handle($this, 'source');
             } catch (\Exception $exception) {
                 $this->emit('error', [$exception, $this]);
             } catch (\Throwable $exception) {

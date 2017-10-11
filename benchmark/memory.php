@@ -28,7 +28,7 @@ show_memory('Begin');
 
 $loop = EventLoopFactory::create();
 
-MessengerFactory::parentFromClass('WyriHaximus\React\ChildProcess\Messenger\ReturnChild', $loop)->then(function (Messenger $messenger) use ($loop) {
+MessengerFactory::parent('WyriHaximus\React\ChildProcess\Messenger\ReturnChild', $loop)->then(function (Messenger $messenger) use ($loop) {
     $messenger->on('error', function ($e) {
         echo 'Error: ', var_export($e, true), PHP_EOL;
     });
