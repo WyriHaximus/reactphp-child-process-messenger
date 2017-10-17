@@ -1,8 +1,8 @@
 <?php
 
-use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessagesFactory;
 use React\EventLoop\LoopInterface;
 use WyriHaximus\React\ChildProcess\Messenger\ChildInterface;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessagesFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
@@ -24,7 +24,7 @@ class ExamplesChildProcess implements ChildInterface
                 'time' => (new DateTime('@' . $payload['time'] * $payload['i']))->format('c'),
             ]));
         });
-        $messenger->registerRpc('format', function (Payload $payload) use ($loop) {
+        $messenger->registerRpc('format', function (Payload $payload) {
             return \React\Promise\resolve([
                 'formattedTime' => (new DateTime('@' . $payload['unixTime']))->format('c'),
             ]);

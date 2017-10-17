@@ -2,7 +2,6 @@
 
 require dirname(dirname(__DIR__)) . '/vendor/autoload.php';
 
-use React\ChildProcess\Process;
 use React\EventLoop\Factory as LoopFactory;
 use React\EventLoop\Timer\Timer;
 use WyriHaximus\React\ChildProcess\Messenger\Factory as MessengerFactory;
