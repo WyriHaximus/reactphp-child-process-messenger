@@ -56,7 +56,7 @@ final class Factory
             );
 
             $server->on('connection', function (ConnectionInterface $connection) use ($server, $resolve, $reject, $class, $options) {
-                $server->pause();
+                $server->close();
                 $messenger = new Messenger($connection, $options);
                 $resolve($messenger->rpc(MessengesFactory::rpc(Factory::PROCESS_REGISTER, [
                     'className' => $class,
