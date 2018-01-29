@@ -15,7 +15,7 @@ final class Process
     protected $loop;
 
     /**
-     * @var Agent
+     * @var Messenger
      */
     protected $messenger;
 
