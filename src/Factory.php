@@ -23,7 +23,7 @@ final class Factory
      * @param  LoopInterface                       $loop
      * @param  array                               $options
      * @param  mixed                               $class
-     * @return Promise\PromiseInterface<Overwatch>
+     * @return Promise\PromiseInterface<Messenger>
      */
     public static function parent(
         $class,
