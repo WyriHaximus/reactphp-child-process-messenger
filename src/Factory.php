@@ -18,6 +18,23 @@ final class Factory
     const TERMINATE_TIMEOUT = 1;
     const PROCESS_REGISTER = 'wyrihaximus.react.child-process.messenger.child.register';
 
+    public static function parent(
+        Process $process,
+        LoopInterface $loop,
+        array $options = []
+    ) {
+        return new Promise\Promise(function ($resolve, $reject) use ($process, $loop, $options) {
+            $server = new Server('127.0.0.1:0', $loop);
+            $argvString = \escapeshellarg(ArgvEncoder::encode([
+                'address' => $server->getAddress(),
+            ]));
+
+            $process = new Process($process->getCommand() . ' ' . $argvString);
+
+            self::startParent($process, $server, $loop, $options)->done($resolve, $reject);
+        });
+    }
+
     /**
      * @param  string                              $process
      * @param  LoopInterface                       $loop
@@ -25,7 +42,7 @@ final class Factory
      * @param  mixed                               $class
      * @return Promise\PromiseInterface<Messenger>
      */
-    public static function parent(
+    public static function parentFromClass(
         $class,
         LoopInterface $loop,
         array $options = []
@@ -55,15 +72,31 @@ final class Factory
                 )
             );
 
-            $server->on('connection', function (ConnectionInterface $connection) use ($server, $resolve, $reject, $class, $options) {
-                $server->close();
-                $messenger = new Messenger($connection, $options);
-                $resolve($messenger->rpc(MessengesFactory::rpc(Factory::PROCESS_REGISTER, [
+            self::startParent($process, $server, $loop, $options)->then(function (Messenger $messenger) use ($class) {
+                return $messenger->rpc(MessengesFactory::rpc(Factory::PROCESS_REGISTER, [
                     'className' => $class,
                 ]))->then(function () use ($messenger) {
                     return Promise\resolve($messenger);
-                }, $reject));
-            });
+                });
+            })->done($resolve, $reject);
+        });
+    }
+
+    private static function startParent(
+        Process $process,
+        Server $server,
+        LoopInterface $loop,
+        array $options
+    )
+    {
+        return new Promise\Promise(function ($resolve, $reject) use ($process, $server, $loop, $options) {
+            $server->on('connection',
+                function (ConnectionInterface $connection) use ($server, $resolve, $reject, $options) {
+                    $server->close();
+                    $messenger = new Messenger($connection, $options);
+                    $resolve($messenger);
+                }
+            );
             $server->on('error', function ($et) use ($reject) {
                 $reject($et);
             });

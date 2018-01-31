@@ -18,7 +18,7 @@ $options = [
 
 $loop = EventLoopFactory::create();
 
-MessengerFactory::parent(ExamplesChildProcess::class, $loop, $options)->then(function (Messenger $messenger) use ($loop) {
+MessengerFactory::parentFromClass(ExamplesChildProcess::class, $loop, $options)->then(function (Messenger $messenger) use ($loop) {
     $messenger->on('message', function (Payload $payload) {
         echo $payload['time'], PHP_EOL;
     });

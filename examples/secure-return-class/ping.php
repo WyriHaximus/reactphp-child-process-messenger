@@ -19,7 +19,7 @@ $options = [
 
 $loop = EventLoopFactory::create();
 
-MessengerFactory::parent(ReturnChild::class, $loop, $options)->then(function (Messenger $messenger) use ($loop) {
+MessengerFactory::parentFromClass(ReturnChild::class, $loop, $options)->then(function (Messenger $messenger) use ($loop) {
     $messenger->on('error', function ($e) {
         echo 'Error: ', var_export($e, true), PHP_EOL;
     });

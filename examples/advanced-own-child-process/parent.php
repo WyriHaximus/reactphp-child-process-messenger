@@ -2,6 +2,7 @@
 
 require dirname(dirname(__DIR__)) . '/vendor/autoload.php';
 
+use React\ChildProcess\Process;
 use React\EventLoop\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Factory as MessengerFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessageFactory;
@@ -10,24 +11,16 @@ use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
 $loop = Factory::create();
 
-$prime = isset($argv[1]) ? (int)$argv[1] : mt_rand(1, 1337);
-
-echo 'Checking if ', $prime, ' is a prime or not', PHP_EOL;
-
-MessengerFactory::parentFromClass(ExamplesChildProcess::class, $loop)->then(function (Messenger $messenger) use ($prime) {
+MessengerFactory::parent(new Process('exec php ' . __DIR__ . DIRECTORY_SEPARATOR . 'child.php foo bar'), $loop)->then(function (Messenger $messenger) {
     return $messenger->rpc(
-        MessageFactory::rpc('isPrime', ['number' => $prime])
+        MessageFactory::rpc('hello')
     )->always(function () use ($messenger) {
         $messenger->softTerminate();
     });
 })->done(function (Payload $result) {
-    if ($result['isPrime']) {
-        echo 'Prime', PHP_EOL;
-
-        return;
-    }
-
-    echo 'Not a prime', PHP_EOL;
+    var_export($result);
+}, function ($et) {
+    echo (string)$et;
 });
 
 $loop->run();

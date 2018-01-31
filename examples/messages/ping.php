@@ -11,7 +11,7 @@ use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
 $loop = EventLoopFactory::create();
 
-MessengerFactory::parent(ExamplesChildProcess::class, $loop)->then(function (Messenger $messenger) use ($loop) {
+MessengerFactory::parentFromClass(ExamplesChildProcess::class, $loop)->then(function (Messenger $messenger) use ($loop) {
     $messenger->on('message', function (Payload $payload) {
         echo $payload['time'], PHP_EOL;
     });

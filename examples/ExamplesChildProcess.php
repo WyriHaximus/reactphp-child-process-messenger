@@ -6,7 +6,7 @@ use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessagesFactory
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
-class ExamplesChildProcess implements ChildInterface
+final class ExamplesChildProcess implements ChildInterface
 {
     public static function create(Messenger $messenger, LoopInterface $loop)
     {
