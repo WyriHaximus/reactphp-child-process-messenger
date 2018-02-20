@@ -50,7 +50,7 @@ class FactoryTest extends TestCase
      */
     public function testParentFromClassException()
     {
-        Factory::parent('stdClass', Phake::mock('React\EventLoop\LoopInterface'));
+        Factory::parentFromClass('stdClass', Phake::mock('React\EventLoop\LoopInterface'));
     }
 
     public function testParentFromClassActualRun()
@@ -58,7 +58,7 @@ class FactoryTest extends TestCase
         $ranMessengerCreateCallback = false;
         $ranChildProcessCallback = false;
         $loop = \React\EventLoop\Factory::create();
-        Factory::parent('WyriHaximus\React\ChildProcess\Messenger\ReturnChild', $loop)->then(function (Messenger $messenger) use (&$ranMessengerCreateCallback, &$ranChildProcessCallback) {
+        Factory::parentFromClass('WyriHaximus\React\ChildProcess\Messenger\ReturnChild', $loop)->then(function (Messenger $messenger) use (&$ranMessengerCreateCallback, &$ranChildProcessCallback) {
             $ranMessengerCreateCallback = true;
             $messenger->rpc(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::rpc('return', [
                 'foo' => 'bar',
