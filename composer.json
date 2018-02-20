@@ -16,6 +16,7 @@
         "indigophp/hash-compat": "^1.0",
         "paragonie/random_compat": "^2.0",
         "react/child-process": "^0.5 || ^0.4",
+        "react/promise": "^2.2",
         "react/socket": "^0.8.1",
         "wyrihaximus/json-throwable": "dev-master",
         "wyrihaximus/ticking-promise": "^1.4"
