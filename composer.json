@@ -18,7 +18,7 @@
         "react/child-process": "^0.5 || ^0.4",
         "react/promise": "^2.2",
         "react/socket": "^0.8.1",
-        "wyrihaximus/json-throwable": "dev-master",
+        "wyrihaximus/json-throwable": "^1.0",
         "wyrihaximus/ticking-promise": "^1.4"
     },
     "require-dev": {

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "d269f26bed2b57e323cab6f0edbf077e",
+    "content-hash": "b20400be8b5fc0b738b93cdbfea471bc",
     "packages": [
         {
             "name": "doctrine/inflector",
@@ -584,16 +584,16 @@
         },
         {
             "name": "wyrihaximus/json-throwable",
-            "version": "dev-master",
+            "version": "1.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WyriHaximus/php-json-throwable.git",
-                "reference": "50255e6a6701377dfca507890427d9c9dda7c92d"
+                "reference": "b0570138d5279833a52e6637a2735c80fc5500f9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WyriHaximus/php-json-throwable/zipball/50255e6a6701377dfca507890427d9c9dda7c92d",
-                "reference": "50255e6a6701377dfca507890427d9c9dda7c92d",
+                "url": "https://api.github.com/repos/WyriHaximus/php-json-throwable/zipball/b0570138d5279833a52e6637a2735c80fc5500f9",
+                "reference": "b0570138d5279833a52e6637a2735c80fc5500f9",
                 "shasum": ""
             },
             "require": {
@@ -625,7 +625,7 @@
                 }
             ],
             "description": "JSON encode and decode throwables and exceptions",
-            "time": "2018-02-19T21:25:16+00:00"
+            "time": "2018-02-19T22:25:26+00:00"
         },
         {
             "name": "wyrihaximus/ticking-promise",
@@ -3003,9 +3003,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "wyrihaximus/json-throwable": 20
-    },
+    "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
