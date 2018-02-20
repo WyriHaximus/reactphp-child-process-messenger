@@ -82,29 +82,6 @@ final class Factory
         });
     }
 
-    private static function startParent(
-        Process $process,
-        Server $server,
-        LoopInterface $loop,
-        array $options
-    )
-    {
-        return new Promise\Promise(function ($resolve, $reject) use ($process, $server, $loop, $options) {
-            $server->on('connection',
-                function (ConnectionInterface $connection) use ($server, $resolve, $reject, $options) {
-                    $server->close();
-                    $messenger = new Messenger($connection, $options);
-                    $resolve($messenger);
-                }
-            );
-            $server->on('error', function ($et) use ($reject) {
-                $reject($et);
-            });
-
-            $process->start($loop);
-        });
-    }
-
     /**
      * @param  LoopInterface                       $loop
      * @param  array                               $options
@@ -141,6 +118,28 @@ final class Factory
             );
 
             return $messenger;
+        });
+    }
+
+    private static function startParent(
+        Process $process,
+        Server $server,
+        LoopInterface $loop,
+        array $options
+    ) {
+        return new Promise\Promise(function ($resolve, $reject) use ($process, $server, $loop, $options) {
+            $server->on('connection',
+                function (ConnectionInterface $connection) use ($server, $resolve, $reject, $options) {
+                    $server->close();
+                    $messenger = new Messenger($connection, $options);
+                    $resolve($messenger);
+                }
+            );
+            $server->on('error', function ($et) use ($reject) {
+                $reject($et);
+            });
+
+            $process->start($loop);
         });
     }
 }

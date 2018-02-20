@@ -21,6 +21,7 @@ $loop = LoopFactory::create();
 MessengerFactory::child($loop, ArgvEncoder::decode($arguments))->done(function (Messenger $messenger) use ($loop) {
     $messenger->registerRpc('hello', function (Payload $payload, Messenger $messenger) {
         sleep(1);
+
         return \React\Promise\resolve([
             'world' => 'hello world',
         ]);
