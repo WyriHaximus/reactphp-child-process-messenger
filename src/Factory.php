@@ -128,7 +128,8 @@ final class Factory
         array $options
     ) {
         return new Promise\Promise(function ($resolve, $reject) use ($process, $server, $loop, $options) {
-            $server->on('connection',
+            $server->on(
+                'connection',
                 function (ConnectionInterface $connection) use ($server, $resolve, $reject, $options) {
                     $server->close();
                     $messenger = new Messenger($connection, $options);
