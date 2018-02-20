@@ -114,6 +114,8 @@ final class ExamplesChildProcessTest extends TestCase
 
     /**
      * @dataProvider providePrimesAndNonPrimes
+     * @param mixed $number
+     * @param mixed $isPrime
      */
     public function testIsPrime($number, $isPrime)
     {
