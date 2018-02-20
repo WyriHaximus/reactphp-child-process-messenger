@@ -31,11 +31,13 @@ final class ExamplesChildProcess implements ChildInterface
         });
     }
 
-    private static function isPrime($n)
+    public static function isPrime($n)
     {
         // Source: https://stackoverflow.com/a/39743570
-        for ($i=$n>>1;$i&&$n%$i--;);
+        for ($i = $n >> 1; $i && $n % $i--; /* void */) {
+            /* void */
+        }
 
-        return!$i&&$n>1;
+        return !$i && $n > 1;
     }
 }
