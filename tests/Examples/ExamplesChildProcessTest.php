@@ -2,6 +2,7 @@
 
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Examples;
 
+use ExamplesChildProcess;
 use PHPUnit\Framework\TestCase;
 
 final class ExamplesChildProcessTest extends TestCase
@@ -119,6 +120,9 @@ final class ExamplesChildProcessTest extends TestCase
      */
     public function testIsPrime($number, $isPrime)
     {
-        self::assertSame($isPrime, \ExamplesChildProcess::isPrime($number));
+        self::assertSame(
+            $isPrime,
+            ExamplesChildProcess::isPrime($number)
+        );
     }
 }
