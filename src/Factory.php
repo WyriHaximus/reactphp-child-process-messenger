@@ -54,6 +54,7 @@ final class Factory
         return new Promise\Promise(function ($resolve, $reject) use ($class, $loop, $options) {
             $server = new Server('127.0.0.1:0', $loop);
             $options['address'] = $server->getAddress();
+            $options['random'] = bin2hex(random_bytes(512));
 
             $template = '%s';
             if (isset($options['cmdTemplate'])) {
@@ -75,7 +76,7 @@ final class Factory
             self::startParent($process, $server, $loop, $options)->then(function (Messenger $messenger) use ($class) {
                 return $messenger->rpc(MessengesFactory::rpc(Factory::PROCESS_REGISTER, [
                     'className' => $class,
-                ]))->then(function () use ($messenger) {
+                ]))->then(function ($p) use ($messenger) {
                     return Promise\resolve($messenger);
                 });
             })->done($resolve, $reject);
@@ -91,7 +92,16 @@ final class Factory
     public static function child(LoopInterface $loop, array $options = [], callable $termiteCallable = null)
     {
         return (new Connector($loop))->connect($options['address'])->then(function (ConnectionInterface $connection) use ($options) {
-            return new Messenger($connection, $options);
+            return new Promise\Promise(function ($resolve, $reject) use ($connection, $options) {
+                $connection->write(hash_hmac('sha512', $options['address'], $options['random']) . PHP_EOL);
+                Promise\Stream\first($connection)->then(function ($chunk) use ($resolve, $connection, $options) {
+                    list($confirmation) = explode(PHP_EOL, $chunk);
+                    if ($confirmation === 'syn') {
+                        $connection->write('ack' . PHP_EOL);
+                        $resolve(new Messenger($connection, $options));
+                    }
+                });
+            });
         })->then(function (Messenger $messenger) use ($loop, $termiteCallable) {
             if ($termiteCallable === null) {
                 $termiteCallable = function () use ($loop) {
@@ -131,9 +141,20 @@ final class Factory
             $server->on(
                 'connection',
                 function (ConnectionInterface $connection) use ($server, $resolve, $reject, $options) {
-                    $server->close();
-                    $messenger = new Messenger($connection, $options);
-                    $resolve($messenger);
+                    Promise\Stream\first($connection)->then(function ($chunk) use ($server, $options, $connection, $resolve) {
+                        list($confirmation) = explode(PHP_EOL, $chunk);
+                        if ($confirmation === hash_hmac('sha512', $options['address'], $options['random'])) {
+                            $connection->write('syn' . PHP_EOL);
+                            $server->close();
+
+                            return Promise\Stream\first($connection);
+                        }
+                    })->then(function ($chunk) use ($options, $connection, $resolve) {
+                        list($confirmation) = explode(PHP_EOL, $chunk);
+                        if ($confirmation === 'ack') {
+                            $resolve(new Messenger($connection, $options));
+                        }
+                    });
                 }
             );
             $server->on('error', function ($et) use ($reject) {

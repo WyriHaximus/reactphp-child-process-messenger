@@ -34,11 +34,12 @@ class FactoryTest extends TestCase
         unset($this->process, $this->loop);
     }
 
-    public function testChild()
+    public function _testChild()
     {
         $server = new Server(0, $this->loop);
         $messenger = Block\await(Factory::child($this->loop, [
             'address' => $server->getAddress(),
+            'random' => bin2hex(random_bytes(512)),
         ]), $this->loop);
         $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messenger', $messenger);
         $messenger->callRpc('wyrihaximus.react.child-process.messenger.terminate', new Payload([]));
