@@ -13,6 +13,8 @@ class FactoryTest extends TestCase
 
     public function providerFromLine()
     {
+        $exception = new \Exception('angry unicorn');
+
         return [
             [
                 '{"type":"message","payload":["foo","bar"]}' . LineInterface::EOL,
@@ -28,14 +30,11 @@ class FactoryTest extends TestCase
                 },
             ],
             [
-                '{"type":"error","payload":["foo","bar"]}' . LineInterface::EOL,
-                function ($message) {
+                '{"type":"error","payload":' . \WyriHaximus\throwable_json_encode($exception) . '}' . LineInterface::EOL,
+                function ($message) use ($exception) {
                     $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\Error', $message);
-                    $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\Payload', $message->getPayload());
-                    $this->assertSame([
-                        'foo',
-                        'bar',
-                    ], $message->getPayload()->getPayload());
+                    $this->assertInstanceOf('Exception', $message->getPayload());
+                    $this->assertEquals($exception, $message->getPayload());
 
                     return true;
                 },
@@ -59,17 +58,14 @@ class FactoryTest extends TestCase
                 },
             ],
             [
-                '{"type":"rpc_error","uniqid":"abc","payload":["foo","bar"]}' . LineInterface::EOL,
-                function ($message) {
+                '{"type":"rpc_error","uniqid":"abc","payload":' . \WyriHaximus\throwable_json_encode($exception) . '}' . LineInterface::EOL,
+                function ($message) use ($exception) {
                     $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcError', $message);
-                    $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\Payload', $message->getPayload());
+                    $this->assertInstanceOf('Exception', $message->getPayload());
                     $this->assertEquals([
                         'type' => 'rpc_error',
                         'uniqid' => 'abc',
-                        'payload' => new Payload([
-                            'foo',
-                            'bar',
-                        ]),
+                        'payload' => \WyriHaximus\throwable_encode($exception),
                     ], $message->jsonSerialize());
 
                     return true;

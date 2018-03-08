@@ -2,7 +2,7 @@
 
 namespace WyriHaximus\React\ChildProcess\Messenger;
 
-class ArgvEncoder
+final class ArgvEncoder
 {
     public static function encode(array $argv)
     {

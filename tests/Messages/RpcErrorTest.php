@@ -11,16 +11,19 @@ class RpcErrorTest extends TestCase
 {
     public function testBasic()
     {
-        $payload = new Payload([
-            'foo' => 'bar',
-        ]);
+        $payload = new \Exception('foo.bar');
         $message = new RpcError('abc', $payload);
 
         $this->assertSame($payload, $message->getPayload());
 
-        $this->assertEquals('{"type":"rpc_error","uniqid":"abc","payload":{"foo":"bar"}}', json_encode($message));
+        $this->assertEquals(
+            '{"type":"rpc_error","uniqid":"abc","payload":' .
+            \WyriHaximus\throwable_json_encode($payload) .
+            '}',
+            json_encode($message)
+        );
 
-        $outstandingCall = Phake::mock('WyriHaximus\React\ChildProcess\Messenger\Messenger');
+        $outstandingCall = Phake::mock('WyriHaximus\React\ChildProcess\Messenger\OutstandingCall');
         $messenger = Phake::mock('WyriHaximus\React\ChildProcess\Messenger\Messenger');
         Phake::when($messenger)->getOutstandingCall('abc')->thenReturn($outstandingCall);
 

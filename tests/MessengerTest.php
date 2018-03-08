@@ -4,18 +4,16 @@ namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 
 use Phake;
 use PHPUnit\Framework\TestCase;
-use React\EventLoop\Factory as EventLoopFactory;
-use React\Stream\Stream;
-use WyriHaximus\React\ChildProcess\Messenger\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Line;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
+use WyriHaximus\React\Tests\ChildProcess\Messenger\Stub\ConnectionStub;
 
 class MessengerTest extends TestCase
 {
     public function testSetAndHasRpc()
     {
-        $loop = EventLoopFactory::create();
-        $messenger = Factory::child($loop);
+        $connection = Phake::mock('React\Socket\ConnectionInterface');
+        $messenger = new Messenger($connection);
 
         $payload = [
             'a',
@@ -40,109 +38,67 @@ class MessengerTest extends TestCase
         $this->assertFalse($messenger->hasRpc('test'));
     }
 
-    public function testGetters()
-    {
-        $loop = \React\EventLoop\Factory::create();
-        $stdin = new Stream(STDIN, $loop);
-        $stdout = new Stream(STDOUT, $loop);
-        $stderr = new Stream(STDERR, $loop);
-
-        $messenger = new Messenger($stdin, $stdout, $stderr, []);
-
-        $this->assertSame($stdin, $messenger->getStdin());
-        $this->assertSame($stdout, $messenger->getStdout());
-        $this->assertSame($stderr, $messenger->getStderr());
-    }
-
     public function testMessage()
     {
-        $loop = \React\EventLoop\Factory::create();
-        $stdin = Phake::mock('React\Stream\Stream');
-        $stdout = new Stream(STDOUT, $loop);
-        $stderr = new Stream(STDERR, $loop);
+        $connection = Phake::mock('React\Socket\ConnectionInterface');
 
-        $messenger = new Messenger($stdin, $stdout, $stderr, [
-            'write' => 'stdin',
-        ]);
+        $messenger = new Messenger($connection);
 
         $messenger->message(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::message([
             'foo' => 'bar',
         ]));
 
-        Phake::verify($stdin)->write($this->isType('string'));
+        Phake::verify($connection)->write($this->isType('string'));
     }
 
     public function testError()
     {
-        $loop = \React\EventLoop\Factory::create();
-        $stdin = new Stream(STDIN, $loop);
-        $stdout = new Stream(STDOUT, $loop);
-        $stderr = Phake::mock('React\Stream\Stream');
+        $connection = Phake::mock('React\Socket\ConnectionInterface');
 
-        $messenger = new Messenger($stdin, $stdout, $stderr, [
-            'write_err' => 'stderr',
-        ]);
+        $messenger = new Messenger($connection);
 
         $messenger->error(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::error([
             'foo' => 'bar',
         ]));
 
-        Phake::verify($stderr)->write($this->isType('string'));
+        Phake::verify($connection)->write($this->isType('string'));
     }
 
     public function testRpc()
     {
-        $loop = \React\EventLoop\Factory::create();
-        $stdin = Phake::mock('React\Stream\Stream');
-        $stdout = new Stream(STDOUT, $loop);
-        $stderr = new Stream(STDERR, $loop);
+        $connection = Phake::mock('React\Socket\ConnectionInterface');
 
-        $messenger = new Messenger($stdin, $stdout, $stderr, [
-            'write' => 'stdin',
-        ]);
+        $messenger = new Messenger($connection);
 
         $messenger->rpc(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::rpc('target', [
             'foo' => 'bar',
         ]));
 
-        Phake::verify($stdin)->write($this->isType('string'));
+        Phake::verify($connection)->write($this->isType('string'));
     }
 
     public function testOnData()
     {
-        $loop = \React\EventLoop\Factory::create();
-        $stdin = Phake::mock('React\Stream\Stream');
+        $connection = Phake::mock('React\Socket\ConnectionInterface');
 
-        Phake::when($stdin)->on('data', $this->isType('callable'))->thenGetReturnByLambda(function ($target, $callback) {
+        Phake::when($connection)->on('data', $this->isType('callable'))->thenGetReturnByLambda(function ($target, $callback) {
             $callback((string)new Line(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::message([]), []));
         });
 
-        $stdout = new Stream(STDOUT, $loop);
-        $stderr = new Stream(STDERR, $loop);
-
-        $messenger = new Messenger($stdin, $stdout, $stderr, [
-            'read' => 'stdin',
-        ]);
+        new Messenger($connection);
     }
 
     public function testEmitOnData()
     {
-        $loop = \React\EventLoop\Factory::create();
-
-        $stdin = new Stream(STDOUT, $loop);
-        $stdout = new Stream(STDOUT, $loop);
-        $stderr = new Stream(STDERR, $loop);
+        $connection = new ConnectionStub();
 
         $cbCalled = false;
-        (new Messenger($stdin, $stdout, $stderr, [
-            'read' => 'stdin',
-        ]))->on('data', function ($source, $data) use (&$cbCalled, $loop) {
-            $this->assertEquals('stdin', $source);
+        (new Messenger($connection))->on('data', function ($data) use (&$cbCalled) {
             $this->assertEquals('bar.foo', $data);
             $cbCalled = true;
         });
 
-        $stdin->emit('data', ['bar.foo']);
+        $connection->emit('data', ['bar.foo']);
 
         $this->assertTrue($cbCalled);
     }

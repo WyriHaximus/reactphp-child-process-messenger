@@ -12,6 +12,10 @@ class ReturnChild implements ChildInterface
      */
     protected $ran = false;
 
+    /**
+     * @param Messenger     $messenger
+     * @param LoopInterface $loop
+     */
     protected function __construct(Messenger $messenger, LoopInterface $loop)
     {
         $messenger->registerRpc('return', function (Payload $payload) {
@@ -20,6 +24,10 @@ class ReturnChild implements ChildInterface
         $this->ran = true;
     }
 
+    /**
+     * @param Messenger     $messenger
+     * @param LoopInterface $loop
+     */
     public static function create(Messenger $messenger, LoopInterface $loop)
     {
         new static($messenger, $loop);

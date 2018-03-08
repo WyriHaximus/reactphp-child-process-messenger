@@ -11,13 +11,14 @@ use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
 $loop = EventLoopFactory::create();
 
-MessengerFactory::parentFromClass('WyriHaximus\React\ChildProcess\Messenger\ReturnChild', $loop)->then(function (Messenger $messenger) use ($loop) {
+MessengerFactory::parentFromClass('WyriHaximus\React\ChildProcess\Messenger\ReturnChild', $loop)->done(function (Messenger $messenger) use ($loop) {
     $messenger->on('error', function ($e) {
         echo 'Error: ', var_export($e, true), PHP_EOL;
     });
 
     $i = 0;
     $loop->addPeriodicTimer(1, function (Timer $timer) use (&$i, $messenger) {
+        echo 'tick', PHP_EOL;
         if ($i >= 13) {
             $timer->cancel();
             $messenger->softTerminate();

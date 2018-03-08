@@ -2,6 +2,9 @@
 
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
+use Exception;
+use Throwable;
+
 class RpcError implements \JsonSerializable, ActionableMessageInterface
 {
     /**
@@ -10,22 +13,22 @@ class RpcError implements \JsonSerializable, ActionableMessageInterface
     protected $uniqid;
 
     /**
-     * @var Payload
+     * @var Exception|Throwable
      */
     protected $payload;
 
     /**
-     * @param string  $uniqid
-     * @param Payload $payload
+     * @param string              $uniqid
+     * @param Exception|Throwable $payload
      */
-    public function __construct($uniqid, Payload $payload)
+    public function __construct($uniqid, $payload)
     {
         $this->uniqid = $uniqid;
         $this->payload = $payload;
     }
 
     /**
-     * @return Payload
+     * @return Exception|Throwable
      */
     public function getPayload()
     {
@@ -40,7 +43,7 @@ class RpcError implements \JsonSerializable, ActionableMessageInterface
         return [
             'type' => 'rpc_error',
             'uniqid' => $this->uniqid,
-            'payload' => $this->payload,
+            'payload' => \WyriHaximus\throwable_encode($this->payload),
         ];
     }
 

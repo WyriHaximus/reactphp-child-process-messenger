@@ -7,7 +7,7 @@ use WyriHaximus\React\ChildProcess\Messenger\Factory as MessengerFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessagesFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 
-class Process
+final class Process
 {
     /**
      * @var LoopInterface

@@ -1,4 +1,5 @@
 # ChildProcessMessenger
+
 [![Linux Build Status](https://travis-ci.org/WyriHaximus/reactphp-child-process-messenger.png)](https://travis-ci.org/WyriHaximus/reactphp-child-process-messenger)
 [![Windows Build status](https://ci.appveyor.com/api/projects/status/1sfdh9g2pvbuw4pp?svg=true)](https://ci.appveyor.com/project/WyriHaximus/reactphp-child-process-messenger)
 [![Latest Stable Version](https://poser.pugx.org/WyriHaximus/react-child-process-messenger/v/stable.png)](https://packagist.org/packages/WyriHaximus/react-child-process-messenger)
@@ -49,7 +50,7 @@ MessengerFactory::parentFromClass('ExampleChild', $loop)->then(function (Messeng
 
 ## More Examples ##
 
-For both message and RPC examples seee the [examples](https://github.com/WyriHaximus/reactphp-child-process-messenger/tree/master/examples) directory
+For both message and RPC examples see the [examples](https://github.com/WyriHaximus/reactphp-child-process-messenger/tree/master/examples) directory
 
 ## Contributing ##
 

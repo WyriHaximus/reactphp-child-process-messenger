@@ -2,7 +2,6 @@
 
 require dirname(dirname(__DIR__)) . '/vendor/autoload.php';
 
-use React\ChildProcess\Process;
 use React\EventLoop\Factory as EventLoopFactory;
 use React\EventLoop\Timer\Timer;
 use WyriHaximus\React\ChildProcess\Messenger\Factory as MessengerFactory;
@@ -12,9 +11,7 @@ use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
 $loop = EventLoopFactory::create();
 
-$process = new Process('exec php ' . dirname(dirname(__DIR__)) . '/examples/messages/pong.php');
-
-MessengerFactory::parent($process, $loop)->then(function (Messenger $messenger) use ($loop) {
+MessengerFactory::parentFromClass(ExamplesChildProcess::class, $loop)->then(function (Messenger $messenger) use ($loop) {
     $messenger->on('message', function (Payload $payload) {
         echo $payload['time'], PHP_EOL;
     });
@@ -27,7 +24,7 @@ MessengerFactory::parent($process, $loop)->then(function (Messenger $messenger) 
     $loop->addPeriodicTimer(0.001, function (Timer $timer) use (&$i, $messenger) {
         if ($i >= 1300000) {
             $timer->cancel();
-            $messenger->terminate();
+            $messenger->softTerminate();
 
             return;
         }
