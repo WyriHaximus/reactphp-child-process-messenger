@@ -2,7 +2,6 @@
 
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
-use Phake;
 use PHPUnit\Framework\TestCase;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Message;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
@@ -20,10 +19,9 @@ class MessageTest extends TestCase
 
         $this->assertEquals('{"type":"message","payload":{"foo":"bar"}}', json_encode($message));
 
-        $em = Phake::mock('Evenement\EventEmitter');
+        $em = $this->prophesize('Evenement\EventEmitter');
+        $em->emit('message', [$payload, $em])->shouldBeCalled();
 
-        $message->handle($em, '');
-
-        Phake::verify($em)->emit('message', [$payload, $em]);
+        $message->handle($em->reveal(), '');
     }
 }

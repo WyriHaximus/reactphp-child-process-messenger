@@ -2,7 +2,6 @@
 
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
-use Phake;
 use PHPUnit\Framework\TestCase;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Error;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
@@ -20,10 +19,9 @@ class ErrorTest extends TestCase
 
         $this->assertEquals('{"type":"error","payload":{"foo":"bar"}}', json_encode($message));
 
-        $em = Phake::mock('Evenement\EventEmitter');
+        $em = $this->prophesize('Evenement\EventEmitter');
+        $em->emit('error', [$payload, $em])->shouldBeCalled();
 
-        $message->handle($em, '');
-
-        Phake::verify($em)->emit('error', [$payload, $em]);
+        $message->handle($em->reveal(), '');
     }
 }

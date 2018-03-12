@@ -2,55 +2,18 @@
 
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 
-use Phake;
 use PHPUnit\Framework\TestCase;
-use WyriHaximus\React\ChildProcess\Messenger\Factory;
-use WyriHaximus\React\ChildProcess\Messenger\Messages\Error;
-use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
+use Prophecy\Argument;
 use WyriHaximus\React\ChildProcess\Messenger\Process;
 
 class ProcessTest extends TestCase
 {
     public function testProcess()
     {
-        $loop = Phake::mock('React\EventLoop\LoopInterface');
-        Phake::when($loop)->futureTick($this->isType('callable'))->thenGetReturnByLambda(function ($callable) {
-            $callable();
-        });
+        $loop = $this->prophesize('React\EventLoop\LoopInterface');
+        $messenger = $this->prophesize('WyriHaximus\React\ChildProcess\Messenger\Messenger');
+        $messenger->registerRpc(Argument::type('string'), Argument::type('callable'))->shouldBeCalled();
 
-        $messenger = Phake::mock('WyriHaximus\React\ChildProcess\Messenger\Messenger');
-        Phake::when($messenger)->registerRpc(Factory::PROCESS_REGISTER, $this->isType('callable'))->thenGetReturnByLambda(function ($rpcName, $callable) {
-            $callable(new Payload([
-                'className' => 'WyriHaximus\React\ChildProcess\Messenger\ReturnChild',
-            ]));
-        });
-        Process::create($loop, $messenger);
-
-        Phake::verify($messenger)->registerRpc('return', $this->isType('callable'));
-        Phake::verify($messenger)->deregisterRpc(Factory::PROCESS_REGISTER);
-    }
-
-    public function testProcessException()
-    {
-        $loop = Phake::mock('React\EventLoop\LoopInterface');
-        Phake::when($loop)->addTimer(1, $this->isType('callable'))->thenGetReturnByLambda(function ($int, $callable) {
-            $callable();
-        });
-
-        $messenger = Phake::mock('WyriHaximus\React\ChildProcess\Messenger\Messenger');
-        Phake::when($messenger)->registerRpc(Factory::PROCESS_REGISTER, $this->isType('callable'))->thenGetReturnByLambda(function ($rpcName, $callable) {
-            $callable(new Payload([
-                'className' => 'stdClass',
-            ]));
-        });
-        Phake::when($messenger)->error($this->isInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\Error'))->thenGetReturnByLambda(function (Error $error) {
-            $this->assertSame([
-                'message' => 'Given class doesn\'t implement ChildInterface',
-                'code' => 0,
-                'line' => 35,
-                'file' => dirname(__DIR__) . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . 'Process.php',
-            ], $error->getPayload());
-        });
-        Process::create($loop, $messenger);
+        Process::create($loop->reveal(), $messenger->reveal());
     }
 }

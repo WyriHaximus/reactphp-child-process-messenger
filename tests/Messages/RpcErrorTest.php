@@ -2,7 +2,6 @@
 
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
-use Phake;
 use PHPUnit\Framework\TestCase;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\RpcError;
@@ -23,15 +22,10 @@ class RpcErrorTest extends TestCase
             json_encode($message)
         );
 
-        $outstandingCall = Phake::mock('WyriHaximus\React\ChildProcess\Messenger\OutstandingCall');
-        $messenger = Phake::mock('WyriHaximus\React\ChildProcess\Messenger\Messenger');
-        Phake::when($messenger)->getOutstandingCall('abc')->thenReturn($outstandingCall);
+        $outstandingCall = $this->prophesize('WyriHaximus\React\ChildProcess\Messenger\OutstandingCall');
+        $messenger = $this->prophesize('WyriHaximus\React\ChildProcess\Messenger\Messenger');
+        $messenger->getOutstandingCall('abc')->shouldBeCalled()->wilLReturn($outstandingCall->reveal());
 
-        $message->handle($messenger, '');
-
-        Phake::inOrder(
-            Phake::verify($messenger)->getOutstandingCall('abc'),
-            Phake::verify($outstandingCall)->reject($payload)
-        );
+        $message->handle($messenger->reveal(), '');
     }
 }

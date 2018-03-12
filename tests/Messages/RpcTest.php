@@ -2,9 +2,8 @@
 
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
-use Phake;
 use PHPUnit\Framework\TestCase;
-use React\Promise\RejectedPromise;
+use Prophecy\Argument;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc;
 
@@ -30,15 +29,15 @@ class RpcTest extends TestCase
         ]);
         $message = new Rpc('foo', $payload, 'bar');
 
-        $messenger = Phake::mock('WyriHaximus\React\ChildProcess\Messenger\Messenger');
-        Phake::when($messenger)->hasRpc('foo')->thenReturn(false);
-        Phake::when($messenger)->createLine($this->isInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcError'))->thenReturn('');
+        $messenger = $this->prophesize('WyriHaximus\React\ChildProcess\Messenger\Messenger');
+        $messenger->write('')->shouldBeCalled();
+        $messenger->hasRpc('foo')->shouldBeCalled()->willReturn(true);
+        $messenger->createLine(Argument::type('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcError'))->shouldBeCalled()->willReturn('');
+        $messenger->callRpc('foo', $payload)->shouldBeCalled()->willReturn(\React\Promise\reject([
+            'foo' => 'bar',
+        ]));
 
-        $message->handle($messenger, '');
-
-        Phake::inOrder(
-            Phake::verify($messenger)->hasRpc('foo')
-        );
+        $message->handle($messenger->reveal(), '');
     }
 
     public function testSuccess()
@@ -48,28 +47,17 @@ class RpcTest extends TestCase
         ]);
         $message = new Rpc('foo', $payload, 'bar');
 
-        $messenger = Phake::mock('WyriHaximus\React\ChildProcess\Messenger\Messenger');
-        Phake::when($messenger)->hasRpc('foo')->thenReturn(true);
-        Phake::when($messenger)->createLine($this->isInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcSuccess'))->thenReturn('');
-        $callbackFired = false;
-        Phake::when($messenger)->callRpc('foo', $payload)->thenGetReturnByLambda(function ($target, $payload) use (&$callbackFired) {
-            $callbackFired = true;
+        $messenger = $this->prophesize('WyriHaximus\React\ChildProcess\Messenger\Messenger');
+        $messenger->write('')->shouldBeCalled();
+        $messenger->hasRpc('foo')->shouldBeCalled()->willReturn(true);
+        $messenger->createLine(Argument::type('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcSuccess'))->shouldBeCalled()->willReturn('');
+        $messenger->callRpc('foo', $payload)->shouldBeCalled()->willReturn(\React\Promise\resolve([
+            'a',
+            'b',
+            'c',
+        ]));
 
-            return \React\Promise\resolve([
-                'a',
-                'b',
-                'c',
-            ]);
-        });
-
-        $message->handle($messenger, '');
-
-        $this->assertTrue($callbackFired);
-
-        Phake::inOrder(
-            Phake::verify($messenger)->hasRpc('foo'),
-            Phake::verify($messenger)->createLine($this->isInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcSuccess'))
-        );
+        $message->handle($messenger->reveal(), '');
     }
 
     public function testError()
@@ -79,52 +67,12 @@ class RpcTest extends TestCase
         ]);
         $message = new Rpc('foo', $payload, 'bar');
 
-        $messenger = Phake::mock('WyriHaximus\React\ChildProcess\Messenger\Messenger');
-        Phake::when($messenger)->hasRpc('foo')->thenReturn(true);
-        Phake::when($messenger)->createLine($this->isInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcError'))->thenReturn('');
-        Phake::when($messenger)->callRpc('foo', $payload)->thenReturn(new RejectedPromise(new \Exception()));
+        $messenger = $this->prophesize('WyriHaximus\React\ChildProcess\Messenger\Messenger');
+        $messenger->write('')->shouldBeCalled();
+        $messenger->hasRpc('foo')->shouldBeCalled()->willReturn(true);
+        $messenger->createLine(Argument::type('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcError'))->shouldBeCalled()->willReturn('');
+        $messenger->callRpc('foo', $payload)->shouldBeCalled()->willReturn(\React\Promise\reject(new \Exception()));
 
-        $message->handle($messenger, '');
-
-        Phake::inOrder(
-            Phake::verify($messenger)->hasRpc('foo'),
-            Phake::verify($messenger)->createLine($this->isInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcError'))
-        );
-    }
-
-    public function testNotify()
-    {
-        $payload = new Payload([
-            'foo' => 'bar',
-        ]);
-        $message = new Rpc('foo', $payload, 'bar');
-
-        $messenger = Phake::mock('WyriHaximus\React\ChildProcess\Messenger\Messenger');
-        Phake::when($messenger)->hasRpc('foo')->thenReturn(true);
-        Phake::when($messenger)->createLine($this->isInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcNotify'))->thenReturn('');
-        $callbackFired = false;
-        Phake::when($messenger)->callRpc('foo', $payload)->thenGetReturnByLambda(function ($target, $payload) use (&$callbackFired) {
-            $callbackFired = true;
-            $promise = Phake::partialMock('React\Promise\Promise', function () {
-            });
-            Phake::when($promise)->done($this->isType('callable'), $this->isType('callable'), $this->isType('callable'))->thenGetReturnByLambda(function ($yes, $no, $notify) {
-                return $notify([
-                    'a',
-                    'b',
-                    'c',
-                ]);
-            });
-
-            return $promise;
-        });
-
-        $message->handle($messenger, '');
-
-        $this->assertTrue($callbackFired);
-
-        Phake::inOrder(
-            Phake::verify($messenger)->hasRpc('foo'),
-            Phake::verify($messenger)->createLine($this->isInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcNotify'))
-        );
+        $message->handle($messenger->reveal(), '');
     }
 }

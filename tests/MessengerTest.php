@@ -2,9 +2,8 @@
 
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 
-use Phake;
 use PHPUnit\Framework\TestCase;
-use WyriHaximus\React\ChildProcess\Messenger\Messages\Line;
+use Prophecy\Argument;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 use WyriHaximus\React\Tests\ChildProcess\Messenger\Stub\ConnectionStub;
 
@@ -12,8 +11,9 @@ class MessengerTest extends TestCase
 {
     public function testSetAndHasRpc()
     {
-        $connection = Phake::mock('React\Socket\ConnectionInterface');
-        $messenger = new Messenger($connection);
+        $connection = $this->prophesize('React\Socket\ConnectionInterface');
+        $connection->on('data', Argument::type('callable'))->shouldBeCalled();
+        $messenger = new Messenger($connection->reveal());
 
         $payload = [
             'a',
@@ -40,52 +40,41 @@ class MessengerTest extends TestCase
 
     public function testMessage()
     {
-        $connection = Phake::mock('React\Socket\ConnectionInterface');
+        $connection = $this->prophesize('React\Socket\ConnectionInterface');
+        $connection->on('data', Argument::type('callable'))->shouldBeCalled();
+        $connection->write(Argument::type('string'))->shouldBeCalled();
 
-        $messenger = new Messenger($connection);
+        $messenger = new Messenger($connection->reveal());
 
         $messenger->message(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::message([
             'foo' => 'bar',
         ]));
-
-        Phake::verify($connection)->write($this->isType('string'));
     }
 
     public function testError()
     {
-        $connection = Phake::mock('React\Socket\ConnectionInterface');
+        $connection = $this->prophesize('React\Socket\ConnectionInterface');
+        $connection->on('data', Argument::type('callable'))->shouldBeCalled();
+        $connection->write(Argument::type('string'))->shouldBeCalled();
 
-        $messenger = new Messenger($connection);
+        $messenger = new Messenger($connection->reveal());
 
         $messenger->error(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::error([
             'foo' => 'bar',
         ]));
-
-        Phake::verify($connection)->write($this->isType('string'));
     }
 
     public function testRpc()
     {
-        $connection = Phake::mock('React\Socket\ConnectionInterface');
+        $connection = $this->prophesize('React\Socket\ConnectionInterface');
+        $connection->on('data', Argument::type('callable'))->shouldBeCalled();
+        $connection->write(Argument::type('string'))->shouldBeCalled();
 
-        $messenger = new Messenger($connection);
+        $messenger = new Messenger($connection->reveal());
 
         $messenger->rpc(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::rpc('target', [
             'foo' => 'bar',
         ]));
-
-        Phake::verify($connection)->write($this->isType('string'));
-    }
-
-    public function testOnData()
-    {
-        $connection = Phake::mock('React\Socket\ConnectionInterface');
-
-        Phake::when($connection)->on('data', $this->isType('callable'))->thenGetReturnByLambda(function ($target, $callback) {
-            $callback((string)new Line(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::message([]), []));
-        });
-
-        new Messenger($connection);
     }
 
     public function testEmitOnData()

@@ -2,11 +2,8 @@
 
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 
-use Clue\React\Block;
-use Phake;
 use PHPUnit\Framework\TestCase;
 use React\EventLoop\Factory as EventLoopFactory;
-use React\Socket\Server;
 use WyriHaximus\React\ChildProcess\Messenger\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
@@ -26,23 +23,12 @@ class FactoryTest extends TestCase
     public function setUp()
     {
         $this->loop = EventLoopFactory::create();
-        $this->process = Phake::mock('React\ChildProcess\Process');
+        $this->process = $this->prophesize('React\ChildProcess\Process')->reveal();
     }
 
     public function tearDown()
     {
         unset($this->process, $this->loop);
-    }
-
-    public function _testChild()
-    {
-        $server = new Server(0, $this->loop);
-        $messenger = Block\await(Factory::child($this->loop, [
-            'address' => $server->getAddress(),
-            'random' => bin2hex(random_bytes(512)),
-        ]), $this->loop);
-        $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messenger', $messenger);
-        $messenger->callRpc('wyrihaximus.react.child-process.messenger.terminate', new Payload([]));
     }
 
     /**
@@ -51,7 +37,7 @@ class FactoryTest extends TestCase
      */
     public function testParentFromClassException()
     {
-        Factory::parentFromClass('stdClass', Phake::mock('React\EventLoop\LoopInterface'));
+        Factory::parentFromClass('stdClass', $this->prophesize('React\EventLoop\LoopInterface')->reveal());
     }
 
     public function testParentFromClassActualRun()
