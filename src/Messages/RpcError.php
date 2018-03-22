@@ -43,7 +43,7 @@ class RpcError implements \JsonSerializable, ActionableMessageInterface
         return [
             'type' => 'rpc_error',
             'uniqid' => $this->uniqid,
-            'payload' => \WyriHaximus\throwable_encode($this->payload),
+            'payload' => LineEncoder::encode($this->payload),
         ];
     }
 

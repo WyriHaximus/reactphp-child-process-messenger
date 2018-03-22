@@ -11,6 +11,7 @@
     ],
     "require": {
         "php": "^5.4||^7.0",
+        "cakephp/utility": "^3.4",
         "doctrine/inflector": "^1.0",
         "evenement/evenement": "^3.0 || ^2.0 || ^1.0",
         "indigophp/hash-compat": "^1.0",

@@ -4,6 +4,7 @@ namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
 use PHPUnit\Framework\TestCase;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\LineEncoder;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\LineInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 
@@ -30,7 +31,7 @@ class FactoryTest extends TestCase
                 },
             ],
             [
-                '{"type":"error","payload":' . \WyriHaximus\throwable_json_encode($exception) . '}' . LineInterface::EOL,
+                '{"type":"error","payload":' . json_encode(LineEncoder::encode($exception)) . '}' . LineInterface::EOL,
                 function ($message) use ($exception) {
                     $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\Error', $message);
                     $this->assertInstanceOf('Exception', $message->getPayload());
@@ -58,14 +59,14 @@ class FactoryTest extends TestCase
                 },
             ],
             [
-                '{"type":"rpc_error","uniqid":"abc","payload":' . \WyriHaximus\throwable_json_encode($exception) . '}' . LineInterface::EOL,
+                '{"type":"rpc_error","uniqid":"abc","payload":' . json_encode(LineEncoder::encode($exception)) . '}' . LineInterface::EOL,
                 function ($message) use ($exception) {
                     $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcError', $message);
                     $this->assertInstanceOf('Exception', $message->getPayload());
                     $this->assertEquals([
                         'type' => 'rpc_error',
                         'uniqid' => 'abc',
-                        'payload' => \WyriHaximus\throwable_encode($exception),
+                        'payload' => LineEncoder::encode($exception),
                     ], $message->jsonSerialize());
 
                     return true;

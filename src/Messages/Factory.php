@@ -122,7 +122,7 @@ class Factory
      */
     protected static function errorFromLine(array $line)
     {
-        return static::error(\WyriHaximus\throwable_decode($line['payload']));
+        return static::error(LineDecoder::decode($line['payload']));
     }
 
     /**
@@ -142,7 +142,7 @@ class Factory
      */
     protected static function rpcErrorFromLine(array $line)
     {
-        return static::rpcError($line['uniqid'], \WyriHaximus\throwable_decode($line['payload']));
+        return static::rpcError($line['uniqid'], LineDecoder::decode($line['payload']));
     }
 
     /**
