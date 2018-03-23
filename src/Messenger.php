@@ -69,6 +69,18 @@ class Messenger extends EventEmitter
             $this->emit('data', [$data]);
             $this->handleData();
         });
+        $this->connection->on('close', function () {
+            $calls = $this->outstandingRpcCalls->getCalls();
+            if (count($calls) === 0) {
+                return;
+            }
+            $error = new CommunicationWithProcessUnexpectedEndException();
+            $this->emit('error', [$error, $this]);
+            /** @var OutstandingCall $call */
+            foreach ($calls as $call) {
+                $call->reject($error);
+            }
+        });
     }
 
     /**
@@ -182,6 +194,15 @@ class Messenger extends EventEmitter
     public function write($line)
     {
         $this->connection->write($line);
+    }
+
+    /**
+     * @param int|null $exitCode
+     * @internal
+     */
+    public function crashed($exitCode)
+    {
+        $this->emit('error', [new ProcessUnexpectedEndException($exitCode), $this]);
     }
 
     private function handleData()

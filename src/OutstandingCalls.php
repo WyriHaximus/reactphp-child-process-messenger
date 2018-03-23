@@ -35,6 +35,14 @@ class OutstandingCalls
     }
 
     /**
+     * @return array
+     */
+    public function getCalls()
+    {
+        return array_values($this->calls);
+    }
+
+    /**
      * @return string
      */
     protected function getNewUniqid()

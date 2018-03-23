@@ -80,6 +80,7 @@ script:
   - if [ "$qaExtended" = "true" ]; then make ci-extended; fi;
   - php benchmark/memory.php
   - php examples/error/error.php
+  - php examples/overflow/overflow.php
 
 ## Gather coverage and set it to coverage servers
 after_script: if [ "$qaExtended" = "true" ]; then make ci-coverage; fi;

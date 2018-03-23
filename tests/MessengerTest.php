@@ -4,6 +4,7 @@ namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 
 use PHPUnit\Framework\TestCase;
 use Prophecy\Argument;
+use React\EventLoop\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 use WyriHaximus\React\Tests\ChildProcess\Messenger\Stub\ConnectionStub;
 
@@ -13,6 +14,7 @@ class MessengerTest extends TestCase
     {
         $connection = $this->prophesize('React\Socket\ConnectionInterface');
         $connection->on('data', Argument::type('callable'))->shouldBeCalled();
+        $connection->on('close', Argument::type('callable'))->shouldBeCalled();
         $messenger = new Messenger($connection->reveal());
 
         $payload = [
@@ -42,6 +44,7 @@ class MessengerTest extends TestCase
     {
         $connection = $this->prophesize('React\Socket\ConnectionInterface');
         $connection->on('data', Argument::type('callable'))->shouldBeCalled();
+        $connection->on('close', Argument::type('callable'))->shouldBeCalled();
         $connection->write(Argument::type('string'))->shouldBeCalled();
 
         $messenger = new Messenger($connection->reveal());
@@ -55,6 +58,7 @@ class MessengerTest extends TestCase
     {
         $connection = $this->prophesize('React\Socket\ConnectionInterface');
         $connection->on('data', Argument::type('callable'))->shouldBeCalled();
+        $connection->on('close', Argument::type('callable'))->shouldBeCalled();
         $connection->write(Argument::type('string'))->shouldBeCalled();
 
         $messenger = new Messenger($connection->reveal());
@@ -68,6 +72,7 @@ class MessengerTest extends TestCase
     {
         $connection = $this->prophesize('React\Socket\ConnectionInterface');
         $connection->on('data', Argument::type('callable'))->shouldBeCalled();
+        $connection->on('close', Argument::type('callable'))->shouldBeCalled();
         $connection->write(Argument::type('string'))->shouldBeCalled();
 
         $messenger = new Messenger($connection->reveal());
@@ -90,5 +95,20 @@ class MessengerTest extends TestCase
         $connection->emit('data', ['bar.foo']);
 
         $this->assertTrue($cbCalled);
+    }
+
+    public function testCrashed()
+    {
+        $this->setExpectedException('WyriHaximus\React\ChildProcess\Messenger\ProcessUnexpectedEndException');
+
+        $loop = Factory::create();
+        $connection = new ConnectionStub();
+
+        $messenger = new Messenger($connection);
+        $loop->futureTick(function () use ($messenger) {
+            $messenger->crashed(123);
+        });
+
+        throw \Clue\React\Block\await(\React\Promise\Stream\first($messenger, 'error'), $loop);
     }
 }

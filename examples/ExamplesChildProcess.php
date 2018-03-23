@@ -29,6 +29,14 @@ final class ExamplesChildProcess implements ChildInterface
                 'formattedTime' => (new DateTime('@' . $payload['unixTime']))->format('c'),
             ]);
         });
+        $messenger->registerRpc('overflow', function () {
+            ini_set('memory_limit', '20M');
+
+            $string = '';
+            while (true) {
+                $string .= '0123456789';
+            }
+        });
     }
 
     public static function isPrime($n)

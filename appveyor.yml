@@ -74,3 +74,4 @@ test_script:
     - vendor/bin/phpunit -c phpunit.xml.dist
     - php benchmark/memory.php
     - php example/error/error.php
+    - php example/overflow/overflow.php

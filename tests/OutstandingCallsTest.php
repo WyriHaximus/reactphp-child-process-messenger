@@ -12,6 +12,7 @@ class OutstandingCallsTest extends TestCase
         $oc = new OutstandingCalls();
         $call = $oc->newCall();
         $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\OutstandingCall', $call);
+        $this->assertEquals([$call], $oc->getCalls());
         $this->assertEquals($call, $oc->getCall($call->getUniqid()));
     }
 }

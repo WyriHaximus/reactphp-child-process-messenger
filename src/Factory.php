@@ -137,7 +137,7 @@ final class Factory
         LoopInterface $loop,
         array $options
     ) {
-        return new Promise\Promise(function ($resolve, $reject) use ($process, $server, $loop, $options) {
+        return (new Promise\Promise(function ($resolve, $reject) use ($process, $server, $loop, $options) {
             $server->on(
                 'connection',
                 function (ConnectionInterface $connection) use ($server, $resolve, $reject, $options) {
@@ -162,6 +162,21 @@ final class Factory
             });
 
             $process->start($loop);
+        }))->then(function (Messenger $messenger) use ($loop, $process) {
+            $loop->addPeriodicTimer(self::INTERVAL, function ($timer) use ($messenger, $loop, $process) {
+                if (!$process->isRunning()) {
+                    $loop->cancelTimer($timer);
+
+                    $exitCode = $process->getExitCode();
+                    if ($exitCode === 0) {
+                        return;
+                    }
+
+                    $messenger->crashed($exitCode);
+                }
+            });
+
+            return $messenger;
         });
     }
 }
