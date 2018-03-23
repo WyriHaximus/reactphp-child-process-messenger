@@ -10,7 +10,7 @@ use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
 $loop = Factory::create();
 
-MessengerFactory::parentFromClass(ExamplesChildProcess::class, $loop)->then(function (Messenger $messenger) {
+MessengerFactory::parentFromClass('\ExamplesChildProcess', $loop)->then(function (Messenger $messenger) {
     return $messenger->rpc(
         MessageFactory::rpc('overflow')
     )->always(function () use ($messenger) {
