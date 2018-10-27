@@ -94,7 +94,6 @@ final class Factory
         $connectTimeout = isset($options['connect-timeout']) ? $options['connect-timeout'] : 5;
         return (new Connector($loop, ['timeout' => $connectTimeout]))->connect($options['address'])->then(function (ConnectionInterface $connection) use ($options, $loop, $connectTimeout) {
             return new Promise\Promise(function ($resolve, $reject) use ($connection, $options, $loop, $connectTimeout) {
-                $connection->write(hash_hmac('sha512', $options['address'], $options['random']) . PHP_EOL);
                 Promise\Timer\timeout(Promise\Stream\first($connection), $connectTimeout, $loop)->then(function ($chunk) use ($resolve, $connection, $options) {
                     list($confirmation) = explode(PHP_EOL, $chunk);
                     if ($confirmation === 'syn') {
@@ -102,6 +101,7 @@ final class Factory
                         $resolve(new Messenger($connection, $options));
                     }
                 }, $reject);
+                $connection->write(hash_hmac('sha512', $options['address'], $options['random']) . PHP_EOL);
             });
         })->then(function (Messenger $messenger) use ($loop, $termiteCallable) {
             if ($termiteCallable === null) {
