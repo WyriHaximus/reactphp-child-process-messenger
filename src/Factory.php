@@ -93,7 +93,6 @@ final class Factory
     {
         return (new Connector($loop))->connect($options['address'])->then(function (ConnectionInterface $connection) use ($options) {
             return new Promise\Promise(function ($resolve, $reject) use ($connection, $options) {
-                $connection->write(hash_hmac('sha512', $options['address'], $options['random']) . PHP_EOL);
                 Promise\Stream\first($connection)->then(function ($chunk) use ($resolve, $connection, $options) {
                     list($confirmation) = explode(PHP_EOL, $chunk);
                     if ($confirmation === 'syn') {
@@ -101,6 +100,7 @@ final class Factory
                         $resolve(new Messenger($connection, $options));
                     }
                 });
+                $connection->write(hash_hmac('sha512', $options['address'], $options['random']) . PHP_EOL);
             });
         })->then(function (Messenger $messenger) use ($loop, $termiteCallable) {
             if ($termiteCallable === null) {
