@@ -92,6 +92,7 @@ final class Factory
     public static function child(LoopInterface $loop, array $options = [], callable $termiteCallable = null)
     {
         $connectTimeout = isset($options['connect-timeout']) ? $options['connect-timeout'] : 5;
+
         return (new Connector($loop, ['timeout' => $connectTimeout]))->connect($options['address'])->then(function (ConnectionInterface $connection) use ($options, $loop, $connectTimeout) {
             return new Promise\Promise(function ($resolve, $reject) use ($connection, $options, $loop, $connectTimeout) {
                 Promise\Timer\timeout(Promise\Stream\first($connection), $connectTimeout, $loop)->then(function ($chunk) use ($resolve, $connection, $options) {

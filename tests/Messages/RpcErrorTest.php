@@ -4,7 +4,6 @@ namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
 use PHPUnit\Framework\TestCase;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\LineEncoder;
-use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\RpcError;
 
 class RpcErrorTest extends TestCase
