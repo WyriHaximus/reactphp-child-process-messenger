@@ -24,5 +24,7 @@ if (isset($argv[1])) {
 $loop = LoopFactory::create();
 MessengerFactory::child($loop, ArgvEncoder::decode($arguments))->done(function (Messenger $messenger) use ($loop) {
     Process::create($loop, $messenger);
+}, function () use ($loop) {
+    $loop->stop();
 });
 $loop->run();
