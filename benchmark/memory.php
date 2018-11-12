@@ -36,7 +36,7 @@ MessengerFactory::parentFromClass('WyriHaximus\React\ChildProcess\Messenger\Retu
     $i = 0;
     $loop->addPeriodicTimer(0.0001, function (Timer $timer) use (&$i, $messenger, $loop) {
         if ($i >= I) {
-            $timer->cancel();
+            $loop->cancelTimer($timer);
             $messenger->softTerminate();
 
             show_memory('Completed messaging');
@@ -65,6 +65,6 @@ $loop = null;
 
 show_memory('Removed loop');
 
-gc_collect_cycles();
+$cycles = gc_collect_cycles();
 
-show_memory('gc_collect_cycles');
+show_memory('gc_collect_cycles: ' . $cycles);
