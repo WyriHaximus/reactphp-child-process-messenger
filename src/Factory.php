@@ -36,10 +36,9 @@ final class Factory
     }
 
     /**
-     * @param  string                              $process
+     * @param  string                              $class
      * @param  LoopInterface                       $loop
      * @param  array                               $options
-     * @param  mixed                               $class
      * @return Promise\PromiseInterface<Messenger>
      */
     public static function parentFromClass(
@@ -66,14 +65,27 @@ final class Factory
             $childProcessPath = \escapeshellarg(__DIR__ . DIRECTORY_SEPARATOR . 'child-process.php');
             $argvString = \escapeshellarg(ArgvEncoder::encode($options));
             $command = $phpBinary . ' ' . $childProcessPath;
+            $fds = [];
+            foreach (scandir('/proc/self/fd', SCANDIR_SORT_NONE) as $id) {
+                if (!in_array($id, ['.', '..'], true)) {
+                    $fds[(int)$id] = ['file', '/dev/null', 'r'];
+                }
+            }
+
             $process = new Process(
                 sprintf(
                     $template,
                     $command . ' ' . $argvString
-                )
+                ),
+                null,
+                null,
+                $fds
             );
 
-            self::startParent($process, $server, $loop, $options)->then(function (Messenger $messenger) use ($class) {
+            $connectTimeout = isset($options['connect-timeout']) ? $options['connect-timeout'] : 5;
+            \WyriHaximus\React\futurePromise($loop)->then(function () use ($process, $server, $loop, $options, $connectTimeout) {
+                return Promise\Timer\timeout(self::startParent($process, $server, $loop, $options), $connectTimeout, $loop);
+            })->then(function (Messenger $messenger) use ($class) {
                 return $messenger->rpc(MessengesFactory::rpc(Factory::PROCESS_REGISTER, [
                     'className' => $class,
                 ]))->then(function ($p) use ($messenger) {
@@ -142,21 +154,24 @@ final class Factory
         return (new Promise\Promise(function ($resolve, $reject) use ($process, $server, $loop, $options) {
             $server->on(
                 'connection',
-                function (ConnectionInterface $connection) use ($server, $resolve, $reject, $options) {
-                    Promise\Stream\first($connection)->then(function ($chunk) use ($server, $options, $connection, $resolve) {
+                function (ConnectionInterface $connection) use ($server, $resolve, $reject, $options, $loop) {
+                    Promise\Stream\first($connection)->then(function ($chunk) use ($options, $connection, $resolve) {
                         list($confirmation) = explode(PHP_EOL, $chunk);
                         if ($confirmation === hash_hmac('sha512', $options['address'], $options['random'])) {
                             $connection->write('syn' . PHP_EOL);
-                            $server->close();
 
                             return Promise\Stream\first($connection);
                         }
-                    })->then(function ($chunk) use ($options, $connection, $resolve) {
+                    })->then(function ($chunk) use ($options, $connection) {
                         list($confirmation) = explode(PHP_EOL, $chunk);
                         if ($confirmation === 'ack') {
-                            $resolve(new Messenger($connection, $options));
+                            return Promise\resolve(new Messenger($connection, $options));
                         }
-                    });
+
+                        return Promise\reject(new \RuntimeException('Handshake failed'));
+                    })->always(function () use ($server) {
+                        $server->close();
+                    })->done($resolve, $reject);
                 }
             );
             $server->on('error', function ($et) use ($reject) {
@@ -164,6 +179,9 @@ final class Factory
             });
 
             $process->start($loop);
+        }, function () use ($server, $process) {
+            $server->close();
+            $process->terminate();
         }))->then(function (Messenger $messenger) use ($loop, $process) {
             $loop->addPeriodicTimer(self::INTERVAL, function ($timer) use ($messenger, $loop, $process) {
                 if (!$process->isRunning()) {
