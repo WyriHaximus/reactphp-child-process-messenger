@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "70a0d14efc3648248db5fbab8e243321",
+    "content-hash": "5533c0f3d8e712023856d4bac36ad146",
     "packages": [
         {
             "name": "cakephp/utility",
@@ -730,6 +730,96 @@
                 "writable"
             ],
             "time": "2018-07-11T14:38:16+00:00"
+        },
+        {
+            "name": "tivie/php-os-detector",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/tivie/php-os-detector.git",
+                "reference": "9461dcd85c00e03842264f2fc8ccdc8d46867321"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/tivie/php-os-detector/zipball/9461dcd85c00e03842264f2fc8ccdc8d46867321",
+                "reference": "9461dcd85c00e03842264f2fc8ccdc8d46867321",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "4.3.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Tivie\\OS\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "APACHE 2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Estevão Soares dos Santos",
+                    "email": "estevao@soares-dos-santos.com"
+                }
+            ],
+            "description": "A small utility library that detects the OS the server is running on",
+            "homepage": "http://tivie.github.com/php-os-detector/",
+            "keywords": [
+                "detection",
+                "detector",
+                "identification",
+                "operating system",
+                "os",
+                "os detection"
+            ],
+            "time": "2017-10-21T03:33:59+00:00"
+        },
+        {
+            "name": "wyrihaximus/file-descriptors",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/WyriHaximus/php-file-descriptors.git",
+                "reference": "57b11900028fab76884c25eb3389b3f018b3affe"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/WyriHaximus/php-file-descriptors/zipball/57b11900028fab76884c25eb3389b3f018b3affe",
+                "reference": "57b11900028fab76884c25eb3389b3f018b3affe",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.2",
+                "tivie/php-os-detector": "^1.1"
+            },
+            "require-dev": {
+                "api-clients/cs-fixer-config": "^1.1",
+                "api-clients/test-utilities": "^5.2",
+                "wyrihaximus/iterator-or-array-to-array": "^1.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "WyriHaximus\\FileDescriptors\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Cees-Jan Kiewiet",
+                    "email": "ceesjank@gmail.com"
+                }
+            ],
+            "description": "List open file descriptors for the current process cross platform",
+            "time": "2018-12-06T21:49:09+00:00"
         },
         {
             "name": "wyrihaximus/json-throwable",
@@ -3104,14 +3194,16 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "wyrihaximus/file-descriptors": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
-        "php": "^5.4||^7.0"
+        "php": "^7.2"
     },
     "platform-dev": [],
     "platform-overrides": {
-        "php": "5.4"
+        "php": "7.2"
     }
 }

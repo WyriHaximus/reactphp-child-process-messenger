@@ -8,6 +8,8 @@ use React\Promise;
 use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
 use React\Socket\Server;
+use WyriHaximus\FileDescriptors\Factory as FileDescriptorsFactory;
+use WyriHaximus\FileDescriptors\ListerInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessengesFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 
@@ -61,15 +63,24 @@ final class Factory
                 unset($options['cmdTemplate']);
             }
 
+            if (isset($options['fileDescriptorLister']) && $options['fileDescriptorLister'] instanceof ListerInterface) {
+                /** @var ListerInterface $fileDescriptorLister */
+                $fileDescriptorLister = $options['fileDescriptorLister'];
+                unset($options['fileDescriptorLister']);
+            }
+
+            if (!isset($fileDescriptorLister)) {
+                /** @var ListerInterface $fileDescriptorLister */
+                $fileDescriptorLister = FileDescriptorsFactory::create();
+            }
+
             $phpBinary = \escapeshellarg(PHP_BINARY . (PHP_SAPI === 'phpdbg' ? ' -qrr --' : ''));
             $childProcessPath = \escapeshellarg(__DIR__ . DIRECTORY_SEPARATOR . 'child-process.php');
             $argvString = \escapeshellarg(ArgvEncoder::encode($options));
             $command = $phpBinary . ' ' . $childProcessPath;
             $fds = [];
-            foreach (scandir('/proc/self/fd', SCANDIR_SORT_NONE) as $id) {
-                if (!in_array($id, ['.', '..'], true)) {
-                    $fds[(int)$id] = ['file', '/dev/null', 'r'];
-                }
+            foreach ($fileDescriptorLister->list() as $id) {
+                $fds[(int)$id] = ['file', '/dev/null', 'r'];
             }
 
             $process = new Process(

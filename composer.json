@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": "^5.4||^7.0",
+        "php": "^7.2",
         "cakephp/utility": "^3.4",
         "doctrine/inflector": "^1.0",
         "evenement/evenement": "^3.0 || ^2.0 || ^1.0",
@@ -21,6 +21,7 @@
         "react/promise-stream": "^1.1",
         "react/promise-timer": "^1.5",
         "react/socket": "^1.0 || ^0.8.1",
+        "wyrihaximus/file-descriptors": "dev-master",
         "wyrihaximus/json-throwable": "^2.0 || ^1.1.1",
         "wyrihaximus/ticking-promise": "^1.4"
     },
@@ -47,7 +48,7 @@
     "config": {
         "sort-packages": true,
         "platform": {
-            "php": "5.4"
+            "php": "7.2"
         }
     },
     "scripts": {
