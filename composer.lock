@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "79912aec568632de57a04ac400e3031e",
+    "content-hash": "cea1d6b65678d0c6d1456bad02272fcf",
     "packages": [
         {
             "name": "cakephp/utility",
@@ -357,16 +357,16 @@
         },
         {
             "name": "react/child-process",
-            "version": "v0.5.2",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/child-process.git",
-                "reference": "aae49d7f1340bafb695b9af3ce4421ea41a39620"
+                "reference": "3534eccc177e14111dd16e5ba6b4a25829e09e6d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/child-process/zipball/aae49d7f1340bafb695b9af3ce4421ea41a39620",
-                "reference": "aae49d7f1340bafb695b9af3ce4421ea41a39620",
+                "url": "https://api.github.com/repos/reactphp/child-process/zipball/3534eccc177e14111dd16e5ba6b4a25829e09e6d",
+                "reference": "3534eccc177e14111dd16e5ba6b4a25829e09e6d",
                 "shasum": ""
             },
             "require": {
@@ -395,7 +395,7 @@
                 "process",
                 "reactphp"
             ],
-            "time": "2018-01-18T14:53:06+00:00"
+            "time": "2018-12-03T09:45:51+00:00"
         },
         {
             "name": "react/dns",
@@ -3192,9 +3192,17 @@
             "time": "2018-08-29T13:11:53+00:00"
         }
     ],
-    "aliases": [],
+    "aliases": [
+        {
+            "alias": "v0.5.666",
+            "alias_normalized": "0.5.666.0",
+            "version": "9999999-dev",
+            "package": "react/child-process"
+        }
+    ],
     "minimum-stability": "stable",
     "stability-flags": {
+        "react/child-process": 20,
         "wyrihaximus/file-descriptors": 20
     },
     "prefer-stable": false,
