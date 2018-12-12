@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "5533c0f3d8e712023856d4bac36ad146",
+    "content-hash": "79912aec568632de57a04ac400e3031e",
     "packages": [
         {
             "name": "cakephp/utility",
@@ -781,16 +781,16 @@
         },
         {
             "name": "wyrihaximus/file-descriptors",
-            "version": "dev-master",
+            "version": "dev-last-resort",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WyriHaximus/php-file-descriptors.git",
-                "reference": "57b11900028fab76884c25eb3389b3f018b3affe"
+                "reference": "a08b1bc1b56650f110200cff3e262ae1f41dffe1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WyriHaximus/php-file-descriptors/zipball/57b11900028fab76884c25eb3389b3f018b3affe",
-                "reference": "57b11900028fab76884c25eb3389b3f018b3affe",
+                "url": "https://api.github.com/repos/WyriHaximus/php-file-descriptors/zipball/a08b1bc1b56650f110200cff3e262ae1f41dffe1",
+                "reference": "a08b1bc1b56650f110200cff3e262ae1f41dffe1",
                 "shasum": ""
             },
             "require": {
@@ -819,7 +819,7 @@
                 }
             ],
             "description": "List open file descriptors for the current process cross platform",
-            "time": "2018-12-06T21:49:09+00:00"
+            "time": "2018-12-12T16:26:25+00:00"
         },
         {
             "name": "wyrihaximus/json-throwable",
