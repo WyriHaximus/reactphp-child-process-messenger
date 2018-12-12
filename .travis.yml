@@ -16,6 +16,7 @@ matrix:
         - qaExtended=true
     - php: 7.1
     - php: 7.2
+    - php: 7.3
     - php: nightly
       env:
         - dropPlatform=false
@@ -37,6 +38,9 @@ matrix:
     - php: 7.2
       env:
         - dependencies=lowest
+    - php: 7.3
+      env:
+        - dependencies=lowest
     - php: nightly
       env:
         - dependencies=lowest
@@ -57,6 +61,9 @@ matrix:
       env:
         - dependencies=highest
     - php: 7.2
+      env:
+        - dependencies=highest
+    - php: 7.3
       env:
         - dependencies=highest
     - php: nightly
