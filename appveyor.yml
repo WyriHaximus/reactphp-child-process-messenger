@@ -77,7 +77,7 @@ install:
 ## Run the actual test
 test_script:
     - cd c:\projects\php-project-workspace
-    - vendor/bin/phpunit -c phpunit.xml.dist
+    - vendor/bin/phpunit -c phpunit.xml.dist --debug
     - php benchmark/memory.php
     - php example/error/error.php
     - php example/overflow/overflow.php
