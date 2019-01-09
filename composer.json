@@ -20,7 +20,7 @@
         "react/promise": "^2.2",
         "react/promise-stream": "^1.1",
         "react/promise-timer": "^1.5",
-        "react/socket": "^1.2.0",
+        "react/socket": "^1.0 || ^0.8.1",
         "wyrihaximus/json-throwable": "^2.0 || ^1.1.1",
         "wyrihaximus/ticking-promise": "^1.4"
     },
