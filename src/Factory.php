@@ -63,25 +63,28 @@ final class Factory
                 unset($options['cmdTemplate']);
             }
 
-            if (isset($options['fileDescriptorLister']) && $options['fileDescriptorLister'] instanceof ListerInterface) {
-                /** @var ListerInterface $fileDescriptorLister */
-                $fileDescriptorLister = $options['fileDescriptorLister'];
-                unset($options['fileDescriptorLister']);
-            }
+            $fds = [];
+            if (\DIRECTORY_SEPARATOR !== '\\') {
+                if (isset($options['fileDescriptorLister']) && $options['fileDescriptorLister'] instanceof ListerInterface) {
+                    /** @var ListerInterface $fileDescriptorLister */
+                    $fileDescriptorLister = $options['fileDescriptorLister'];
+                    unset($options['fileDescriptorLister']);
+                }
 
-            if (!isset($fileDescriptorLister)) {
-                /** @var ListerInterface $fileDescriptorLister */
-                $fileDescriptorLister = FileDescriptorsFactory::create();
+                if (!isset($fileDescriptorLister)) {
+                    /** @var ListerInterface $fileDescriptorLister */
+                    $fileDescriptorLister = FileDescriptorsFactory::create();
+                }
+
+                foreach ($fileDescriptorLister->list() as $id) {
+                    $fds[(int)$id] = ['file', '/dev/null', 'r'];
+                }
             }
 
             $phpBinary = \escapeshellarg(PHP_BINARY . (PHP_SAPI === 'phpdbg' ? ' -qrr --' : ''));
             $childProcessPath = \escapeshellarg(__DIR__ . DIRECTORY_SEPARATOR . 'child-process.php');
             $argvString = \escapeshellarg(ArgvEncoder::encode($options));
             $command = $phpBinary . ' ' . $childProcessPath;
-            $fds = [];
-            foreach ($fileDescriptorLister->list() as $id) {
-                $fds[(int)$id] = ['file', '/dev/null', 'r'];
-            }
 
             $process = new Process(
                 sprintf(

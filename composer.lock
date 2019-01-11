@@ -361,12 +361,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/child-process.git",
-                "reference": "3534eccc177e14111dd16e5ba6b4a25829e09e6d"
+                "reference": "8e08e214ebcd9d2bfc42684d58945c075b64a452"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/child-process/zipball/3534eccc177e14111dd16e5ba6b4a25829e09e6d",
-                "reference": "3534eccc177e14111dd16e5ba6b4a25829e09e6d",
+                "url": "https://api.github.com/repos/reactphp/child-process/zipball/8e08e214ebcd9d2bfc42684d58945c075b64a452",
+                "reference": "8e08e214ebcd9d2bfc42684d58945c075b64a452",
                 "shasum": ""
             },
             "require": {
@@ -376,7 +376,8 @@
                 "react/stream": "^1.0 || ^0.7.6"
             },
             "require-dev": {
-                "phpunit/phpunit": "^6.4 || ^5.7 || ^4.8.35",
+                "phpunit/phpunit": "^7.0 || ^6.4 || ^5.7 || ^4.8.35",
+                "react/socket": "^1.0",
                 "sebastian/environment": "^3.0 || ^2.0 || ^1.0"
             },
             "type": "library",
@@ -395,7 +396,7 @@
                 "process",
                 "reactphp"
             ],
-            "time": "2018-12-03T09:45:51+00:00"
+            "time": "2019-01-11T20:41:38+00:00"
         },
         {
             "name": "react/dns",
