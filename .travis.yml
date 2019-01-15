@@ -102,6 +102,14 @@ matrix:
         - choco install php
         - choco install composer
         - export PATH="$(powershell -Command '("Process", "Machine" | % { [Environment]::GetEnvironmentVariable("PATH", $_) -Split ";" -Replace "\\$", "" } | Select -Unique | % { cygpath $_ }) -Join ":"')"
+    - os: osx
+      osx_image: xcode10.1
+      language: generic
+    - os: osx
+      osx_image: xcode10.1
+      language: generic
+      env:
+        - dependencies=highest
 
 ## Install or update dependencies
 install:
