@@ -113,9 +113,10 @@ matrix:
 
 ## Install or update dependencies
 install:
-  - composer validate
-  - if [ -z "$dropPlatform" ]; then composer config --unset platform.php; fi;
-  - if [ -z "$qaExtended" ]; then phpenv config-rm xdebug.ini || :; fi;
+  - if [[ "${TRAVIS_OS_NAME}" != "osx"  ]]; then composer validate; fi;
+  - if [[ -z "$dropPlatform" || "${TRAVIS_OS_NAME}" != "osx" ]]; then composer config --unset platform.php; fi;
+  - if [[ -z "$qaExtended" || "${TRAVIS_OS_NAME}" != "osx" ]]; then phpenv config-rm xdebug.ini || :; fi;
+  - php -v
   - if [ -z "$dependencies" ]; then composer install --prefer-dist; fi;
   - if [ "$dependencies" = "lowest" ]; then composer update --prefer-lowest --prefer-dist -n; fi;
   - if [ "$dependencies" = "highest" ]; then composer update --prefer-dist -n; fi;
