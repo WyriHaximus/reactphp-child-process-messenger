@@ -70,6 +70,13 @@ matrix:
       env:
         - dependencies=highest
         - dropPlatform=false
+    - name: "Windows"
+      os: windows
+      language: shell # no built-in php support
+      before_install:
+        - choco install php
+        - choco install composer
+        - export PATH="$(powershell -Command '("Process", "Machine" | % { [Environment]::GetEnvironmentVariable("PATH", $_) -Split ";" -Replace "\\$", "" } | Select -Unique | % { cygpath $_ }) -Join ":"')"
 
 ## Install or update dependencies
 install:
