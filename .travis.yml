@@ -5,6 +5,13 @@ cache:
   directories:
     - $HOME/.composer/cache/files
 
+# OS X required packages
+addons:
+  homebrew:
+    packages:
+      - php
+      - composer
+
 ## Build matrix for lowest and highest possible targets
 matrix:
   include:
