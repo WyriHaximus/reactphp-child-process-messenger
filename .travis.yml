@@ -88,14 +88,14 @@ matrix:
         - choco install php
         - choco install composer
         - export PATH="$(powershell -Command '("Process", "Machine" | % { [Environment]::GetEnvironmentVariable("PATH", $_) -Split ";" -Replace "\\$", "" } | Select -Unique | % { cygpath $_ }) -Join ":"')"
-    - name: "Windows (5.4)"
+    - name: "Windows (5.4) (current)"
       os: windows
       language: shell # no built-in php support
       before_install:
         - choco install php  --version ((choco search php --exact --all-versions -r | select-string -pattern 5.4 | sort { [version]($_ -split '\|' | select -last 1) } -Descending | Select-Object -first 1) -replace '[php|]','')
         - choco install composer
         - export PATH="$(powershell -Command '("Process", "Machine" | % { [Environment]::GetEnvironmentVariable("PATH", $_) -Split ";" -Replace "\\$", "" } | Select -Unique | % { cygpath $_ }) -Join ":"')"
-    - name: "Windows (latest)"
+    - name: "Windows (latest) (current)"
       os: windows
       language: shell # no built-in php support
       before_install:
