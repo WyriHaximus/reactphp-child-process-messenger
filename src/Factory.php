@@ -76,7 +76,12 @@ final class Factory
                     $fileDescriptorLister = FileDescriptorsFactory::create();
                 }
 
-                foreach ($fileDescriptorLister->list() as $id) {
+                if (\method_exists($fileDescriptorLister, 'list')) {
+                    $fds = $fileDescriptorLister->list();
+                } else {
+                    $fds = $fileDescriptorLister->listFileDescriptors();
+                }
+                foreach ($fds as $id) {
                     $fds[(int)$id] = ['file', '/dev/null', 'r'];
                 }
             }
