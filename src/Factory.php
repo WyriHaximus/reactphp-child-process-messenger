@@ -76,12 +76,7 @@ final class Factory
                     $fileDescriptorLister = FileDescriptorsFactory::create();
                 }
 
-                if (\method_exists($fileDescriptorLister, 'list')) {
-                    $fdsl = $fileDescriptorLister->list();
-                } else {
-                    $fdsl = $fileDescriptorLister->listFileDescriptors();
-                }
-                foreach ($fdsl as $id) {
+                foreach (self::listFileDescriptors(($fileDescriptorLister)) as $id) {
                     $fds[(int)$id] = ['file', '/dev/null', 'r'];
                 }
             }
@@ -217,5 +212,14 @@ final class Factory
 
             return $messenger;
         });
+    }
+
+    private static function listFileDescriptors(ListerInterface $fileDescriptorLister)
+    {
+        if (\method_exists($fileDescriptorLister, 'list')) {
+            return $fileDescriptorLister->list();
+        }
+
+        return $fileDescriptorLister->listFileDescriptors();
     }
 }
