@@ -31,7 +31,7 @@ class FactoryTest extends TestCase
                 },
             ],
             [
-                '{"type":"error","payload":' . json_encode(LineEncoder::encode($exception)) . '}' . LineInterface::EOL,
+                '{"type":"error","payload":' . \json_encode(LineEncoder::encode($exception)) . '}' . LineInterface::EOL,
                 function ($message) use ($exception) {
                     $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\Error', $message);
                     $this->assertInstanceOf('Exception', $message->getPayload());
@@ -59,7 +59,7 @@ class FactoryTest extends TestCase
                 },
             ],
             [
-                '{"type":"rpc_error","uniqid":"abc","payload":' . json_encode(LineEncoder::encode($exception)) . '}' . LineInterface::EOL,
+                '{"type":"rpc_error","uniqid":"abc","payload":' . \json_encode(LineEncoder::encode($exception)) . '}' . LineInterface::EOL,
                 function ($message) use ($exception) {
                     $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcError', $message);
                     $this->assertInstanceOf('Exception', $message->getPayload());

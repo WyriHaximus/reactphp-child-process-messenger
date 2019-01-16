@@ -29,18 +29,18 @@ class SecureLine implements LineInterface
      */
     public function __toString()
     {
-        $line = json_encode($this->line);
+        $line = \json_encode($this->line);
 
-        return json_encode([
+        return \json_encode([
             'type' => 'secure',
             'line' => $line,
-            'signature' => base64_encode(static::sign($line, $this->key)),
+            'signature' => \base64_encode(static::sign($line, $this->key)),
         ]) . LineInterface::EOL;
     }
 
     public static function fromLine($line, array $lineOptions)
     {
-        if (static::validate(base64_decode($line['signature'], true), $line['line'], $lineOptions['key'])) {
+        if (static::validate(\base64_decode($line['signature'], true), $line['line'], $lineOptions['key'])) {
             return Factory::fromLine($line['line'], $lineOptions);
         }
 
@@ -49,11 +49,11 @@ class SecureLine implements LineInterface
 
     protected static function sign($line, $key)
     {
-        return hash_hmac('sha256', $line, $key, true);
+        return \hash_hmac('sha256', $line, $key, true);
     }
 
     protected static function validate($signature, $line, $key)
     {
-        return hash_equals($signature, static::sign($line, $key));
+        return \hash_equals($signature, static::sign($line, $key));
     }
 }

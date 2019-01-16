@@ -30,7 +30,7 @@ final class ExamplesChildProcess implements ChildInterface
             ]);
         });
         $messenger->registerRpc('overflow', function () {
-            ini_set('memory_limit', '20M');
+            \ini_set('memory_limit', '20M');
 
             $string = '';
             while (true) {

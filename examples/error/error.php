@@ -1,6 +1,6 @@
 <?php
 
-require dirname(dirname(__DIR__)) . '/vendor/autoload.php';
+require \dirname(\dirname(__DIR__)) . '/vendor/autoload.php';
 
 use React\EventLoop\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Factory as MessengerFactory;

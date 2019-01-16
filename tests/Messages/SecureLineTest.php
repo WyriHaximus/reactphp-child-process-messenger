@@ -53,10 +53,10 @@ class SecureLineTest extends TestCase
         ]);
         $this->assertEquals($output, (string)$line);
 
-        $stringLine = SecureLine::fromLine(json_decode((string)$line, true), [
+        $stringLine = SecureLine::fromLine(\json_decode((string)$line, true), [
             'key' => static::KEY,
         ]);
-        $this->assertEquals($lineString, json_encode($stringLine));
+        $this->assertEquals($lineString, \json_encode($stringLine));
     }
 
     /**
@@ -66,7 +66,7 @@ class SecureLineTest extends TestCase
     public function testSignatureMismatch()
     {
         $line = '{"type":"secure","line":"{\"type\":\"rpc\",\"uniqid\":1234567890,\"target\":\"foo\",\"payload\":[\"bar\",\"baz\"]}","signature":"r7TvJ\/AuvAY7dKZ+7wQyI0PdyLivANZzPB35j8Xuyps="}';
-        SecureLine::fromLine(json_decode((string)$line, true), [
+        SecureLine::fromLine(\json_decode((string)$line, true), [
             'key' => 'cba',
         ]);
     }

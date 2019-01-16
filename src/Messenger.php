@@ -71,7 +71,7 @@ class Messenger extends EventEmitter
         });
         $this->connection->on('close', function () {
             $calls = $this->outstandingRpcCalls->getCalls();
-            if (count($calls) === 0) {
+            if (\count($calls) === 0) {
                 return;
             }
             $error = new CommunicationWithProcessUnexpectedEndException();
@@ -207,12 +207,12 @@ class Messenger extends EventEmitter
 
     private function handleData()
     {
-        if (strpos($this->buffer, LineInterface::EOL) === false) {
+        if (\strpos($this->buffer, LineInterface::EOL) === false) {
             return;
         }
 
-        $messages = explode(LineInterface::EOL, $this->buffer);
-        $this->buffer = array_pop($messages);
+        $messages = \explode(LineInterface::EOL, $this->buffer);
+        $this->buffer = \array_pop($messages);
         $this->iterateMessages($messages);
     }
 

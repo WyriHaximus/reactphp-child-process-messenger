@@ -1,6 +1,6 @@
 <?php
 
-require dirname(dirname(__DIR__)) . '/vendor/autoload.php';
+require \dirname(\dirname(__DIR__)) . '/vendor/autoload.php';
 
 use React\EventLoop\Factory as EventLoopFactory;
 use React\EventLoop\Timer\Timer;
@@ -17,7 +17,7 @@ MessengerFactory::parentFromClass(ExamplesChildProcess::class, $loop)->then(func
     });
 
     $messenger->on('error', function ($e) {
-        echo 'Error: ', var_export($e, true), PHP_EOL;
+        echo 'Error: ', \var_export($e, true), PHP_EOL;
     });
 
     $i = 0;
@@ -31,7 +31,7 @@ MessengerFactory::parentFromClass(ExamplesChildProcess::class, $loop)->then(func
 
         $messenger->message(MessagesFactory::message([
             'i' => $i,
-            'time' => time(),
+            'time' => \time(),
         ]));
 
         $i++;

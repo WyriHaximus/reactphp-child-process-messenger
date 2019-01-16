@@ -48,14 +48,14 @@ final class Factory
         LoopInterface $loop,
         array $options = []
     ) {
-        if (!is_subclass_of($class, 'WyriHaximus\React\ChildProcess\Messenger\ChildInterface')) {
+        if (!\is_subclass_of($class, 'WyriHaximus\React\ChildProcess\Messenger\ChildInterface')) {
             throw new \Exception('Given class doesn\'t implement ChildInterface');
         }
 
         return new Promise\Promise(function ($resolve, $reject) use ($class, $loop, $options) {
             $server = new Server('127.0.0.1:0', $loop);
             $options['address'] = $server->getAddress();
-            $options['random'] = bin2hex(random_bytes(512));
+            $options['random'] = \bin2hex(\random_bytes(512));
 
             $template = '%s';
             if (isset($options['cmdTemplate'])) {
@@ -92,7 +92,7 @@ final class Factory
             $command = $phpBinary . ' ' . $childProcessPath;
 
             $process = new Process(
-                sprintf(
+                \sprintf(
                     $template,
                     $command . ' ' . $argvString
                 ),
@@ -127,13 +127,13 @@ final class Factory
         return (new Connector($loop, ['timeout' => $connectTimeout]))->connect($options['address'])->then(function (ConnectionInterface $connection) use ($options, $loop, $connectTimeout) {
             return new Promise\Promise(function ($resolve, $reject) use ($connection, $options, $loop, $connectTimeout) {
                 Promise\Timer\timeout(Promise\Stream\first($connection), $connectTimeout, $loop)->then(function ($chunk) use ($resolve, $connection, $options) {
-                    list($confirmation) = explode(PHP_EOL, $chunk);
+                    list($confirmation) = \explode(PHP_EOL, $chunk);
                     if ($confirmation === 'syn') {
                         $connection->write('ack' . PHP_EOL);
                         $resolve(new Messenger($connection, $options));
                     }
                 }, $reject);
-                $connection->write(hash_hmac('sha512', $options['address'], $options['random']) . PHP_EOL);
+                $connection->write(\hash_hmac('sha512', $options['address'], $options['random']) . PHP_EOL);
             });
         })->then(function (Messenger $messenger) use ($loop, $termiteCallable) {
             if ($termiteCallable === null) {
@@ -175,14 +175,14 @@ final class Factory
                 'connection',
                 function (ConnectionInterface $connection) use ($server, $resolve, $reject, $options, $loop) {
                     Promise\Stream\first($connection)->then(function ($chunk) use ($options, $connection, $resolve) {
-                        list($confirmation) = explode(PHP_EOL, $chunk);
-                        if ($confirmation === hash_hmac('sha512', $options['address'], $options['random'])) {
+                        list($confirmation) = \explode(PHP_EOL, $chunk);
+                        if ($confirmation === \hash_hmac('sha512', $options['address'], $options['random'])) {
                             $connection->write('syn' . PHP_EOL);
 
                             return Promise\Stream\first($connection);
                         }
                     })->then(function ($chunk) use ($options, $connection) {
-                        list($confirmation) = explode(PHP_EOL, $chunk);
+                        list($confirmation) = \explode(PHP_EOL, $chunk);
                         if ($confirmation === 'ack') {
                             return Promise\resolve(new Messenger($connection, $options));
                         }

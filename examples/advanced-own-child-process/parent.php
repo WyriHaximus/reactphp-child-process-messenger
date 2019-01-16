@@ -1,6 +1,6 @@
 <?php
 
-require dirname(dirname(__DIR__)) . '/vendor/autoload.php';
+require \dirname(\dirname(__DIR__)) . '/vendor/autoload.php';
 
 use React\ChildProcess\Process;
 use React\EventLoop\Factory;
@@ -18,7 +18,7 @@ MessengerFactory::parent(new Process('exec php ' . __DIR__ . DIRECTORY_SEPARATOR
         $messenger->softTerminate();
     });
 })->done(function (Payload $result) {
-    var_export($result);
+    \var_export($result);
 }, function ($et) {
     echo (string)$et;
 });

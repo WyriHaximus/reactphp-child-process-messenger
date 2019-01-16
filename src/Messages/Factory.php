@@ -17,9 +17,9 @@ class Factory
      */
     public static function fromLine($line, array $lineOptions)
     {
-        $line = json_decode($line, true);
+        $line = \json_decode($line, true);
         $method = Inflector::camelize($line['type']) . 'FromLine';
-        if (method_exists(get_class(new static()), $method) && $method !== 'FromLine') {
+        if (\method_exists(\get_class(new static()), $method) && $method !== 'FromLine') {
             return static::$method($line, $lineOptions);
         }
 

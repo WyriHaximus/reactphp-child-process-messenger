@@ -17,9 +17,9 @@ class RpcErrorTest extends TestCase
 
         $this->assertEquals(
             '{"type":"rpc_error","uniqid":"abc","payload":' .
-            json_encode(LineEncoder::encode($payload)) .
+            \json_encode(LineEncoder::encode($payload)) .
             '}',
-            json_encode($message)
+            \json_encode($message)
         );
 
         $outstandingCall = $this->prophesize('WyriHaximus\React\ChildProcess\Messenger\OutstandingCall');

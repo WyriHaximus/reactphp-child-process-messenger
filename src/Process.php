@@ -31,7 +31,7 @@ final class Process
         $this->messenger->registerRpc(
             MessengerFactory::PROCESS_REGISTER,
             function (Payload $payload) {
-                if (!is_subclass_of($payload['className'], 'WyriHaximus\React\ChildProcess\Messenger\ChildInterface')) {
+                if (!\is_subclass_of($payload['className'], 'WyriHaximus\React\ChildProcess\Messenger\ChildInterface')) {
                     throw new \Exception('Given class doesn\'t implement ChildInterface');
                 }
 
@@ -75,7 +75,7 @@ final class Process
      */
     protected function registerClass($className)
     {
-        call_user_func_array([
+        \call_user_func_array([
             $className,
             'create',
         ], [

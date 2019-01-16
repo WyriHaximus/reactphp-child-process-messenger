@@ -19,6 +19,7 @@ return Config::create()
             ],
             'blank_line_before_return' => true,
             'method_separation' => true,
+            'native_function_invocation' => true,
             'new_with_braces' => true,
             'no_extra_consecutive_blank_lines' => true,
             'no_leading_import_slash' => true,

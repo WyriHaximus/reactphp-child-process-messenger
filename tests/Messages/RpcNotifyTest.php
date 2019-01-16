@@ -17,7 +17,7 @@ class RpcNotifyTest extends TestCase
 
         $this->assertSame($payload, $message->getPayload());
 
-        $this->assertEquals('{"type":"rpc_notify","uniqid":"abc","payload":{"foo":"bar"}}', json_encode($message));
+        $this->assertEquals('{"type":"rpc_notify","uniqid":"abc","payload":{"foo":"bar"}}', \json_encode($message));
 
         $outstandingCall = $this->prophesize('WyriHaximus\React\ChildProcess\Messenger\OutstandingCall');
         $messenger = $this->prophesize('WyriHaximus\React\ChildProcess\Messenger\Messenger');
