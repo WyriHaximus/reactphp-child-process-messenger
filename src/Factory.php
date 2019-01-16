@@ -77,11 +77,11 @@ final class Factory
                 }
 
                 if (\method_exists($fileDescriptorLister, 'list')) {
-                    $fds = $fileDescriptorLister->list();
+                    $fdsl = $fileDescriptorLister->list();
                 } else {
-                    $fds = $fileDescriptorLister->listFileDescriptors();
+                    $fdsl = $fileDescriptorLister->listFileDescriptors();
                 }
-                foreach ($fds as $id) {
+                foreach ($fdsl as $id) {
                     $fds[(int)$id] = ['file', '/dev/null', 'r'];
                 }
             }
