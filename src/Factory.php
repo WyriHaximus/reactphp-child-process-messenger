@@ -64,7 +64,7 @@ final class Factory
             }
 
             $fds = [];
-            if (\DIRECTORY_SEPARATOR !== '\\') {
+            if (StaticConfig::shouldListFileDescriptors() && \DIRECTORY_SEPARATOR !== '\\') {
                 if (isset($options['fileDescriptorLister']) && $options['fileDescriptorLister'] instanceof ListerInterface) {
                     /** @var ListerInterface $fileDescriptorLister */
                     $fileDescriptorLister = $options['fileDescriptorLister'];
