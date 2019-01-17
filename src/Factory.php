@@ -8,6 +8,8 @@ use React\Promise;
 use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
 use React\Socket\Server;
+use WyriHaximus\FileDescriptors\Factory as FileDescriptorsFactory;
+use WyriHaximus\FileDescriptors\ListerInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessengesFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 
@@ -36,10 +38,9 @@ final class Factory
     }
 
     /**
-     * @param  string                              $process
+     * @param  string                              $class
      * @param  LoopInterface                       $loop
      * @param  array                               $options
-     * @param  mixed                               $class
      * @return Promise\PromiseInterface<Messenger>
      */
     public static function parentFromClass(
@@ -47,14 +48,14 @@ final class Factory
         LoopInterface $loop,
         array $options = []
     ) {
-        if (!is_subclass_of($class, 'WyriHaximus\React\ChildProcess\Messenger\ChildInterface')) {
+        if (!\is_subclass_of($class, 'WyriHaximus\React\ChildProcess\Messenger\ChildInterface')) {
             throw new \Exception('Given class doesn\'t implement ChildInterface');
         }
 
         return new Promise\Promise(function ($resolve, $reject) use ($class, $loop, $options) {
             $server = new Server('127.0.0.1:0', $loop);
             $options['address'] = $server->getAddress();
-            $options['random'] = bin2hex(random_bytes(512));
+            $options['random'] = \bin2hex(\random_bytes(512));
 
             $template = '%s';
             if (isset($options['cmdTemplate'])) {
@@ -62,18 +63,43 @@ final class Factory
                 unset($options['cmdTemplate']);
             }
 
+            $fds = [];
+            if (\DIRECTORY_SEPARATOR !== '\\') {
+                if (isset($options['fileDescriptorLister']) && $options['fileDescriptorLister'] instanceof ListerInterface) {
+                    /** @var ListerInterface $fileDescriptorLister */
+                    $fileDescriptorLister = $options['fileDescriptorLister'];
+                    unset($options['fileDescriptorLister']);
+                }
+
+                if (!isset($fileDescriptorLister)) {
+                    /** @var ListerInterface $fileDescriptorLister */
+                    $fileDescriptorLister = FileDescriptorsFactory::create();
+                }
+
+                foreach (self::listFileDescriptors(($fileDescriptorLister)) as $id) {
+                    $fds[(int)$id] = ['file', '/dev/null', 'r'];
+                }
+            }
+
             $phpBinary = \escapeshellarg(PHP_BINARY . (PHP_SAPI === 'phpdbg' ? ' -qrr --' : ''));
             $childProcessPath = \escapeshellarg(__DIR__ . DIRECTORY_SEPARATOR . 'child-process.php');
             $argvString = \escapeshellarg(ArgvEncoder::encode($options));
             $command = $phpBinary . ' ' . $childProcessPath;
+
             $process = new Process(
-                sprintf(
+                \sprintf(
                     $template,
                     $command . ' ' . $argvString
-                )
+                ),
+                null,
+                null,
+                $fds
             );
 
-            self::startParent($process, $server, $loop, $options)->then(function (Messenger $messenger) use ($class) {
+            $connectTimeout = isset($options['connect-timeout']) ? $options['connect-timeout'] : 5;
+            \WyriHaximus\React\futurePromise($loop)->then(function () use ($process, $server, $loop, $options, $connectTimeout) {
+                return Promise\Timer\timeout(self::startParent($process, $server, $loop, $options), $connectTimeout, $loop);
+            })->then(function (Messenger $messenger) use ($class) {
                 return $messenger->rpc(MessengesFactory::rpc(Factory::PROCESS_REGISTER, [
                     'className' => $class,
                 ]))->then(function ($p) use ($messenger) {
@@ -96,13 +122,13 @@ final class Factory
         return (new Connector($loop, ['timeout' => $connectTimeout]))->connect($options['address'])->then(function (ConnectionInterface $connection) use ($options, $loop, $connectTimeout) {
             return new Promise\Promise(function ($resolve, $reject) use ($connection, $options, $loop, $connectTimeout) {
                 Promise\Timer\timeout(Promise\Stream\first($connection), $connectTimeout, $loop)->then(function ($chunk) use ($resolve, $connection, $options) {
-                    list($confirmation) = explode(PHP_EOL, $chunk);
+                    list($confirmation) = \explode(PHP_EOL, $chunk);
                     if ($confirmation === 'syn') {
                         $connection->write('ack' . PHP_EOL);
                         $resolve(new Messenger($connection, $options));
                     }
                 }, $reject);
-                $connection->write(hash_hmac('sha512', $options['address'], $options['random']) . PHP_EOL);
+                $connection->write(\hash_hmac('sha512', $options['address'], $options['random']) . PHP_EOL);
             });
         })->then(function (Messenger $messenger) use ($loop, $termiteCallable) {
             if ($termiteCallable === null) {
@@ -142,21 +168,24 @@ final class Factory
         return (new Promise\Promise(function ($resolve, $reject) use ($process, $server, $loop, $options) {
             $server->on(
                 'connection',
-                function (ConnectionInterface $connection) use ($server, $resolve, $reject, $options) {
-                    Promise\Stream\first($connection)->then(function ($chunk) use ($server, $options, $connection, $resolve) {
-                        list($confirmation) = explode(PHP_EOL, $chunk);
-                        if ($confirmation === hash_hmac('sha512', $options['address'], $options['random'])) {
+                function (ConnectionInterface $connection) use ($server, $resolve, $reject, $options, $loop) {
+                    Promise\Stream\first($connection)->then(function ($chunk) use ($options, $connection, $resolve) {
+                        list($confirmation) = \explode(PHP_EOL, $chunk);
+                        if ($confirmation === \hash_hmac('sha512', $options['address'], $options['random'])) {
                             $connection->write('syn' . PHP_EOL);
-                            $server->close();
 
                             return Promise\Stream\first($connection);
                         }
-                    })->then(function ($chunk) use ($options, $connection, $resolve) {
-                        list($confirmation) = explode(PHP_EOL, $chunk);
+                    })->then(function ($chunk) use ($options, $connection) {
+                        list($confirmation) = \explode(PHP_EOL, $chunk);
                         if ($confirmation === 'ack') {
-                            $resolve(new Messenger($connection, $options));
+                            return Promise\resolve(new Messenger($connection, $options));
                         }
-                    });
+
+                        return Promise\reject(new \RuntimeException('Handshake failed'));
+                    })->always(function () use ($server) {
+                        $server->close();
+                    })->done($resolve, $reject);
                 }
             );
             $server->on('error', function ($et) use ($reject) {
@@ -164,6 +193,9 @@ final class Factory
             });
 
             $process->start($loop);
+        }, function () use ($server, $process) {
+            $server->close();
+            $process->terminate();
         }))->then(function (Messenger $messenger) use ($loop, $process) {
             $loop->addPeriodicTimer(self::INTERVAL, function ($timer) use ($messenger, $loop, $process) {
                 if (!$process->isRunning()) {
@@ -180,5 +212,14 @@ final class Factory
 
             return $messenger;
         });
+    }
+
+    private static function listFileDescriptors(ListerInterface $fileDescriptorLister)
+    {
+        if (\method_exists($fileDescriptorLister, 'list')) {
+            return $fileDescriptorLister->list();
+        }
+
+        return $fileDescriptorLister->listFileDescriptors();
     }
 }

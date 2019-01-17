@@ -17,7 +17,7 @@ class MessageTest extends TestCase
 
         $this->assertSame($payload, $message->getPayload());
 
-        $this->assertEquals('{"type":"message","payload":{"foo":"bar"}}', json_encode($message));
+        $this->assertEquals('{"type":"message","payload":{"foo":"bar"}}', \json_encode($message));
 
         $em = $this->prophesize('Evenement\EventEmitter');
         $em->emit('message', [$payload, $em])->shouldBeCalled();

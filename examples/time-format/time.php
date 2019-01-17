@@ -1,6 +1,6 @@
 <?php
 
-require dirname(dirname(__DIR__)) . '/vendor/autoload.php';
+require \dirname(\dirname(__DIR__)) . '/vendor/autoload.php';
 
 use React\EventLoop\Factory as LoopFactory;
 use React\EventLoop\Timer\Timer;
@@ -14,7 +14,7 @@ MessengerFactory::parentFromClass(ExamplesChildProcess::class, $loop)->done(func
     $i = 0;
 
     $messenger->on('error', function ($e) {
-        echo 'Error: ', var_export($e, true), PHP_EOL;
+        echo 'Error: ', \var_export($e, true), PHP_EOL;
     });
 
     $loop->addPeriodicTimer(1, function (Timer $timer) use ($messenger, &$i) {
@@ -26,7 +26,7 @@ MessengerFactory::parentFromClass(ExamplesChildProcess::class, $loop)->done(func
         }
 
         $messenger->rpc(MessageFactory::rpc('format', [
-            'unixTime' => time(),
+            'unixTime' => \time(),
         ]))->then(function ($formattedTime) {
             echo $formattedTime['formattedTime'], PHP_EOL;
         });

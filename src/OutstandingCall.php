@@ -34,7 +34,7 @@ class OutstandingCall
         $this->uniqid = $uniqid;
         $this->deferred = new Deferred($canceller);
 
-        if (!is_callable($cleanup)) {
+        if (!\is_callable($cleanup)) {
             $cleanup = function () {
             };
         }

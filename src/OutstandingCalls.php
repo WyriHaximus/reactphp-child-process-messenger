@@ -39,7 +39,7 @@ class OutstandingCalls
      */
     public function getCalls()
     {
-        return array_values($this->calls);
+        return \array_values($this->calls);
     }
 
     /**
@@ -48,7 +48,7 @@ class OutstandingCalls
     protected function getNewUniqid()
     {
         do {
-            $uniqid = (string)microtime(true) . '.' . bin2hex(random_bytes(4));
+            $uniqid = (string)\microtime(true) . '.' . \bin2hex(\random_bytes(4));
         } while (isset($this->calls[$uniqid]));
 
         return $uniqid;

@@ -5,6 +5,13 @@ cache:
   directories:
     - $HOME/.composer/cache/files
 
+# OS X required packages
+addons:
+  homebrew:
+    packages:
+      - php
+      - composer
+
 ## Build matrix for lowest and highest possible targets
 matrix:
   include:
@@ -16,6 +23,7 @@ matrix:
         - qaExtended=true
     - php: 7.1
     - php: 7.2
+    - php: 7.3
     - php: nightly
       env:
         - dropPlatform=false
@@ -37,6 +45,9 @@ matrix:
     - php: 7.2
       env:
         - dependencies=lowest
+    - php: 7.3
+      env:
+        - dependencies=lowest
     - php: nightly
       env:
         - dependencies=lowest
@@ -59,16 +70,53 @@ matrix:
     - php: 7.2
       env:
         - dependencies=highest
+    - php: 7.3
+      env:
+        - dependencies=highest
     - php: nightly
       env:
         - dependencies=highest
         - dropPlatform=false
+    - name: "Windows (latest) (lowest)"
+      os: windows
+      language: shell # no built-in php support
+      env:
+        - dependencies=lowest
+      before_install:
+        - choco install php
+        - choco install composer
+        - export PATH="$(powershell -Command '("Process", "Machine" | % { [Environment]::GetEnvironmentVariable("PATH", $_) -Split ";" -Replace "\\$", "" } | Select -Unique | % { cygpath $_ }) -Join ":"')"
+    - name: "Windows (latest) (current)"
+      os: windows
+      language: shell # no built-in php support
+      before_install:
+        - choco install php
+        - choco install composer
+        - export PATH="$(powershell -Command '("Process", "Machine" | % { [Environment]::GetEnvironmentVariable("PATH", $_) -Split ";" -Replace "\\$", "" } | Select -Unique | % { cygpath $_ }) -Join ":"')"
+    - name: "Windows (latest) (highest)"
+      os: windows
+      language: shell # no built-in php support
+      env:
+        - dependencies=highest
+      before_install:
+        - choco install php
+        - choco install composer
+        - export PATH="$(powershell -Command '("Process", "Machine" | % { [Environment]::GetEnvironmentVariable("PATH", $_) -Split ";" -Replace "\\$", "" } | Select -Unique | % { cygpath $_ }) -Join ":"')"
+    - os: osx
+      osx_image: xcode10.1
+      language: generic
+    - os: osx
+      osx_image: xcode10.1
+      language: generic
+      env:
+        - dependencies=highest
 
 ## Install or update dependencies
 install:
-  - composer validate
-  - if [ -z "$dropPlatform" ]; then composer config --unset platform.php; fi;
-  - if [ -z "$qaExtended" ]; then phpenv config-rm xdebug.ini || :; fi;
+  - if [[ "${TRAVIS_OS_NAME}" != "osx"  ]]; then composer validate; fi;
+  - if [[ -z "$dropPlatform" || "${TRAVIS_OS_NAME}" != "osx" ]]; then composer config --unset platform.php; fi;
+  - if [[ -z "$qaExtended" || "${TRAVIS_OS_NAME}" != "osx" ]]; then phpenv config-rm xdebug.ini || :; fi;
+  - php -v
   - if [ -z "$dependencies" ]; then composer install --prefer-dist; fi;
   - if [ "$dependencies" = "lowest" ]; then composer update --prefer-lowest --prefer-dist -n; fi;
   - if [ "$dependencies" = "highest" ]; then composer update --prefer-dist -n; fi;
@@ -76,7 +124,8 @@ install:
 
 ## Run the actual test
 script:
-  - if [ -z "$qaExtended" ]; then make ci; fi;
+  - if [ -z "$qaExtended" || "${TRAVIS_OS_NAME}" != "windows"  ]; then make ci; fi;
+  - if [ "${TRAVIS_OS_NAME}" = "windows"  ]; then vendor/bin/phpunit; fi;
   - if [ "$qaExtended" = "true" ]; then make ci-extended; fi;
   - php benchmark/memory.php
   - php examples/error/error.php

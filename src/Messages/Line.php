@@ -22,7 +22,7 @@ class Line implements LineInterface
      */
     public function __toString()
     {
-        return json_encode($this->payload) . LineInterface::EOL;
+        return \json_encode($this->payload) . LineInterface::EOL;
     }
 
     /**

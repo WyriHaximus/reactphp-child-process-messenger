@@ -18,8 +18,8 @@ class RpcTest extends TestCase
 
         $this->assertSame($payload, $message->getPayload());
 
-        $this->assertEquals('{"type":"rpc","uniqid":"","target":"foo","payload":{"foo":"bar"}}', json_encode($message));
-        $this->assertEquals('{"type":"rpc","uniqid":"bar","target":"foo","payload":{"foo":"bar"}}', json_encode($message->setUniqid('bar')));
+        $this->assertEquals('{"type":"rpc","uniqid":"","target":"foo","payload":{"foo":"bar"}}', \json_encode($message));
+        $this->assertEquals('{"type":"rpc","uniqid":"bar","target":"foo","payload":{"foo":"bar"}}', \json_encode($message->setUniqid('bar')));
     }
 
     public function testHasNoRpcTarget()

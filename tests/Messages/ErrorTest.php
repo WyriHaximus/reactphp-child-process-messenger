@@ -17,7 +17,7 @@ class ErrorTest extends TestCase
 
         $this->assertSame($payload, $message->getPayload());
 
-        $this->assertEquals('{"type":"error","payload":{"foo":"bar"}}', json_encode($message));
+        $this->assertEquals('{"type":"error","payload":{"foo":"bar"}}', \json_encode($message));
 
         $em = $this->prophesize('Evenement\EventEmitter');
         $em->emit('error', [$payload, $em])->shouldBeCalled();

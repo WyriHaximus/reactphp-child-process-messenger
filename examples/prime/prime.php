@@ -1,6 +1,6 @@
 <?php
 
-require dirname(dirname(__DIR__)) . '/vendor/autoload.php';
+require \dirname(\dirname(__DIR__)) . '/vendor/autoload.php';
 
 use React\EventLoop\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Factory as MessengerFactory;
@@ -10,7 +10,7 @@ use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
 $loop = Factory::create();
 
-$prime = isset($argv[1]) ? (int)$argv[1] : mt_rand(1, 1337);
+$prime = isset($argv[1]) ? (int)$argv[1] : \mt_rand(1, 1337);
 
 echo 'Checking if ', $prime, ' is a prime or not', PHP_EOL;
 
