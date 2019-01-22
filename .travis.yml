@@ -124,7 +124,7 @@ install:
 
 ## Run the actual test
 script:
-  - if [ -z "$qaExtended" || "${TRAVIS_OS_NAME}" != "windows"  ]; then make ci; fi;
+  - if [[ -z "$qaExtended" || "${TRAVIS_OS_NAME}" != "windows" ]]; then make ci; fi;
   - if [ "${TRAVIS_OS_NAME}" = "windows"  ]; then vendor/bin/phpunit; fi;
   - if [ "$qaExtended" = "true" ]; then make ci-extended; fi;
   - php benchmark/memory.php
