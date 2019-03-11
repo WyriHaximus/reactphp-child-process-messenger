@@ -19,6 +19,7 @@ final class Factory
     const TIMEOUT = 13;
     const TERMINATE_TIMEOUT = 1;
     const PROCESS_REGISTER = 'wyrihaximus.react.child-process.messenger.child.register';
+    const DEFAULT_CONNECT_TIMEOUT = 15;
 
     public static function parent(
         Process $process,
@@ -96,7 +97,7 @@ final class Factory
                 $fds
             );
 
-            $connectTimeout = isset($options['connect-timeout']) ? $options['connect-timeout'] : 5;
+            $connectTimeout = isset($options['connect-timeout']) ? $options['connect-timeout'] : self::DEFAULT_CONNECT_TIMEOUT;
             \WyriHaximus\React\futurePromise($loop)->then(function () use ($process, $server, $loop, $options, $connectTimeout) {
                 return Promise\Timer\timeout(self::startParent($process, $server, $loop, $options), $connectTimeout, $loop);
             })->then(function (Messenger $messenger) use ($class) {
@@ -117,7 +118,7 @@ final class Factory
      */
     public static function child(LoopInterface $loop, array $options = [], callable $termiteCallable = null)
     {
-        $connectTimeout = isset($options['connect-timeout']) ? $options['connect-timeout'] : 5;
+        $connectTimeout = isset($options['connect-timeout']) ? $options['connect-timeout'] : self::DEFAULT_CONNECT_TIMEOUT;
 
         return (new Connector($loop, ['timeout' => $connectTimeout]))->connect($options['address'])->then(function (ConnectionInterface $connection) use ($options, $loop, $connectTimeout) {
             return new Promise\Promise(function ($resolve, $reject) use ($connection, $options, $loop, $connectTimeout) {
