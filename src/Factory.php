@@ -55,8 +55,8 @@ final class Factory
 
         return new Promise\Promise(function ($resolve, $reject) use ($class, $loop, $options) {
             $server = new Server('127.0.0.1:0', $loop);
+            $options['random'] = \bin2hex(\random_bytes(32));
             $options['address'] = $server->getAddress();
-            $options['random'] = \bin2hex(\random_bytes(512));
 
             $template = '%s';
             if (isset($options['cmdTemplate'])) {
