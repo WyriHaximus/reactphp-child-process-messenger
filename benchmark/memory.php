@@ -19,7 +19,7 @@ show_memory('Bare init');
 require \dirname(__DIR__) . '/vendor/autoload.php';
 
 use React\EventLoop\Factory as EventLoopFactory;
-use React\EventLoop\Timer\Timer;
+use React\EventLoop\TimerInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Factory as MessengerFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessagesFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
@@ -34,7 +34,7 @@ MessengerFactory::parentFromClass('WyriHaximus\React\ChildProcess\Messenger\Retu
     });
 
     $i = 0;
-    $loop->addPeriodicTimer(0.00001, function (Timer $timer) use (&$i, $messenger, $loop) {
+    $loop->addPeriodicTimer(0.00001, function (TimerInterface $timer) use (&$i, $messenger, $loop) {
         if ($i >= I) {
             $loop->cancelTimer($timer);
             $messenger->softTerminate();
