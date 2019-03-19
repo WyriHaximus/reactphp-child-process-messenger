@@ -122,12 +122,17 @@ final class Factory
 
         return (new Connector($loop, ['timeout' => $connectTimeout]))->connect($options['address'])->then(function (ConnectionInterface $connection) use ($options, $loop, $connectTimeout) {
             return new Promise\Promise(function ($resolve, $reject) use ($connection, $options, $loop, $connectTimeout) {
-                Promise\Timer\timeout(Promise\Stream\first($connection), $connectTimeout, $loop)->then(function ($chunk) use ($resolve, $connection, $options) {
+                Promise\Timer\timeout(Promise\Stream\first($connection), $connectTimeout, $loop)->then(function ($chunk) use ($resolve, $reject, $connection, $options, $loop) {
                     list($confirmation) = \explode(PHP_EOL, $chunk);
                     if ($confirmation === 'syn') {
                         $connection->write('ack' . PHP_EOL);
                         $resolve(new Messenger($connection, $options));
+                        $connection->on('close', [$loop, 'stop']);
+                        $connection->on('error', [$loop, 'stop']);
+                        return;
                     }
+
+                    $reject(new \RuntimeException('Handshake SYN failed'));
                 }, $reject);
                 $connection->write(\hash_hmac('sha512', $options['address'], $options['random']) . PHP_EOL);
             });
