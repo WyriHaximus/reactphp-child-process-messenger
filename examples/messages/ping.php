@@ -3,7 +3,7 @@
 require \dirname(\dirname(__DIR__)) . '/vendor/autoload.php';
 
 use React\EventLoop\Factory as EventLoopFactory;
-use React\EventLoop\Timer\Timer;
+use React\EventLoop\TimerInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Factory as MessengerFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessagesFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
@@ -21,7 +21,7 @@ MessengerFactory::parentFromClass(ExamplesChildProcess::class, $loop)->then(func
     });
 
     $i = 0;
-    $loop->addPeriodicTimer(0.001, function (Timer $timer) use (&$i, $messenger) {
+    $loop->addPeriodicTimer(0.001, function (TimerInterface $timer) use (&$i, $messenger) {
         if ($i >= 1300000) {
             $timer->cancel();
             $messenger->softTerminate();
