@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fa16c43a10189dc5a89ed33173086767",
+    "content-hash": "a5e4b957e0d4ae6a358a251c3ee67a80",
     "packages": [
         {
             "name": "cakephp/utility",
@@ -1949,6 +1949,7 @@
                 "mock",
                 "xunit"
             ],
+            "abandoned": true,
             "time": "2015-10-02T06:51:40+00:00"
         },
         {
