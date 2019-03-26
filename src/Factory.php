@@ -28,10 +28,10 @@ final class Factory
     ) {
         return new Promise\Promise(function ($resolve, $reject) use ($process, $loop, $options) {
             $server = new Server('127.0.0.1:0', $loop);
-            $argvString = \escapeshellarg(ArgvEncoder::encode([
-                'address' => $server->getAddress(),
-            ]));
 
+            $options['random'] = \bin2hex(\random_bytes(32));
+            $options['address'] = $server->getAddress();
+            $argvString = \escapeshellarg(ArgvEncoder::encode($options));
             $process = new Process($process->getCommand() . ' ' . $argvString);
 
             self::startParent($process, $server, $loop, $options)->done($resolve, $reject);
