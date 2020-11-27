@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
-interface ActionableMessageInterface
+use JsonSerializable;
+use WyriHaximus\React\ChildProcess\Messenger\Messenger;
+
+interface ActionableMessageInterface extends JsonSerializable
 {
-    /**
-     * @param $bindTo
-     * @param $source
-     */
-    public function handle($bindTo, $source);
+    public function handle(Messenger $bindTo, string $source): void;
 }

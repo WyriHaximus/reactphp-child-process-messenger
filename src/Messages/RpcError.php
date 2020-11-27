@@ -1,29 +1,24 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
+use Closure;
 use Exception;
+use JsonSerializable;
 use Throwable;
+use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
-class RpcError implements \JsonSerializable, ActionableMessageInterface
+final class RpcError implements JsonSerializable, ActionableMessageInterface
 {
-    /**
-     * @var string
-     */
-    protected $uniqid;
+    protected string $uniqid;
 
-    /**
-     * @var Exception|Throwable
-     */
-    protected $payload;
+    protected Throwable $payload;
 
-    /**
-     * @param string              $uniqid
-     * @param Exception|Throwable $payload
-     */
-    public function __construct($uniqid, $payload)
+    public function __construct(string $uniqid, Throwable $payload)
     {
-        $this->uniqid = $uniqid;
+        $this->uniqid  = $uniqid;
         $this->payload = $payload;
     }
 
@@ -36,9 +31,9 @@ class RpcError implements \JsonSerializable, ActionableMessageInterface
     }
 
     /**
-     * @return string
+     * @return array<string,string|mixed>
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'type' => 'rpc_error',
@@ -47,15 +42,11 @@ class RpcError implements \JsonSerializable, ActionableMessageInterface
         ];
     }
 
-    /**
-     * @param $bindTo
-     * @param $source
-     */
-    public function handle($bindTo, $source)
+    public function handle(Messenger $bindTo, string $source): void
     {
-        $cb = function ($payload, $uniqid) {
-            $this->getOutstandingCall($uniqid)->reject($payload);
-        };
+        $cb = Closure::fromCallable(function ($payload, $uniqid): void {
+            $this->getOutstandingCall($uniqid)->reject($payload); /** @phpstan-ignore-line  */
+        });
         $cb = $cb->bindTo($bindTo);
         $cb($this->payload, $this->uniqid);
     }

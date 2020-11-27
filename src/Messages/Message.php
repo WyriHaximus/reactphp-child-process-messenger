@@ -1,34 +1,29 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
-class Message implements \JsonSerializable, ActionableMessageInterface
-{
-    /**
-     * @var Payload
-     */
-    protected $payload;
+use JsonSerializable;
 
-    /**
-     * @param Payload $payload
-     */
+final class Message implements JsonSerializable, ActionableMessageInterface
+{
+    protected Payload $payload;
+
     public function __construct(Payload $payload)
     {
         $this->payload = $payload;
     }
 
-    /**
-     * @return Payload
-     */
-    public function getPayload()
+    public function getPayload(): Payload
     {
         return $this->payload;
     }
 
     /**
-     * @return string
+     * @return array<string, string|Payload>
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'type' => 'message',
@@ -36,14 +31,10 @@ class Message implements \JsonSerializable, ActionableMessageInterface
         ];
     }
 
-    /**
-     * @param $bindTo
-     * @param $source
-     */
-    public function handle($bindTo, $source)
+    public function handle(object $bindTo, string $source): void
     {
-        $cb = function ($payload) {
-            $this->emit('message', [
+        $cb = function ($payload): void {
+            $this->emit('message', [ /** @phpstan-ignore-line  */
                 $payload,
                 $this,
             ]);

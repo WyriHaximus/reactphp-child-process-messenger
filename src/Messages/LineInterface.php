@@ -1,19 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
 interface LineInterface
 {
-    const EOL = "\r\n";
+    public const EOL = "\r\n";
 
     /**
-     * @param ActionableMessageInterface $line
-     * @param array                      $options
+     * @param array<mixed> $options
      */
-    public function __construct(\JsonSerializable $line, array $options);
+    public function __construct(ActionableMessageInterface $line, array $options);
 
-    /**
-     * @return string
-     */
-    public function __toString();
+    public function __toString(): string;
 }

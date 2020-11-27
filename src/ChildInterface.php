@@ -1,14 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\ChildProcess\Messenger;
 
 use React\EventLoop\LoopInterface;
 
 interface ChildInterface
 {
-    /**
-     * @param Messenger     $messenger
-     * @param LoopInterface $loop
-     */
-    public static function create(Messenger $messenger, LoopInterface $loop);
+    public static function create(Messenger $messenger, LoopInterface $loop): void;
 }

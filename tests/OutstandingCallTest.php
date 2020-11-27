@@ -1,17 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 
-use PHPUnit\Framework\TestCase;
+use WyriHaximus\TestUtilities\TestCase;
 use WyriHaximus\React\ChildProcess\Messenger\OutstandingCall;
 
-class OutstandingCallTest extends TestCase
+final class OutstandingCallTest extends TestCase
 {
-    public function testBasic()
+    public function testBasic(): void
     {
-        $oc = new OutstandingCall('abc', function () {
+        $oc = new OutstandingCall('abc', static function (): void {
         });
-        $this->assertEquals('abc', $oc->getUniqid());
-        $this->assertInstanceOf('React\Promise\Deferred', $oc->getDeferred());
+        self::assertEquals('abc', $oc->getUniqid());
     }
 }

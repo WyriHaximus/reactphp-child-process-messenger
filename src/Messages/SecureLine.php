@@ -1,59 +1,66 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
-class SecureLine implements LineInterface
+use Exception;
+
+use function base64_encode;
+use function hash_equals;
+use function hash_hmac;
+use function Safe\base64_decode;
+use function Safe\json_encode;
+
+final class SecureLine implements LineInterface
 {
-    /**
-     * @var Line
-     */
-    protected $line;
+    protected ActionableMessageInterface $line;
+
+    protected string $key;
 
     /**
-     * @var string
+     * @param array<string, mixed> $options
      */
-    protected $key;
-
-    /**
-     * @param \JsonSerializable $line
-     * @param array             $options
-     */
-    public function __construct(\JsonSerializable $line, array $options)
+    public function __construct(ActionableMessageInterface $line, array $options)
     {
         $this->line = $line;
         $this->key  = $options['key'];
     }
 
-    /**
-     * @return string
-     */
-    public function __toString()
+    public function __toString(): string
     {
-        $line = \json_encode($this->line);
+        $line = json_encode($this->line);
 
-        return \json_encode([
+        return json_encode([
             'type' => 'secure',
             'line' => $line,
-            'signature' => \base64_encode(static::sign($line, $this->key)),
+            'signature' => base64_encode(static::sign($line, $this->key)),
         ]) . LineInterface::EOL;
     }
 
-    public static function fromLine($line, array $lineOptions)
+    /**
+     * @param array<mixed> $line
+     * @param array<mixed> $lineOptions
+     *
+     * @throws Exception
+     */
+    public static function fromLine(array $line, array $lineOptions): ActionableMessageInterface
     {
-        if (static::validate(\base64_decode($line['signature'], true), $line['line'], $lineOptions['key'])) {
+        if (static::validate(base64_decode($line['signature'], true), $line['line'], $lineOptions['key'])) {
             return Factory::fromLine($line['line'], $lineOptions);
         }
 
-        throw new \Exception('Signature mismatch!');
+        /** @phpstan-ignore-next-line  */
+        throw new Exception('Signature mismatch!');
     }
 
-    protected static function sign($line, $key)
+    private static function sign(string $line, string $key): string
     {
-        return \hash_hmac('sha256', $line, $key, true);
+        return hash_hmac('sha256', $line, $key, true);
     }
 
-    protected static function validate($signature, $line, $key)
+    private static function validate(string $signature, string $line, string $key): bool
     {
-        return \hash_equals($signature, static::sign($line, $key));
+        return hash_equals($signature, static::sign($line, $key));
     }
 }

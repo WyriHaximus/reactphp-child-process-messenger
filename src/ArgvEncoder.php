@@ -1,20 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\ChildProcess\Messenger;
+
+use function base64_encode;
+use function Safe\base64_decode;
+use function serialize;
+use function strlen;
+use function unserialize;
 
 final class ArgvEncoder
 {
-    public static function encode(array $argv)
+    /**
+     * @param array<string> $argv
+     */
+    public static function encode(array $argv): string
     {
-        return \base64_encode(\serialize($argv));
+        return base64_encode(serialize($argv));
     }
 
-    public static function decode($argv)
+    /**
+     * @return array<mixed>
+     */
+    public static function decode(string $argv): array
     {
-        if (\strlen($argv) == 0) {
+        if (strlen($argv) === 0) {
             return [];
         }
 
-        return \unserialize(\base64_decode($argv, true));
+        return unserialize(base64_decode($argv, true));
     }
 }

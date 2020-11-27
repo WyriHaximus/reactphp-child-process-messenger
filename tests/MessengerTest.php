@@ -1,46 +1,54 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 
-use PHPUnit\Framework\TestCase;
+use WyriHaximus\TestUtilities\TestCase;
 use Prophecy\Argument;
 use React\EventLoop\Factory;
+use React\Socket\ConnectionInterface;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
+use WyriHaximus\React\ChildProcess\Messenger\ProcessUnexpectedEndException;
 use WyriHaximus\React\Tests\ChildProcess\Messenger\Stub\ConnectionStub;
 
-class MessengerTest extends TestCase
+use function Clue\React\Block\await;
+use function React\Promise\Stream\first;
+
+final class MessengerTest extends TestCase
 {
-    public function testSetAndHasRpc()
+    public function testSetAndHasRpc(): void
     {
-        $connection = $this->prophesize('React\Socket\ConnectionInterface');
+        $connection = $this->prophesize(ConnectionInterface::class);
         $connection->on('data', Argument::type('callable'))->shouldBeCalled();
         $connection->on('close', Argument::type('callable'))->shouldBeCalled();
         $messenger = new Messenger($connection->reveal());
 
-        $payload = [
+        $payload       = [
             'a',
             'b',
             'c',
         ];
         $callableFired = false;
-        $callable = function (array $passedPayload) use (&$callableFired, $payload) {
-            $this->assertEquals($payload, $passedPayload);
+        $callable      = function ($passedPayload) use (&$callableFired, $payload): void {
+            self::assertEquals($payload, $passedPayload);
             $callableFired = true;
         };
 
         $messenger->registerRpc('test', $callable);
-        $this->assertFalse($messenger->hasRpc('tset'));
-        $this->assertTrue($messenger->hasRpc('test'));
+        self::assertFalse($messenger->hasRpc('tset'));
+        self::assertTrue($messenger->hasRpc('test'));
 
-        $messenger->callRpc('test', $payload);
+        $messenger->callRpc('test', new Payload($payload));
 
-        $this->assertTrue($callableFired);
+        self::assertTrue($callableFired);
 
         $messenger->deregisterRpc('test');
-        $this->assertFalse($messenger->hasRpc('test'));
+        self::assertFalse($messenger->hasRpc('test'));
     }
 
-    public function testMessage()
+    public function testMessage(): void
     {
         $connection = $this->prophesize('React\Socket\ConnectionInterface');
         $connection->on('data', Argument::type('callable'))->shouldBeCalled();
@@ -49,12 +57,10 @@ class MessengerTest extends TestCase
 
         $messenger = new Messenger($connection->reveal());
 
-        $messenger->message(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::message([
-            'foo' => 'bar',
-        ]));
+        $messenger->message(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::message(['foo' => 'bar']));
     }
 
-    public function testError()
+    public function testError(): void
     {
         $connection = $this->prophesize('React\Socket\ConnectionInterface');
         $connection->on('data', Argument::type('callable'))->shouldBeCalled();
@@ -63,12 +69,10 @@ class MessengerTest extends TestCase
 
         $messenger = new Messenger($connection->reveal());
 
-        $messenger->error(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::error([
-            'foo' => 'bar',
-        ]));
+        $messenger->error(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::error(new \Exception('foo:bar')));
     }
 
-    public function testRpc()
+    public function testRpc(): void
     {
         $connection = $this->prophesize('React\Socket\ConnectionInterface');
         $connection->on('data', Argument::type('callable'))->shouldBeCalled();
@@ -77,38 +81,36 @@ class MessengerTest extends TestCase
 
         $messenger = new Messenger($connection->reveal());
 
-        $messenger->rpc(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::rpc('target', [
-            'foo' => 'bar',
-        ]));
+        $messenger->rpc(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::rpc('target', ['foo' => 'bar']));
     }
 
-    public function testEmitOnData()
+    public function testEmitOnData(): void
     {
         $connection = new ConnectionStub();
 
         $cbCalled = false;
-        (new Messenger($connection))->on('data', function ($data) use (&$cbCalled) {
-            $this->assertEquals('bar.foo', $data);
+        (new Messenger($connection))->on('data', function ($data) use (&$cbCalled): void {
+            self::assertEquals('bar.foo', $data);
             $cbCalled = true;
         });
 
         $connection->emit('data', ['bar.foo']);
 
-        $this->assertTrue($cbCalled);
+        self::assertTrue($cbCalled);
     }
 
-    public function testCrashed()
+    public function testCrashed(): void
     {
-        $this->setExpectedException('WyriHaximus\React\ChildProcess\Messenger\ProcessUnexpectedEndException');
+        self::expectException(ProcessUnexpectedEndException::class);
 
-        $loop = Factory::create();
+        $loop       = Factory::create();
         $connection = new ConnectionStub();
 
         $messenger = new Messenger($connection);
-        $loop->futureTick(function () use ($messenger) {
+        $loop->futureTick(static function () use ($messenger): void {
             $messenger->crashed(123);
         });
 
-        throw \Clue\React\Block\await(\React\Promise\Stream\first($messenger, 'error'), $loop);
+        throw await(first($messenger, 'error'), $loop); /** @phpstan-ignore-line  */
     }
 }

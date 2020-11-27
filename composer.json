@@ -10,27 +10,31 @@
         }
     ],
     "require": {
-        "php": "^7.0 || ^5.4",
+        "php": "^7.4",
+        "ext-json": "^7.4",
         "cakephp/utility": "^3.4",
         "doctrine/inflector": "^1.0",
         "evenement/evenement": "^3.0 || ^2.0 || ^1.0",
         "indigophp/hash-compat": "^1.0",
         "paragonie/random_compat": "^9.0 || ^2.0",
-        "react/child-process": "^0.6 || ^0.5 | ^0.4",
-        "react/promise": "^2.2",
-        "react/promise-stream": "^1.1",
+        "react/child-process": "^0.6",
+        "react/promise": "^2.8",
+        "react/promise-stream": "^1.2",
         "react/promise-timer": "^1.5",
-        "react/socket": "^1.0 || ^0.8.1",
-        "wyrihaximus/file-descriptors": "^1.0 || ^0.1",
-        "wyrihaximus/json-throwable": "^2.0 || ^1.1.1",
-        "wyrihaximus/ticking-promise": "^1.4"
+        "react/socket": "^1",
+        "thecodingmachine/safe": "^1.3",
+        "wyrihaximus/file-descriptors": "^1.1",
+        "wyrihaximus/json-throwable": "^4 || ^3 || ^2 || ^1.1.1",
+        "wyrihaximus/ticking-promise": "^2 || ^1.4"
     },
     "require-dev": {
-        "clue/block-react": "^1.2",
-        "friendsofphp/php-cs-fixer": "^2.2",
-        "jakub-onderka/php-console-highlighter": "^0.4",
-        "jakub-onderka/php-parallel-lint": "^1.0.0",
-        "phpunit/phpunit": "^4.8.35||^5.0||^6.0"
+        "wyrihaximus/async-test-utilities": "^3.3.1"
+    },
+    "config": {
+        "platform": {
+            "php": "7.4.7"
+        },
+        "sort-packages": true
     },
     "autoload": {
         "psr-4": {
@@ -45,63 +49,12 @@
             "examples/ExamplesChildProcess.php"
         ]
     },
-    "config": {
-        "sort-packages": true,
-        "platform": {
-            "php": "5.4"
-        }
-    },
     "scripts": {
-        "ensure-installed": "composer install --ansi -n -q",
-        "cs": [
-            "@ensure-installed",
-            "php-cs-fixer fix --config=.php_cs --ansi --dry-run --diff --verbose --allow-risky=yes --show-progress=estimating"
+        "post-install-cmd": [
+            "composer normalize"
         ],
-        "cs-fix": [
-            "@ensure-installed",
-            "php-cs-fixer fix --config=.php_cs --ansi --verbose --allow-risky=yes --show-progress=estimating"
-        ],
-        "unit": [
-            "@ensure-installed",
-            "phpunit --colors=always -c phpunit.xml.dist"
-        ],
-        "unit-coverage": [
-            "@ensure-installed",
-            "phpunit --colors=always -c phpunit.xml.dist --coverage-text --coverage-html covHtml --coverage-clover ./build/logs/clover.xml"
-        ],
-        "lint-php": [
-            "@ensure-installed",
-            "parallel-lint --exclude vendor ."
-        ],
-        "qa-all": [
-            "@lint-php",
-            "@cs",
-            "@unit"
-        ],
-        "qa-all-coverage": [
-            "@lint-php",
-            "@cs",
-            "@unit-coverage"
-        ],
-        "qa-windows": [
-            "@lint-php",
-            "@cs",
-            "@unit"
-        ],
-        "qa-ci": [
-            "@unit"
-        ],
-        "qa-ci-extended": [
-            "@qa-all-coverage"
-        ],
-        "qa-ci-windows": [
-            "@qa-windows"
-        ],
-        "qa-contrib": [
-            "@qa-all"
-        ],
-        "ci-coverage": [
-            "if [ -f ./build/logs/clover.xml ]; then wget https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover ./build/logs/clover.xml; fi"
+        "post-update-cmd": [
+            "composer normalize"
         ]
     }
 }

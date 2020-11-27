@@ -1,67 +1,77 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Stub;
 
-use Evenement\EventEmitter;
+use Evenement\EventEmitterTrait;
 use React\Socket\ConnectionInterface;
 use React\Stream\Util;
 use React\Stream\WritableStreamInterface;
 
-class ConnectionStub extends EventEmitter implements ConnectionInterface
+final class ConnectionStub implements ConnectionInterface
 {
-    private $data = '';
+    use EventEmitterTrait;
 
-    public function isReadable()
+    private string $data = '';
+
+    public function isReadable(): bool
     {
         return true;
     }
 
-    public function isWritable()
+    public function isWritable(): bool
     {
         return true;
     }
 
-    public function pause()
+    public function pause(): void
     {
     }
 
-    public function resume()
+    public function resume(): void
     {
     }
 
-    public function pipe(WritableStreamInterface $dest, array $options = [])
+    /**
+     * @param array<mixed> $options
+     */
+    public function pipe(WritableStreamInterface $dest, array $options = []): WritableStreamInterface
     {
         Util::pipe($this, $dest, $options);
 
         return $dest;
     }
 
-    public function write($data)
+    // phpcs:disabled
+    public function write($data): bool
     {
         $this->data .= $data;
 
         return true;
     }
 
-    public function end($data = null)
+    // phpcs:disabled
+    /** @phpstan-ignore-next-line */
+    public function end($data = null): void
     {
     }
 
-    public function close()
+    public function close(): void
     {
     }
 
-    public function getData()
+    public function getData(): string
     {
         return $this->data;
     }
 
-    public function getRemoteAddress()
+    public function getRemoteAddress(): string
     {
         return '127.0.0.1';
     }
 
-    public function getLocalAddress()
+    public function getLocalAddress(): string
     {
         return '127.0.0.1';
     }

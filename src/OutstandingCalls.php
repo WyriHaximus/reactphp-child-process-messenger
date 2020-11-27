@@ -1,55 +1,51 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\ChildProcess\Messenger;
 
-class OutstandingCalls
-{
-    /**
-     * @var OutstandingCall[]
-     */
-    protected $calls = [];
+use Closure;
 
-    /**
-     * @param  callable        $canceller
-     * @return OutstandingCall
-     */
-    public function newCall(callable $canceller = null)
+use function array_key_exists;
+use function array_values;
+use function bin2hex;
+use function microtime;
+use function random_bytes;
+
+final class OutstandingCalls
+{
+    /** @var array<OutstandingCall> */
+    protected array $calls = [];
+
+    public function newCall(Closure $canceller): OutstandingCall
     {
         $uniqid = $this->getNewUniqid();
 
-        $this->calls[$uniqid] = new OutstandingCall($uniqid, $canceller, function (OutstandingCall $call) {
+        $this->calls[$uniqid] = new OutstandingCall($uniqid, $canceller, function (OutstandingCall $call): void {
             unset($this->calls[$call->getUniqid()]);
         });
 
         return $this->calls[$uniqid];
     }
 
-    /**
-     * @param string $uniqid
-     *
-     * @return OutstandingCall
-     */
-    public function getCall($uniqid)
+    public function getCall(string $uniqid): OutstandingCall
     {
         return $this->calls[$uniqid];
     }
 
     /**
-     * @return array
+     * @return array<OutstandingCall>
      */
-    public function getCalls()
+    public function getCalls(): array
     {
-        return \array_values($this->calls);
+        return array_values($this->calls);
     }
 
-    /**
-     * @return string
-     */
-    protected function getNewUniqid()
+    private function getNewUniqid(): string
     {
         do {
-            $uniqid = (string)\microtime(true) . '.' . \bin2hex(\random_bytes(4));
-        } while (isset($this->calls[$uniqid]));
+            $uniqid = (string) microtime(true) . '.' . bin2hex(random_bytes(4));
+        } while (array_key_exists($uniqid, $this->calls));
 
         return $uniqid;
     }

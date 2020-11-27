@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\ChildProcess\Messenger;
 
 use Exception;

@@ -1,40 +1,48 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
 use Cake\Utility\Hash;
-use Exception;
 use Throwable;
+
+use function WyriHaximus\throwable_encode;
 
 final class LineEncoder
 {
-    const META_KEY = 'a';
-    const TYPE_KEY = 'b';
-    const VALUE_KEY = 'c';
-    const THROWABLES_KEY = 'd';
-    const TYPE_THROWABLE = 'e';
-    const TYPE_ARRAY = 'f';
+    public const META_KEY       = 'a';
+    public const TYPE_KEY       = 'b';
+    public const VALUE_KEY      = 'c';
+    public const THROWABLES_KEY = 'd';
+    public const TYPE_THROWABLE = 'e';
+    public const TYPE_ARRAY     = 'f';
 
-    public static function encode($line)
+    /**
+     * @param array<mixed>|Throwable $line
+     *
+     * @return array<mixed>
+     */
+    public static function encode($line): array
     {
-        if ($line instanceof Exception || $line instanceof Throwable) {
+        if ($line instanceof Throwable) {
             return [
                 self::META_KEY => [
                     self::TYPE_KEY => self::TYPE_THROWABLE,
                 ],
-                self::VALUE_KEY => \WyriHaximus\throwable_encode($line),
+                self::VALUE_KEY => throwable_encode($line),
             ];
         }
 
         $throwables = [];
-        $line = Hash::flatten($line);
+        $line       = Hash::flatten($line);
         foreach ($line as $key => $value) {
-            if (!($value instanceof Exception) && !($value instanceof Throwable)) {
+            if (! ($value instanceof Throwable)) {
                 continue;
             }
 
             $throwables[] = $key;
-            $line[$key] = \WyriHaximus\throwable_encode($value);
+            $line[$key]   = throwable_encode($value);
         }
 
         return [
