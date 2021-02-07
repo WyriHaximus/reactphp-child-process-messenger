@@ -1,58 +1,61 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\ChildProcess\Messenger;
 
-use Evenement\EventEmitter;
+use Evenement\EventEmitterInterface;
+use Evenement\EventEmitterTrait;
+use Exception;
 use React\Promise\PromiseInterface;
-use React\Promise\RejectedPromise;
 use React\Socket\ConnectionInterface;
+use Throwable;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\ActionableMessageInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Error;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessagesFactory;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Line;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\LineInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Message;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc;
 
-class Messenger extends EventEmitter
+use function array_key_exists;
+use function array_pop;
+use function count;
+use function explode;
+use function React\Promise\reject;
+use function strpos;
+
+final class Messenger implements EventEmitterInterface
 {
-    const INTERVAL = 0.1;
-    const TERMINATE_RPC = 'wyrihaximus.react.child-process.messenger.terminate';
+    use EventEmitterTrait;
 
-    /**
-     * @var ConnectionInterface
-     */
-    protected $connection;
+    public const INTERVAL      = 0.1;
+    public const TERMINATE_RPC = 'wyrihaximus.react.child-process.messenger.terminate';
 
-    /**
-     * @var OutstandingCalls
-     */
-    protected $outstandingRpcCalls;
+    protected ConnectionInterface $connection;
 
-    /**
-     * @var array
-     */
-    protected $rpcs = [];
+    protected OutstandingCalls $outstandingRpcCalls;
 
-    /**
-     * @var array
-     */
-    protected $options = [];
+    /** @var array<mixed> */
+    protected array $rpcs = [];
 
-    /**
-     * @var string[]
-     */
-    protected $buffer = '';
+    /** @var array<mixed> */
+    protected array $options = [];
 
-    protected $defaultOptions = [
-        'lineClass' => 'WyriHaximus\React\ChildProcess\Messenger\Messages\Line',
-        'messageFactoryClass' => 'WyriHaximus\React\ChildProcess\Messenger\Messages\Factory',
+    protected string $buffer = '';
+
+    /** @var array<string, class-string|array<mixed>> */
+    protected array $defaultOptions = [
+        'lineClass' => Line::class,
+        'messageFactoryClass' => MessagesFactory::class,
         'lineOptions' => [],
     ];
 
     /**
-     * Messenger constructor.
-     * @param ConnectionInterface $connection
-     * @param array               $options
+     * @param array<string, class-string|array<mixed>> $options
+     *
+     * @phpstan-ignore-next-line
      */
     public function __construct(
         ConnectionInterface $connection,
@@ -64,104 +67,74 @@ class Messenger extends EventEmitter
 
         $this->outstandingRpcCalls = new OutstandingCalls();
 
-        $this->connection->on('data', function ($data) {
+        $this->connection->on('data', function ($data): void {
             $this->buffer .= $data;
             $this->emit('data', [$data]);
             $this->handleData();
         });
-        $this->connection->on('close', function () {
+        $this->connection->on('close', function (): void {
             $calls = $this->outstandingRpcCalls->getCalls();
-            if (\count($calls) === 0) {
+            if (count($calls) === 0) {
                 return;
             }
+
             $error = new CommunicationWithProcessUnexpectedEndException();
             $this->emit('error', [$error, $this]);
-            /** @var OutstandingCall $call */
             foreach ($calls as $call) {
                 $call->reject($error);
             }
         });
     }
 
-    /**
-     * @param string   $target
-     * @param callable $listener
-     */
-    public function registerRpc($target, callable $listener)
+    public function registerRpc(string $target, callable $listener): void
     {
         $this->rpcs[$target] = $listener;
     }
 
-    /**
-     * @param string $target
-     */
-    public function deregisterRpc($target)
+    public function deregisterRpc(string $target): void
     {
         unset($this->rpcs[$target]);
     }
 
-    /**
-     * @param  string $target
-     * @return bool
-     */
-    public function hasRpc($target)
+    public function hasRpc(string $target): bool
     {
-        return isset($this->rpcs[$target]);
+        return array_key_exists($target, $this->rpcs);
     }
 
-    /**
-     * @param $target
-     * @param $payload
-     * @return React\Promise\PromiseInterface
-     */
-    public function callRpc($target, $payload)
+    public function callRpc(string $target, Payload $payload): PromiseInterface
     {
         try {
-            $promise = $this->rpcs[$target]($payload, $this);
+            $promise = $this->rpcs[$target]($payload->getPayload(), $this);
             if ($promise instanceof PromiseInterface) {
                 return $promise;
             }
 
-            throw new \Exception('RPC must return promise');
-        } catch (\Exception $exception) {
-            return new RejectedPromise($exception);
-        } catch (\Throwable $exception) {
-            return new RejectedPromise($exception);
+            /** @phpstan-ignore-next-line  */
+            throw new Exception('RPC must return promise');
+            /** @phpstan-ignore-next-line  */
+        } catch (Throwable $exception) {
+            return reject($exception);
         }
     }
 
-    /**
-     * @param Message $message
-     */
-    public function message(Message $message)
+    public function message(Message $message): void
     {
         $this->write($this->createLine($message));
     }
 
-    /**
-     * @param Error $error
-     */
-    public function error(Error $error)
+    public function error(Error $error): void
     {
         $this->write($this->createLine($error));
     }
 
-    /**
-     * @param  string          $uniqid
-     * @return OutstandingCall
-     */
-    public function getOutstandingCall($uniqid)
+    public function getOutstandingCall(string $uniqid): OutstandingCall
     {
         return $this->outstandingRpcCalls->getCall($uniqid);
     }
 
-    /**
-     * @param  Rpc                    $rpc
-     * @return \React\Promise\Promise
-     */
-    public function rpc(Rpc $rpc)
+    public function rpc(Rpc $rpc): PromiseInterface
     {
-        $callReference = $this->outstandingRpcCalls->newCall(function () {
+        $callReference = $this->outstandingRpcCalls->newCall(function (): void {
         });
 
         $this->write($this->createLine($rpc->setUniqid($callReference->getUniqid())));
@@ -169,61 +142,52 @@ class Messenger extends EventEmitter
         return $callReference->getDeferred()->promise();
     }
 
-    /**
-     * @param  ActionableMessageInterface $line
-     * @return LineInterface
-     */
-    public function createLine(ActionableMessageInterface $line)
+    public function createLine(ActionableMessageInterface $line): string
     {
         $lineCLass = $this->options['lineClass'];
 
         return (string) new $lineCLass($line, $this->options['lineOptions']);
     }
 
-    /**
-     * @return \React\Promise\Promise
-     */
-    public function softTerminate()
+    public function softTerminate(): PromiseInterface
     {
-        return $this->rpc(MessagesFactory::rpc(static::TERMINATE_RPC));
+        return $this->rpc(MessagesFactory::rpc(self::TERMINATE_RPC));
     }
 
-    /**
-     * @param string $line
-     */
-    public function write($line)
+    public function write(string $line): void
     {
         $this->connection->write($line);
     }
 
     /**
-     * @param int|null $exitCode
      * @internal
      */
-    public function crashed($exitCode)
+    public function crashed(int $exitCode): void
     {
         $this->emit('error', [new ProcessUnexpectedEndException($exitCode), $this]);
     }
 
-    private function handleData()
+    private function handleData(): void
     {
-        if (\strpos($this->buffer, LineInterface::EOL) === false) {
+        if (strpos($this->buffer, LineInterface::EOL) === false) {
             return;
         }
 
-        $messages = \explode(LineInterface::EOL, $this->buffer);
-        $this->buffer = \array_pop($messages);
+        $messages     = explode(LineInterface::EOL, $this->buffer);
+        $this->buffer = array_pop($messages);
         $this->iterateMessages($messages);
     }
 
-    private function iterateMessages(array $messages)
+    /**
+     * @param array<string> $messages
+     */
+    private function iterateMessages(array $messages): void
     {
         foreach ($messages as $message) {
             try {
                 MessagesFactory::fromLine($message, [])->handle($this, 'source');
-            } catch (\Exception $exception) {
-                $this->emit('error', [$exception, $this]);
-            } catch (\Throwable $exception) {
+                /** @phpstan-ignore-next-line  */
+            } catch (Throwable $exception) {
                 $this->emit('error', [$exception, $this]);
             }
         }

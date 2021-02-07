@@ -1,23 +1,25 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
-use PHPUnit\Framework\TestCase;
+use WyriHaximus\TestUtilities\TestCase;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Message;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 
-class MessageTest extends TestCase
+use function Safe\json_encode;
+
+final class MessageTest extends TestCase
 {
-    public function testBasic()
+    public function testBasic(): void
     {
-        $payload = new Payload([
-            'foo' => 'bar',
-        ]);
+        $payload = new Payload(['foo' => 'bar']);
         $message = new Message($payload);
 
-        $this->assertSame($payload, $message->getPayload());
+        self::assertSame($payload, $message->getPayload());
 
-        $this->assertEquals('{"type":"message","payload":{"foo":"bar"}}', \json_encode($message));
+        self::assertEquals('{"type":"message","payload":{"foo":"bar"}}', json_encode($message));
 
         $em = $this->prophesize('Evenement\EventEmitter');
         $em->emit('message', [$payload, $em])->shouldBeCalled();

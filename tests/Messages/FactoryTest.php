@@ -1,28 +1,40 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
-use PHPUnit\Framework\TestCase;
+use Exception;
+use WyriHaximus\TestUtilities\TestCase;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Error;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\LineEncoder;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\LineInterface;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Message;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\RpcError;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\RpcNotify;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\RpcSuccess;
 
-class FactoryTest extends TestCase
+use function Safe\json_encode;
+
+final class FactoryTest extends TestCase
 {
-    const KEY = 'abc';
+    public const KEY = 'abc';
 
-    public function providerFromLine()
+    /**
+     * @return iterable<array<string|callable|array>>
+     */
+    public function providerFromLine(): iterable
     {
-        $exception = new \Exception('angry unicorn');
+        $exception = new Exception('angry unicorn');
 
         return [
             [
                 '{"type":"message","payload":["foo","bar"]}' . LineInterface::EOL,
-                function ($message) {
-                    $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\Message', $message);
-                    $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\Payload', $message->getPayload());
-                    $this->assertSame([
+                static function (Message $message): bool {
+                    self::assertSame([
                         'foo',
                         'bar',
                     ], $message->getPayload()->getPayload());
@@ -31,21 +43,18 @@ class FactoryTest extends TestCase
                 },
             ],
             [
-                '{"type":"error","payload":' . \json_encode(LineEncoder::encode($exception)) . '}' . LineInterface::EOL,
-                function ($message) use ($exception) {
-                    $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\Error', $message);
-                    $this->assertInstanceOf('Exception', $message->getPayload());
-                    $this->assertEquals($exception, $message->getPayload());
+                '{"type":"error","payload":' . json_encode(LineEncoder::encode($exception)) . '}' . LineInterface::EOL,
+                static function (Error $message) use ($exception): bool {
+                    self::assertInstanceOf('Exception', $message->getPayload());
+                    self::assertEquals($exception, $message->getPayload());
 
                     return true;
                 },
             ],
             [
                 '{"type":"rpc","uniqid":"abc","target":"foo","payload":["foo","bar"]}' . LineInterface::EOL,
-                function ($message) {
-                    $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc', $message);
-                    $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\Payload', $message->getPayload());
-                    $this->assertEquals([
+                static function (Rpc $message): bool {
+                    self::assertEquals([
                         'type' => 'rpc',
                         'uniqid' => 'abc',
                         'target' => 'foo',
@@ -59,11 +68,10 @@ class FactoryTest extends TestCase
                 },
             ],
             [
-                '{"type":"rpc_error","uniqid":"abc","payload":' . \json_encode(LineEncoder::encode($exception)) . '}' . LineInterface::EOL,
-                function ($message) use ($exception) {
-                    $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcError', $message);
-                    $this->assertInstanceOf('Exception', $message->getPayload());
-                    $this->assertEquals([
+                '{"type":"rpc_error","uniqid":"abc","payload":' . json_encode(LineEncoder::encode($exception)) . '}' . LineInterface::EOL,
+                static function (RpcError $message) use ($exception): bool {
+                    self::assertInstanceOf('Exception', $message->getPayload());
+                    self::assertEquals([
                         'type' => 'rpc_error',
                         'uniqid' => 'abc',
                         'payload' => LineEncoder::encode($exception),
@@ -74,10 +82,8 @@ class FactoryTest extends TestCase
             ],
             [
                 '{"type":"rpc_success","uniqid":"abc","payload":["foo","bar"]}' . LineInterface::EOL,
-                function ($message) {
-                    $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcSuccess', $message);
-                    $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\Payload', $message->getPayload());
-                    $this->assertEquals([
+                static function (RpcSuccess $message): bool {
+                    self::assertEquals([
                         'type' => 'rpc_success',
                         'uniqid' => 'abc',
                         'payload' => new Payload([
@@ -91,10 +97,8 @@ class FactoryTest extends TestCase
             ],
             [
                 '{"type":"rpc_notify","uniqid":"abc","payload":["foo","bar"]}' . LineInterface::EOL,
-                function ($message) {
-                    $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcNotify', $message);
-                    $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\Payload', $message->getPayload());
-                    $this->assertEquals([
+                static function (RpcNotify $message): bool {
+                    self::assertEquals([
                         'type' => 'rpc_notify',
                         'uniqid' => 'abc',
                         'payload' => new Payload([
@@ -108,10 +112,8 @@ class FactoryTest extends TestCase
             ],
             [
                 '{"type":"secure","line":"{\"type\":\"rpc\",\"uniqid\":1234567890,\"target\":\"foo\",\"payload\":[\"bar\",\"baz\"]}","signature":"r7TvJ\/AuvAY7dKZ+7wQyI0PdyLivANZzPB35j8Xuyps="}' . LineInterface::EOL,
-                function ($message) {
-                    $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc', $message);
-                    $this->assertInstanceOf('WyriHaximus\React\ChildProcess\Messenger\Messages\Payload', $message->getPayload());
-                    $this->assertEquals([
+                static function (Rpc $message): bool {
+                    self::assertEquals([
                         'type' => 'rpc',
                         'uniqid' => 1234567890,
                         'payload' => new Payload([
@@ -124,27 +126,29 @@ class FactoryTest extends TestCase
                     return true;
                 },
                 [
-                    'key' => static::KEY,
+                    'key' => self::KEY,
                 ],
             ],
         ];
     }
 
     /**
+     * @param mixed        $input
+     * @param array<mixed> $lineOptions
+     *
      * @dataProvider providerFromLine
-     * @param mixed $input
      */
-    public function testFromLine($input, callable $tests, array $lineOptions = [])
+    public function testFromLine($input, callable $tests, array $lineOptions = []): void
     {
         $line = Factory::fromLine($input, $lineOptions);
-        $this->assertTrue($tests($line));
+        self::assertTrue($tests($line));
     }
 
     /**
      * @expectedException Exception
      * @expectedExceptionMessage Unknown message type: massage
      */
-    public function testFromLineException()
+    public function testFromLineException(): void
     {
         Factory::fromLine('{"type":"massage","payload":["foo","bar"]}' . LineInterface::EOL, []);
     }

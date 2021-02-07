@@ -1,41 +1,34 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
-class RpcNotify implements \JsonSerializable, ActionableMessageInterface
+use Closure;
+use JsonSerializable;
+use WyriHaximus\React\ChildProcess\Messenger\Messenger;
+
+final class RpcNotify implements JsonSerializable, ActionableMessageInterface
 {
-    /**
-     * @var string
-     */
-    protected $uniqid;
+    protected string $uniqid;
 
-    /**
-     * @var Payload
-     */
-    protected $payload;
+    protected Payload $payload;
 
-    /**
-     * @param string  $uniqid
-     * @param Payload $payload
-     */
-    public function __construct($uniqid, Payload $payload)
+    public function __construct(string $uniqid, Payload $payload)
     {
-        $this->uniqid = $uniqid;
+        $this->uniqid  = $uniqid;
         $this->payload = $payload;
     }
 
-    /**
-     * @return Payload
-     */
-    public function getPayload()
+    public function getPayload(): Payload
     {
         return $this->payload;
     }
 
     /**
-     * @return string
+     * @return array<string,string|mixed>
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'type' => 'rpc_notify',
@@ -44,15 +37,11 @@ class RpcNotify implements \JsonSerializable, ActionableMessageInterface
         ];
     }
 
-    /**
-     * @param $bindTo
-     * @param $source
-     */
-    public function handle($bindTo, $source)
+    public function handle(Messenger $bindTo, string $source): void
     {
-        $cb = function ($payload, $uniqid) {
-            $this->getOutstandingCall($uniqid)->progress($payload);
-        };
+        $cb = Closure::fromCallable(function ($payload, $uniqid): void {
+            $this->getOutstandingCall($uniqid)->progress($payload); /** @phpstan-ignore-line  */
+        });
         $cb = $cb->bindTo($bindTo);
         $cb($this->payload, $this->uniqid);
     }

@@ -1,39 +1,43 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
-use PHPUnit\Framework\TestCase;
+use Exception;
+use WyriHaximus\TestUtilities\TestCase;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\LineEncoder;
 
-class LineEncoderTest extends TestCase
+use function WyriHaximus\throwable_encode;
+
+final class LineEncoderTest extends TestCase
 {
-    public function provideLines()
+    /**
+     * @return iterable<array<Exception|array<mixed>>>
+     */
+    public function provideLines(): iterable
     {
         $lines = [];
 
-        $exception = new \Exception('whoops');
-        $lines[] = [
+        $exception = new Exception('whoops');
+        $lines[]   = [
             $exception,
             [
                 LineEncoder::META_KEY => [
                     LineEncoder::TYPE_KEY => LineEncoder::TYPE_THROWABLE,
                 ],
-                LineEncoder::VALUE_KEY => \WyriHaximus\throwable_encode($exception),
+                LineEncoder::VALUE_KEY => throwable_encode($exception),
             ],
         ];
 
         $lines[] = [
-            [
-                'foo' => 'bar',
-            ],
+            ['foo' => 'bar'],
             [
                 LineEncoder::META_KEY => [
                     LineEncoder::TYPE_KEY => LineEncoder::TYPE_ARRAY,
                     LineEncoder::THROWABLES_KEY => [],
                 ],
-                LineEncoder::VALUE_KEY => [
-                    'foo' => 'bar',
-                ],
+                LineEncoder::VALUE_KEY => ['foo' => 'bar'],
             ],
         ];
 
@@ -43,9 +47,7 @@ class LineEncoderTest extends TestCase
                 'bar' => [
                     'level1' => [
                         $exception,
-                        [
-                            'level2' => $exception,
-                        ],
+                        ['level2' => $exception],
                     ],
                 ],
                 'boom' => $exception,
@@ -61,9 +63,9 @@ class LineEncoderTest extends TestCase
                 ],
                 LineEncoder::VALUE_KEY => [
                     'foo' => 'bar',
-                    'bar.level1.0' => \WyriHaximus\throwable_encode($exception),
-                    'bar.level1.1.level2' => \WyriHaximus\throwable_encode($exception),
-                    'boom' => \WyriHaximus\throwable_encode($exception),
+                    'bar.level1.0' => throwable_encode($exception),
+                    'bar.level1.1.level2' => throwable_encode($exception),
+                    'boom' => throwable_encode($exception),
                 ],
             ],
         ];
@@ -72,13 +74,14 @@ class LineEncoderTest extends TestCase
     }
 
     /**
-     * @param mixed $in
-     * @param array $out
+     * @param mixed        $in
+     * @param array<mixed> $out
+     *
      * @dataProvider provideLines
      */
-    public function testLines($in, array $out)
+    public function testLines($in, array $out): void
     {
         $encodedLine = LineEncoder::encode($in);
-        $this->assertSame($out, $encodedLine);
+        self::assertSame($out, $encodedLine);
     }
 }

@@ -1,27 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
-use PHPUnit\Framework\TestCase;
+use WyriHaximus\TestUtilities\TestCase;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\ActionableMessageInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Line;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\LineInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc;
 
-class LineTest extends TestCase
+final class LineTest extends TestCase
 {
-    public function providerBasic()
+    /**
+     * @return iterable<array<Rpc|string>>
+     */
+    public function providerBasic(): iterable
     {
         return [
             [
                 new Rpc(
                     'foo',
-                    new Payload([
-                        'bar' => 'baz',
-                    ]),
-                    1234567890
+                    new Payload(['bar' => 'baz']),
+                    'u7tfiygouhp089786i7ftuigvyouh9'
                 ),
-                '{"type":"rpc","uniqid":1234567890,"target":"foo","payload":{"bar":"baz"}}' . LineInterface::EOL,
+                '{"type":"rpc","uniqid":"u7tfiygouhp089786i7ftuigvyouh9","target":"foo","payload":{"bar":"baz"}}' . LineInterface::EOL,
             ],
             [
                 new Rpc(
@@ -30,21 +34,22 @@ class LineTest extends TestCase
                         'bar',
                         'baz',
                     ]),
-                    1234567890
+                    'oisuerhfuahugoireu'
                 ),
-                '{"type":"rpc","uniqid":1234567890,"target":"foo","payload":["bar","baz"]}' . LineInterface::EOL,
+                '{"type":"rpc","uniqid":"oisuerhfuahugoireu","target":"foo","payload":["bar","baz"]}' . LineInterface::EOL,
             ],
         ];
     }
 
     /**
-     * @dataProvider providerBasic
      * @param mixed $output
+     *
+     * @dataProvider providerBasic
      */
-    public function testBasic(\JsonSerializable $input, $output)
+    public function testBasic(ActionableMessageInterface $input, $output): void
     {
         $line = new Line($input, []);
-        $this->assertSame($input, $line->getPayload());
-        $this->assertEquals($output, (string)$line);
+        self::assertSame($input, $line->getPayload());
+        self::assertEquals($output, (string)$line);
     }
 }

@@ -1,37 +1,30 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
-use Exception;
+use JsonSerializable;
 use Throwable;
 
-class Error implements \JsonSerializable, ActionableMessageInterface
+final class Error implements JsonSerializable, ActionableMessageInterface
 {
-    /**
-     * @var Exception|Throwable
-     */
-    protected $payload;
+    protected Throwable $payload;
 
-    /**
-     * @param Exception|Throwable $payload
-     */
-    public function __construct($payload)
+    public function __construct(Throwable $payload)
     {
         $this->payload = $payload;
     }
 
-    /**
-     * @return Exception|Throwable
-     */
-    public function getPayload()
+    public function getPayload(): Throwable
     {
         return $this->payload;
     }
 
     /**
-     * @return string
+     * @return array<string,string|Throwable>
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'type' => 'error',
@@ -39,14 +32,10 @@ class Error implements \JsonSerializable, ActionableMessageInterface
         ];
     }
 
-    /**
-     * @param $bindTo
-     * @param $source
-     */
-    public function handle($bindTo, $source)
+    public function handle(object $bindTo, string $source): void
     {
-        $cb = function ($payload) {
-            $this->emit('error', [
+        $cb = function ($payload): void {
+            $this->emit('error', [ /** @phpstan-ignore-line  */
                 $payload,
                 $this,
             ]);

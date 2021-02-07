@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 
-use PHPUnit\Framework\TestCase;
+use WyriHaximus\TestUtilities\TestCase;
 use Prophecy\Argument;
 use WyriHaximus\React\ChildProcess\Messenger\Process;
 
-class ProcessTest extends TestCase
+final class ProcessTest extends TestCase
 {
-    public function testProcess()
+    public function testProcess(): void
     {
-        $loop = $this->prophesize('React\EventLoop\LoopInterface');
+        $loop      = $this->prophesize('React\EventLoop\LoopInterface');
         $messenger = $this->prophesize('WyriHaximus\React\ChildProcess\Messenger\Messenger');
         $messenger->registerRpc(Argument::type('string'), Argument::type('callable'))->shouldBeCalled();
 

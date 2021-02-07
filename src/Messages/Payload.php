@@ -1,56 +1,81 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
-class Payload implements \JsonSerializable, \ArrayAccess
-{
-    /**
-     * @var array
-     */
-    protected $payload = [];
+use ArrayAccess;
+use JsonSerializable;
+/** @phpstan-ignore-next-line  */
 
-    public function __construct(array $payload = [])
+final class Payload implements JsonSerializable, ArrayAccess /** @phpstan-ignore-line  */
+{
+    /** @var array<mixed> */
+    protected array $payload = [];
+
+    /**
+     * @param array<mixed> $payload
+     *
+     * @phpstan-ignore-next-line
+     */
+    public function __construct(array $payload = []) /** @phpstan-ignore-line  */
     {
         $this->payload = $payload;
     }
 
     /**
-     * @return array
+     * @return array<mixed>
      */
-    public function getPayload()
+    public function getPayload(): array
     {
         return $this->payload;
     }
 
     /**
-     * @return string
+     * @return array<mixed>
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->payload;
     }
 
-    public function offsetSet($offset, $value)
+    /**
+     * @param mixed|null $offset
+     * @param mixed      $value
+     */
+    public function offsetSet($offset, $value): void
     {
-        if (\is_null($offset)) {
+        if ($offset === null) {
             $this->payload[] = $value;
         } else {
             $this->payload[$offset] = $value;
         }
     }
 
-    public function offsetExists($offset)
+    /**
+     * @param mixed $offset
+     */
+    public function offsetExists($offset): bool
     {
+        /** @phpstan-ignore-next-line */
         return isset($this->payload[$offset]);
     }
 
-    public function offsetUnset($offset)
+    /**
+     * @param mixed $offset
+     */
+    public function offsetUnset($offset): void
     {
         unset($this->payload[$offset]);
     }
 
+    /**
+     * @param mixed $offset
+     *
+     * @return mixed|null
+     */
     public function offsetGet($offset)
     {
-        return isset($this->payload[$offset]) ? $this->payload[$offset] : null;
+        return $this->payload[$offset] ?? null;
     }
 }

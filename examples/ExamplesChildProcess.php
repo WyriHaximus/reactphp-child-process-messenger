@@ -8,7 +8,7 @@ use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
 final class ExamplesChildProcess implements ChildInterface
 {
-    public static function create(Messenger $messenger, LoopInterface $loop)
+    public static function create(Messenger $messenger, LoopInterface $loop): void
     {
         $messenger->registerRpc('error', function (Payload $payload) {
             throw new Exception('whoops');

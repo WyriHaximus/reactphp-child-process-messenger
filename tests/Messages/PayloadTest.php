@@ -1,30 +1,28 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
-use PHPUnit\Framework\TestCase;
+use WyriHaximus\TestUtilities\TestCase;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 
-class PayloadTest extends TestCase
+final class PayloadTest extends TestCase
 {
-    public function testBasic()
+    public function testBasic(): void
     {
-        $payload = new Payload([
-            'foo' => 'bar',
-        ]);
+        $payload = new Payload(['foo' => 'bar']);
 
-        $this->assertEquals([
-            'foo' => 'bar',
-        ], $payload->getPayload());
-        $this->assertTrue(isset($payload['foo']));
-        $this->assertEquals('bar', $payload['foo']);
+        self::assertEquals(['foo' => 'bar'], $payload->getPayload());
+        self::assertArrayHasKey('foo', $payload);
+        self::assertEquals('bar', $payload['foo']);
         $payload['ajsdhjkfad'] = 'abc';
-        $this->assertEquals('abc', $payload['ajsdhjkfad']);
+        self::assertEquals('abc', $payload['ajsdhjkfad']);
         unset($payload['ajsdhjkfad']);
-        $this->assertFalse(isset($payload['ajsdhjkfad']));
+        self::assertArrayNotHasKey('ajsdhjkfad', $payload);
         $payload[] = 'abc';
-        $this->assertEquals('abc', $payload[0]);
-        $this->assertEquals([
+        self::assertEquals('abc', $payload[0]);
+        self::assertEquals([
             'foo' => 'bar',
             0 => 'abc',
         ], $payload->getPayload());

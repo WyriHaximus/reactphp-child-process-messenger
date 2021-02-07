@@ -1,13 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Examples;
 
 use ExamplesChildProcess;
-use PHPUnit\Framework\TestCase;
+use WyriHaximus\TestUtilities\TestCase;
 
 final class ExamplesChildProcessTest extends TestCase
 {
-    public function providePrimesAndNonPrimes()
+    /**
+     * @return iterable<array<int|bool>>
+     */
+    public function providePrimesAndNonPrimes(): iterable
     {
         return [
             [
@@ -114,11 +119,12 @@ final class ExamplesChildProcessTest extends TestCase
     }
 
     /**
-     * @dataProvider providePrimesAndNonPrimes
      * @param mixed $number
      * @param mixed $isPrime
+     *
+     * @dataProvider providePrimesAndNonPrimes
      */
-    public function testIsPrime($number, $isPrime)
+    public function testIsPrime($number, $isPrime): void
     {
         self::assertSame(
             $isPrime,

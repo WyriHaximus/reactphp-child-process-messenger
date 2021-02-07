@@ -1,57 +1,43 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
-class Rpc implements \JsonSerializable, ActionableMessageInterface
+use Closure;
+use Exception;
+use JsonSerializable;
+
+final class Rpc implements JsonSerializable, ActionableMessageInterface
 {
-    /**
-     * @var string
-     */
-    protected $target;
+    protected string $target;
 
-    /**
-     * @var Payload
-     */
-    protected $payload;
+    protected Payload $payload;
 
-    /**
-     * @var string
-     */
-    protected $uniqid;
+    protected string $uniqid;
 
-    /**
-     * @param string  $target
-     * @param Payload $payload
-     * @param string  $uniqid
-     */
-    public function __construct($target, Payload $payload, $uniqid = '')
+    /** @phpstan-ignore-next-line  */
+    public function __construct(string $target, Payload $payload, string $uniqid = '') /** @phpstan-ignore-line  */
     {
-        $this->target = $target;
+        $this->target  = $target;
         $this->payload = $payload;
-        $this->uniqid = $uniqid;
+        $this->uniqid  = $uniqid;
     }
 
-    /**
-     * @return Payload
-     */
-    public function getPayload()
+    public function getPayload(): Payload
     {
         return $this->payload;
     }
 
-    /**
-     * @param $uniqid
-     * @return static
-     */
-    public function setUniqid($uniqid)
+    public function setUniqid(string $uniqid): self
     {
-        return new static($this->target, $this->payload, $uniqid);
+        return new self($this->target, $this->payload, $uniqid);
     }
 
     /**
-     * @return string
+     * @return array<string,string|mixed>
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'type' => 'rpc',
@@ -61,31 +47,27 @@ class Rpc implements \JsonSerializable, ActionableMessageInterface
         ];
     }
 
-    /**
-     * @param $bindTo
-     * @param $source
-     */
-    public function handle($bindTo, $source)
+    public function handle(object $bindTo, string $source): void
     {
-        $cb = function ($target, $payload, $uniqid) {
-            if (!$this->hasRpc($target)) {
-                $this->write($this->createLine(Factory::rpcError($uniqid, new \Exception('Target doesn\'t exist'))));
+        $cb = Closure::fromCallable(function ($target, $payload, $uniqid): void {
+            if (! $this->hasRpc($target)) { /** @phpstan-ignore-line  */
+                $this->write($this->createLine(Factory::rpcError($uniqid, new Exception('Target doesn\'t exist')))); /** @phpstan-ignore-line  */
 
                 return;
             }
 
-            $this->callRpc($target, $payload)->done(
-                function (array $payload) use ($uniqid) {
-                    $this->write($this->createLine(Factory::rpcSuccess($uniqid, $payload)));
+            $this->callRpc($target, $payload)->done( /** @phpstan-ignore-line  */
+                function (array $payload) use ($uniqid): void {
+                    $this->write($this->createLine(Factory::rpcSuccess($uniqid, $payload))); /** @phpstan-ignore-line  */
                 },
-                function ($error) use ($uniqid) {
-                    $this->write($this->createLine(Factory::rpcError($uniqid, $error)));
+                function ($error) use ($uniqid): void {
+                    $this->write($this->createLine(Factory::rpcError($uniqid, $error))); /** @phpstan-ignore-line  */
                 },
-                function ($payload) use ($uniqid) {
-                    $this->write($this->createLine(Factory::rpcNotify($uniqid, $payload)));
+                function ($payload) use ($uniqid): void {
+                    $this->write($this->createLine(Factory::rpcNotify($uniqid, $payload))); /** @phpstan-ignore-line  */
                 }
             );
-        };
+        });
         $cb = $cb->bindTo($bindTo);
         $cb($this->target, $this->payload, $this->uniqid);
     }

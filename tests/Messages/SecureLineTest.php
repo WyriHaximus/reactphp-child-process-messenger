@@ -1,30 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
-use PHPUnit\Framework\TestCase;
+use WyriHaximus\TestUtilities\TestCase;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\ActionableMessageInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\LineInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\SecureLine;
 
-class SecureLineTest extends TestCase
-{
-    const KEY = 'abc';
+use function Safe\json_decode;
+use function Safe\json_encode;
 
-    public function providerBasic()
+final class SecureLineTest extends TestCase
+{
+    public const KEY = 'abc';
+
+    /**
+     * @return iterable<array<Rpc|string>>
+     */
+    public function providerBasic(): iterable
     {
         return [
             [
                 new Rpc(
                     'foo',
-                    new Payload([
-                        'bar' => 'baz',
-                    ]),
-                    1234567890
+                    new Payload(['bar' => 'baz']),
+                    'wasedrftgyhujiko'
                 ),
-                '{"type":"secure","line":"{\"type\":\"rpc\",\"uniqid\":1234567890,\"target\":\"foo\",\"payload\":{\"bar\":\"baz\"}}","signature":"\/HYFhnhlrlzYUjEjb7WFIBoNeZeIoSSLagFBj1GbzlY="}' . LineInterface::EOL,
-                '{"type":"rpc","uniqid":1234567890,"target":"foo","payload":{"bar":"baz"}}',
+                '{"type":"secure","line":"{\"type\":\"rpc\",\"uniqid\":\"wasedrftgyhujiko\",\"target\":\"foo\",\"payload\":{\"bar\":\"baz\"}}","signature":"LPupf5C96orwYVDNK0Fbd3bGc1aUkLid+iCmcNuZ6Ms="}' . LineInterface::EOL,
+                '{"type":"rpc","uniqid":"wasedrftgyhujiko","target":"foo","payload":{"bar":"baz"}}',
             ],
             [
                 new Rpc(
@@ -33,41 +40,40 @@ class SecureLineTest extends TestCase
                         'bar',
                         'baz',
                     ]),
-                    1234567890
+                    'wasedrftgyhujiko'
                 ),
-                '{"type":"secure","line":"{\"type\":\"rpc\",\"uniqid\":1234567890,\"target\":\"foo\",\"payload\":[\"bar\",\"baz\"]}","signature":"r7TvJ\/AuvAY7dKZ+7wQyI0PdyLivANZzPB35j8Xuyps="}' . LineInterface::EOL,
-                '{"type":"rpc","uniqid":1234567890,"target":"foo","payload":["bar","baz"]}',
+                '{"type":"secure","line":"{\"type\":\"rpc\",\"uniqid\":\"wasedrftgyhujiko\",\"target\":\"foo\",\"payload\":[\"bar\",\"baz\"]}","signature":"n6VBaCjLsuUuISTRC0+IreYuBm0WXRdVSRnbIO\/NlP4="}' . LineInterface::EOL,
+                '{"type":"rpc","uniqid":"wasedrftgyhujiko","target":"foo","payload":["bar","baz"]}',
             ],
         ];
     }
 
     /**
-     * @dataProvider providerBasic
      * @param mixed $output
      * @param mixed $lineString
+     *
+     * @dataProvider providerBasic
      */
-    public function testBasic(\JsonSerializable $input, $output, $lineString)
+    public function testBasic(ActionableMessageInterface $input, string $output, string $lineString): void
     {
         $line = new SecureLine($input, [
-            'key' => static::KEY,
+            'key' => self::KEY,
         ]);
-        $this->assertEquals($output, (string)$line);
+        self::assertEquals($output, (string) $line);
 
-        $stringLine = SecureLine::fromLine(\json_decode((string)$line, true), [
-            'key' => static::KEY,
+        $stringLine = SecureLine::fromLine(json_decode((string) $line, true), [
+            'key' => self::KEY,
         ]);
-        $this->assertEquals($lineString, \json_encode($stringLine));
+        self::assertEquals($lineString, json_encode($stringLine));
     }
 
     /**
      * @expectedException           \Exception
      * @expectedExceptionMessage    Signature mismatch!
      */
-    public function testSignatureMismatch()
+    public function testSignatureMismatch(): void
     {
-        $line = '{"type":"secure","line":"{\"type\":\"rpc\",\"uniqid\":1234567890,\"target\":\"foo\",\"payload\":[\"bar\",\"baz\"]}","signature":"r7TvJ\/AuvAY7dKZ+7wQyI0PdyLivANZzPB35j8Xuyps="}';
-        SecureLine::fromLine(\json_decode((string)$line, true), [
-            'key' => 'cba',
-        ]);
+        $line = '{"type":"secure","line":"{\"type\":\"rpc\",\"uniqid\":\"wasedrftgyhujiko\",\"target\":\"foo\",\"payload\":[\"bar\",\"baz\"]}","signature":"n6VBaCjLsuUuISTRC0+IreYuBm0WXRdVSRnbIO\/NlP4="}';
+        SecureLine::fromLine(json_decode($line, true), ['key' => 'cba']);
     }
 }

@@ -1,43 +1,38 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\ChildProcess\Messenger;
 
+use Closure;
 use React\Promise\Deferred;
 
-class OutstandingCall
+use function is_callable;
+
+final class OutstandingCall
 {
-    /**
-     * @var string
-     */
-    protected $uniqid;
+    protected string $uniqid;
 
-    /**
-     * @var Deferred
-     */
-    protected $deferred;
+    protected Deferred $deferred;
 
-    /**
-     * @var callable
-     */
+    /** @var callable */
     protected $cleanup;
 
-    /**
-     * @param string   $uniqid
-     * @param callable $canceller
-     */
-    public function __construct($uniqid, callable $canceller = null, callable $cleanup = null)
+    /** @phpstan-ignore-next-line */
+    public function __construct(string $uniqid, ?Closure $canceller = null, ?callable $cleanup = null) /** @phpstan-ignore-line */
     {
         if ($canceller !== null) {
-            $canceller = \Closure::bind($canceller, $this, 'WyriHaximus\React\ChildProcess\Messenger\OutstandingCall');
+            $canceller = Closure::bind($canceller, $this, self::class);
         }
 
-        $this->uniqid = $uniqid;
+        $this->uniqid   = $uniqid;
         $this->deferred = new Deferred($canceller);
 
-        if (!\is_callable($cleanup)) {
-            $cleanup = function () {
+        if (! is_callable($cleanup)) {
+            $cleanup = static function (): void {
             };
         }
+
         $this->cleanup = $cleanup;
     }
 
@@ -49,10 +44,7 @@ class OutstandingCall
         return $this->uniqid;
     }
 
-    /**
-     * @return Deferred
-     */
-    public function getDeferred()
+    public function getDeferred(): Deferred
     {
         return $this->deferred;
     }
@@ -60,33 +52,22 @@ class OutstandingCall
     /**
      * @param mixed $value
      */
-    public function resolve($value)
+    public function resolve($value): void
     {
         $cleanup = $this->cleanup;
         $cleanup($this);
 
-        return $this->deferred->resolve($value);
+        $this->deferred->resolve($value);
     }
 
     /**
      * @param mixed $value
      */
-    public function progress($value)
+    public function reject($value): void
     {
         $cleanup = $this->cleanup;
         $cleanup($this);
 
-        return $this->deferred->progress($value);
-    }
-
-    /**
-     * @param mixed $value
-     */
-    public function reject($value)
-    {
-        $cleanup = $this->cleanup;
-        $cleanup($this);
-
-        return $this->deferred->reject($value);
+        $this->deferred->reject($value);
     }
 }

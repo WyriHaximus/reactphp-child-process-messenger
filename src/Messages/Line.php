@@ -1,34 +1,33 @@
 <?php
 
+declare(strict_types=1);
+
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
-class Line implements LineInterface
+use JsonSerializable;
+
+use function Safe\json_encode;
+
+final class Line implements LineInterface
 {
-    /**
-     * @var \JsonSerializable
-     */
-    protected $payload;
+    protected JsonSerializable $payload;
 
     /**
-     * @param \JsonSerializable $payload
+     * @param array<mixed> $options
+     *
+     * @phpstan-ignore-next-line
      */
-    public function __construct(\JsonSerializable $payload, array $options)
+    public function __construct(ActionableMessageInterface $payload, array $options)
     {
         $this->payload = $payload;
     }
 
-    /**
-     * @return string
-     */
-    public function __toString()
+    public function __toString(): string
     {
-        return \json_encode($this->payload) . LineInterface::EOL;
+        return json_encode($this->payload) . LineInterface::EOL;
     }
 
-    /**
-     * @return \JsonSerializable
-     */
-    public function getPayload()
+    public function getPayload(): JsonSerializable
     {
         return $this->payload;
     }
