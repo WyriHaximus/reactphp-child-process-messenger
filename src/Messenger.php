@@ -104,7 +104,7 @@ final class Messenger implements EventEmitterInterface
     public function callRpc(string $target, Payload $payload): PromiseInterface
     {
         try {
-            $promise = $this->rpcs[$target]($payload->getPayload(), $this);
+            $promise = $this->rpcs[$target]($payload, $this);
             if ($promise instanceof PromiseInterface) {
                 return $promise;
             }
