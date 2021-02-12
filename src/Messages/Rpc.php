@@ -51,7 +51,7 @@ final class Rpc implements JsonSerializable, ActionableMessageInterface
     {
         $cb = Closure::fromCallable(function ($target, $payload, $uniqid): void {
             if (! $this->hasRpc($target)) { /** @phpstan-ignore-line  */
-                $this->write($this->createLine(Factory::rpcError($uniqid, new Exception('Target doesn\'t exist')))); /** @phpstan-ignore-line  */
+                $this->write($this->createLine(Factory::rpcError($uniqid, new Exception(sprintf('Rpc target <%s> doesn\'t exist',$target))))); /** @phpstan-ignore-line  */
 
                 return;
             }
