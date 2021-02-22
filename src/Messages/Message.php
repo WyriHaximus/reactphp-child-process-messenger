@@ -33,13 +33,19 @@ final class Message implements JsonSerializable, ActionableMessageInterface
 
     public function handle(object $bindTo, string $source): void
     {
-        $cb = function ($payload): void {
+        $cb = function (Payload $payload): void {
+            /**
+             * @psalm-suppress UndefinedMethod
+             */
             $this->emit('message', [ /** @phpstan-ignore-line  */
                 $payload,
                 $this,
             ]);
         };
         $cb = $cb->bindTo($bindTo);
+        /**
+         * @psalm-suppress PossiblyInvalidFunctionCall
+         */
         $cb($this->payload);
     }
 }

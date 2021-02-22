@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
-use WyriHaximus\TestUtilities\TestCase;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\ActionableMessageInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Line;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\LineInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc;
+use WyriHaximus\TestUtilities\TestCase;
 
 final class LineTest extends TestCase
 {
@@ -50,6 +50,6 @@ final class LineTest extends TestCase
     {
         $line = new Line($input, []);
         self::assertSame($input, $line->getPayload());
-        self::assertEquals($output, (string)$line);
+        self::assertEquals($output, (string) $line);
     }
 }

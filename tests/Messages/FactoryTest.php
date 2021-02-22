@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
 use Exception;
-use WyriHaximus\TestUtilities\TestCase;
+use Throwable;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Error;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\LineEncoder;
@@ -14,8 +14,8 @@ use WyriHaximus\React\ChildProcess\Messenger\Messages\Message;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\RpcError;
-use WyriHaximus\React\ChildProcess\Messenger\Messages\RpcNotify;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\RpcSuccess;
+use WyriHaximus\TestUtilities\TestCase;
 
 use function Safe\json_encode;
 
@@ -45,7 +45,6 @@ final class FactoryTest extends TestCase
             [
                 '{"type":"error","payload":' . json_encode(LineEncoder::encode($exception)) . '}' . LineInterface::EOL,
                 static function (Error $message) use ($exception): bool {
-                    self::assertInstanceOf('Exception', $message->getPayload());
                     self::assertEquals($exception, $message->getPayload());
 
                     return true;
@@ -71,11 +70,15 @@ final class FactoryTest extends TestCase
                 '{"type":"rpc_error","uniqid":"abc","payload":' . json_encode(LineEncoder::encode($exception)) . '}' . LineInterface::EOL,
                 static function (RpcError $message) use ($exception): bool {
                     self::assertInstanceOf('Exception', $message->getPayload());
-                    self::assertEquals([
+                    $messageJson = $message->jsonSerialize();
+                    unset($messageJson['payload']['c']['originalTrace']);
+                    $expected = [
                         'type' => 'rpc_error',
                         'uniqid' => 'abc',
                         'payload' => LineEncoder::encode($exception),
-                    ], $message->jsonSerialize());
+                    ];
+                    unset($expected['payload']['c']['originalTrace']);
+                    self::assertEquals($expected, $messageJson);
 
                     return true;
                 },
@@ -96,26 +99,11 @@ final class FactoryTest extends TestCase
                 },
             ],
             [
-                '{"type":"rpc_notify","uniqid":"abc","payload":["foo","bar"]}' . LineInterface::EOL,
-                static function (RpcNotify $message): bool {
-                    self::assertEquals([
-                        'type' => 'rpc_notify',
-                        'uniqid' => 'abc',
-                        'payload' => new Payload([
-                            'foo',
-                            'bar',
-                        ]),
-                    ], $message->jsonSerialize());
-
-                    return true;
-                },
-            ],
-            [
-                '{"type":"secure","line":"{\"type\":\"rpc\",\"uniqid\":1234567890,\"target\":\"foo\",\"payload\":[\"bar\",\"baz\"]}","signature":"r7TvJ\/AuvAY7dKZ+7wQyI0PdyLivANZzPB35j8Xuyps="}' . LineInterface::EOL,
+                '{"type":"secure","line":"{\"type\":\"rpc\",\"uniqid\":\"abc\",\"target\":\"foo\",\"payload\":[\"bar\",\"baz\"]}","signature":"4GF1+eHnzORvlAlWsNDT0dZiYHAaXxEyrgWJ2MRNA3M="}' . LineInterface::EOL,
                 static function (Rpc $message): bool {
                     self::assertEquals([
                         'type' => 'rpc',
-                        'uniqid' => 1234567890,
+                        'uniqid' => 'abc',
                         'payload' => new Payload([
                             'bar',
                             'baz',
@@ -144,12 +132,10 @@ final class FactoryTest extends TestCase
         self::assertTrue($tests($line));
     }
 
-    /**
-     * @expectedException Exception
-     * @expectedExceptionMessage Unknown message type: massage
-     */
     public function testFromLineException(): void
     {
+        self::expectException(Throwable::class);
+        self::expectExceptionMessage('Unknown message type: massage');
         Factory::fromLine('{"type":"massage","payload":["foo","bar"]}' . LineInterface::EOL, []);
     }
 }

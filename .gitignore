@@ -1,2 +1,4 @@
-bin/child-process-messenger-child-process
+bin/child-process
+etc/qa/.phpunit.result.cache
+var/
 vendor/

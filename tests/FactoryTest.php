@@ -4,14 +4,18 @@ declare(strict_types=1);
 
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 
-use WyriHaximus\TestUtilities\TestCase;
 use React\ChildProcess\Process;
 use React\EventLoop\Factory as EventLoopFactory;
 use React\EventLoop\LoopInterface;
+use React\Promise\PromiseInterface;
+use Throwable;
 use WyriHaximus\React\ChildProcess\Messenger\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessagesFactory;
-use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
-use WyriHaximus\React\ChildProcess\Messenger\Messenger;
+use WyriHaximus\React\ChildProcess\Messenger\MessengerInterface;
+use WyriHaximus\React\ChildProcess\Messenger\ReturnChild;
+use WyriHaximus\TestUtilities\TestCase;
+
+use function Clue\React\Block\await;
 
 final class FactoryTest extends TestCase
 {
@@ -22,7 +26,7 @@ final class FactoryTest extends TestCase
     public function setUp(): void
     {
         $this->loop    = EventLoopFactory::create();
-        $this->process = $this->prophesize('React\ChildProcess\Process')->reveal();
+        $this->process = $this->prophesize(Process::class)->reveal();
     }
 
     public function tearDown(): void
@@ -30,13 +34,11 @@ final class FactoryTest extends TestCase
         unset($this->process, $this->loop);
     }
 
-    /**
-     * @expectedException \Exception
-     * @expectedExceptionMessage Given final class doesn't implement ChildInterface
-     */
     public function testParentFromClassException(): void
     {
-        Factory::parentFromClass('stdClass', $this->prophesize('React\EventLoop\LoopInterface')->reveal());
+        self::expectException(Throwable::class);
+        self::expectExceptionMessage('Given class doesn\'t implement ChildInterface');
+        Factory::parentFromClass('stdClass', $this->prophesize(LoopInterface::class)->reveal());
     }
 
     /**
@@ -44,19 +46,15 @@ final class FactoryTest extends TestCase
      */
     public function parentFromClassActualRun(): void
     {
-        $ranMessengerCreateCallback = false;
-        $ranChildProcessCallback    = false;
-        $loop                       = \React\EventLoop\Factory::create();
-        Factory::parentFromClass('WyriHaximus\React\ChildProcess\Messenger\ReturnChild', $loop)->then(static function (Messenger $messenger) use (&$ranMessengerCreateCallback, &$ranChildProcessCallback): void {
-            $ranMessengerCreateCallback = true;
-            $messenger->rpc(MessagesFactory::rpc('return', ['foo' => 'bar']))->then(static function (Payload $payload) use (&$ranChildProcessCallback, $messenger): void {
-                self::assertSame(['foo' => 'bar'], $payload->getPayload());
-                $ranChildProcessCallback = true;
-                $messenger->softTerminate();
-            });
-        })->done();
-        $loop->run();
-        self::assertTrue($ranMessengerCreateCallback);
-        self::assertTrue($ranChildProcessCallback);
+        $loop    = \React\EventLoop\Factory::create();
+        $payload = await(
+            Factory::parentFromClass(ReturnChild::class, $loop)->then(
+                static function (MessengerInterface $messenger): PromiseInterface {
+                    return $messenger->rpc(MessagesFactory::rpc('return', ['foo' => 'bar']));
+                }
+            ),
+            $loop
+        );
+        self::assertSame(['foo' => 'bar'], $payload->getPayload());
     }
 }

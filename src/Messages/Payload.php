@@ -6,9 +6,11 @@ namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
 use ArrayAccess;
 use JsonSerializable;
-/** @phpstan-ignore-next-line  */
 
-final class Payload implements JsonSerializable, ArrayAccess /** @phpstan-ignore-line  */
+/**
+ * @phpstan-ignore-next-line
+ */
+final class Payload implements JsonSerializable, ArrayAccess
 {
     /** @var array<mixed> */
     protected array $payload = [];

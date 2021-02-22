@@ -8,10 +8,11 @@ use WyriHaximus\React\ChildProcess\Messenger\Factory as MessengerFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessagesFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
+use WyriHaximus\React\ChildProcess\Messenger\ReturnChild;
 
 $loop = EventLoopFactory::create();
 
-MessengerFactory::parentFromClass('WyriHaximus\React\ChildProcess\Messenger\ReturnChild', $loop)->done(function (Messenger $messenger) use ($loop) {
+MessengerFactory::parentFromClass(ReturnChild::class, $loop)->done(function (Messenger $messenger) use ($loop) {
     $messenger->on('error', function ($e) {
         echo 'Error: ', \var_export($e, true), PHP_EOL;
     });
@@ -30,6 +31,7 @@ MessengerFactory::parentFromClass('WyriHaximus\React\ChildProcess\Messenger\Retu
             'i' => $i,
             'time' => \time(),
         ]))->then(function (Payload $payload) {
+            var_export($payload);
             echo $payload['time'], PHP_EOL;
         });
 

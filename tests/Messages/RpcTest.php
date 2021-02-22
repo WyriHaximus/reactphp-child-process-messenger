@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
 use Exception;
-use WyriHaximus\TestUtilities\TestCase;
 use Prophecy\Argument;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc;
+use WyriHaximus\React\ChildProcess\Messenger\MessengerInterface;
+use WyriHaximus\TestUtilities\TestCase;
 
 use function React\Promise\reject;
 use function React\Promise\resolve;
@@ -32,11 +33,11 @@ final class RpcTest extends TestCase
         $payload = new Payload(['foo' => 'bar']);
         $message = new Rpc('foo', $payload, 'bar');
 
-        $messenger = $this->prophesize('WyriHaximus\React\ChildProcess\Messenger\Messenger');
+        $messenger = $this->prophesize(MessengerInterface::class);
         $messenger->write('')->shouldBeCalled();
         $messenger->hasRpc('foo')->shouldBeCalled()->willReturn(true);
         $messenger->createLine(Argument::type('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcError'))->shouldBeCalled()->willReturn('');
-        $messenger->callRpc('foo', $payload)->shouldBeCalled()->willReturn(reject(['foo' => 'bar']));
+        $messenger->callRpc('foo', $payload)->shouldBeCalled()->willReturn(reject(new Exception('foo:bar')));
 
         $message->handle($messenger->reveal(), '');
     }
@@ -46,7 +47,7 @@ final class RpcTest extends TestCase
         $payload = new Payload(['foo' => 'bar']);
         $message = new Rpc('foo', $payload, 'bar');
 
-        $messenger = $this->prophesize('WyriHaximus\React\ChildProcess\Messenger\Messenger');
+        $messenger = $this->prophesize(MessengerInterface::class);
         $messenger->write('')->shouldBeCalled();
         $messenger->hasRpc('foo')->shouldBeCalled()->willReturn(true);
         $messenger->createLine(Argument::type('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcSuccess'))->shouldBeCalled()->willReturn('');
@@ -64,7 +65,7 @@ final class RpcTest extends TestCase
         $payload = new Payload(['foo' => 'bar']);
         $message = new Rpc('foo', $payload, 'bar');
 
-        $messenger = $this->prophesize('WyriHaximus\React\ChildProcess\Messenger\Messenger');
+        $messenger = $this->prophesize(MessengerInterface::class);
         $messenger->write('')->shouldBeCalled();
         $messenger->hasRpc('foo')->shouldBeCalled()->willReturn(true);
         $messenger->createLine(Argument::type('WyriHaximus\React\ChildProcess\Messenger\Messages\RpcError'))->shouldBeCalled()->willReturn('');

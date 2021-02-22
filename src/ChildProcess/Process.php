@@ -2,15 +2,15 @@
 
 declare(strict_types=1);
 
-namespace WyriHaximus\React\ChildProcess\Messenger;
+namespace WyriHaximus\React\ChildProcess\Messenger\ChildProcess;
 
-use Exception;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 use Throwable;
+use WyriHaximus\React\ChildProcess\Messenger\ChildInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Factory as MessengerFactory;
-use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessagesFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
+use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
 use function is_subclass_of;
 use function React\Promise\resolve;
@@ -28,37 +28,14 @@ final class Process
         $this->messenger->registerRpc(
             MessengerFactory::PROCESS_REGISTER,
             function (Payload $payload): PromiseInterface {
+                /**
+                 * @psalm-suppress PossiblyNullArgument
+                 */
                 if (! is_subclass_of($payload['className'], ChildInterface::class)) {
-                    throw new Exception('Given class doesn\'t implement ChildInterface'); /**
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            @phpstan-ignore-line */
+                    throw DoesNotImplementChildInterfaceException::create($payload['className'] ?? '');
                 }
 
-                $this->registerClass($payload['className']); /** @phpstan-ignore-line */
+                ($payload['className'])::create($this->messenger, $this->loop);
                 $this->deregisterRpc();
 
                 return resolve([]);
@@ -66,28 +43,20 @@ final class Process
         );
     }
 
-    public static function create(LoopInterface $loop, Messenger $messenger): Process
+    public static function create(LoopInterface $loop, Messenger $messenger): void
     {
-        $reject = static function ($exeption) use ($messenger, $loop): void {
-            $messenger->error(MessagesFactory::error($exeption->getFile()));
+        $reject = static function (Throwable $exeption) use ($loop): void {
+//            $messenger->error(MessagesFactory::error($exeption->getFile()));
             $loop->addTimer(1, static function () use ($loop): void {
                 $loop->stop();
             });
         };
 
-        try {  /** @phpstan-ignore-line  */
-            return new Process($loop, $messenger);
-        } catch (Throwable $throwable) { /** @phpstan-ignore-line  */
+        try {
+            new Process($loop, $messenger);
+        } catch (Throwable $throwable) { /** @phpstan-ignore-line */
             $reject($throwable);
         }
-    }
-
-    /**
-     * @param class-string<ChildInterface> $className
-     */
-    private function registerClass(string $className): void
-    {
-        ($className . '::create')($this->messenger, $this->loop); /** @phpstan-ignore-line  */
     }
 
     private function deregisterRpc(): void

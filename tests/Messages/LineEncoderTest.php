@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
 use Exception;
-use WyriHaximus\TestUtilities\TestCase;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\LineEncoder;
+use WyriHaximus\TestUtilities\TestCase;
 
 use function WyriHaximus\throwable_encode;
 
@@ -19,8 +19,8 @@ final class LineEncoderTest extends TestCase
     {
         $lines = [];
 
-        $exception = new Exception('whoops');
-        $lines[]   = [
+        $exception          = new Exception('whoops');
+        $lines['throwable'] = [
             $exception,
             [
                 LineEncoder::META_KEY => [
@@ -30,7 +30,7 @@ final class LineEncoderTest extends TestCase
             ],
         ];
 
-        $lines[] = [
+        $lines['simple'] = [
             ['foo' => 'bar'],
             [
                 LineEncoder::META_KEY => [
@@ -41,7 +41,7 @@ final class LineEncoderTest extends TestCase
             ],
         ];
 
-        $lines[] = [
+        $lines['complex'] = [
             [
                 'foo' => 'bar',
                 'bar' => [

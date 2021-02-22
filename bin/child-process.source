@@ -10,11 +10,11 @@ use WyriHaximus\React\ChildProcess\Messenger\ChildProcess\Factory;
     require_once '%s';
 })();
 
-(function() {
+(function(array $argv): void {
     /**
      * Create and boot up the child process
      */
-    exit((function (): int {
+    exit((function (array $argv): int {
         return Factory::boot($argv[1] ?? '');
-    })());
-})();
+    })($argv));
+})($argv);
