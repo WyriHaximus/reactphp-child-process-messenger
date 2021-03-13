@@ -9,7 +9,7 @@ use React\Promise\Deferred;
 
 use function is_callable;
 
-final class OutstandingCall
+final class OutstandingCall implements OutstandingCallInterface
 {
     protected string $uniqid;
 

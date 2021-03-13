@@ -8,7 +8,7 @@ use Closure;
 use Exception;
 use JsonSerializable;
 use Throwable;
-use WyriHaximus\React\ChildProcess\Messenger\Messenger;
+use WyriHaximus\React\ChildProcess\Messenger\MessengerInterface;
 
 final class RpcError implements JsonSerializable, ActionableMessageInterface
 {
@@ -42,12 +42,18 @@ final class RpcError implements JsonSerializable, ActionableMessageInterface
         ];
     }
 
-    public function handle(Messenger $bindTo, string $source): void
+    public function handle(MessengerInterface $bindTo, string $source): void
     {
-        $cb = Closure::fromCallable(function ($payload, $uniqid): void {
+        $cb = Closure::fromCallable(function (Throwable $payload, string $uniqid): void {
+            /**
+             * @psalm-suppress UndefinedMethod
+             */
             $this->getOutstandingCall($uniqid)->reject($payload); /** @phpstan-ignore-line  */
         });
         $cb = $cb->bindTo($bindTo);
+        /**
+         * @psalm-suppress PossiblyInvalidFunctionCall
+         */
         $cb($this->payload, $this->uniqid);
     }
 }

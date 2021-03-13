@@ -7,6 +7,8 @@ namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 use JsonSerializable;
 use Throwable;
 
+use function WyriHaximus\throwable_encode;
+
 final class Error implements JsonSerializable, ActionableMessageInterface
 {
     protected Throwable $payload;
@@ -22,25 +24,31 @@ final class Error implements JsonSerializable, ActionableMessageInterface
     }
 
     /**
-     * @return array<string,string|Throwable>
+     * @return array<string,string|array<mixed>>
      */
     public function jsonSerialize(): array
     {
         return [
             'type' => 'error',
-            'payload' => $this->payload,
+            'payload' => throwable_encode($this->payload),
         ];
     }
 
     public function handle(object $bindTo, string $source): void
     {
-        $cb = function ($payload): void {
+        $cb = function (Throwable $payload): void {
+            /**
+             * @psalm-suppress UndefinedMethod
+             */
             $this->emit('error', [ /** @phpstan-ignore-line  */
                 $payload,
                 $this,
             ]);
         };
         $cb = $cb->bindTo($bindTo);
+        /**
+         * @psalm-suppress PossiblyInvalidFunctionCall
+         */
         $cb($this->payload);
     }
 }

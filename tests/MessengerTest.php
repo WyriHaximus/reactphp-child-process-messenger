@@ -4,17 +4,21 @@ declare(strict_types=1);
 
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 
-use WyriHaximus\TestUtilities\TestCase;
+use Exception;
 use Prophecy\Argument;
-use React\EventLoop\Factory;
+use React\Promise\PromiseInterface;
 use React\Socket\ConnectionInterface;
+use Throwable;
+use WyriHaximus\React\ChildProcess\Messenger\ChildProcess\Options;
+use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 use WyriHaximus\React\ChildProcess\Messenger\ProcessUnexpectedEndException;
 use WyriHaximus\React\Tests\ChildProcess\Messenger\Stub\ConnectionStub;
+use WyriHaximus\TestUtilities\TestCase;
 
 use function Clue\React\Block\await;
-use function React\Promise\Stream\first;
+use function React\Promise\resolve;
 
 final class MessengerTest extends TestCase
 {
@@ -23,7 +27,7 @@ final class MessengerTest extends TestCase
         $connection = $this->prophesize(ConnectionInterface::class);
         $connection->on('data', Argument::type('callable'))->shouldBeCalled();
         $connection->on('close', Argument::type('callable'))->shouldBeCalled();
-        $messenger = new Messenger($connection->reveal());
+        $messenger = new Messenger($connection->reveal(), new Options('rng', '127.0.0.1:13', 1));
 
         $payload       = [
             'a',
@@ -31,16 +35,17 @@ final class MessengerTest extends TestCase
             'c',
         ];
         $callableFired = false;
-        $callable      = function ($passedPayload) use (&$callableFired, $payload): void {
-            self::assertEquals($payload, $passedPayload);
+        $callable      = static function (Payload $passedPayload) use (&$callableFired): PromiseInterface {
             $callableFired = true;
+
+            return resolve($passedPayload->getPayload());
         };
 
         $messenger->registerRpc('test', $callable);
         self::assertFalse($messenger->hasRpc('tset'));
         self::assertTrue($messenger->hasRpc('test'));
 
-        $messenger->callRpc('test', new Payload($payload));
+        self::assertSame($payload, await($messenger->callRpc('test', new Payload($payload)), \React\EventLoop\Factory::create()));
 
         self::assertTrue($callableFired);
 
@@ -55,9 +60,9 @@ final class MessengerTest extends TestCase
         $connection->on('close', Argument::type('callable'))->shouldBeCalled();
         $connection->write(Argument::type('string'))->shouldBeCalled();
 
-        $messenger = new Messenger($connection->reveal());
+        $messenger = new Messenger($connection->reveal(), new Options('rng', '127.0.0.1:13', 1));
 
-        $messenger->message(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::message(['foo' => 'bar']));
+        $messenger->message(Factory::message(['foo' => 'bar']));
     }
 
     public function testError(): void
@@ -67,9 +72,9 @@ final class MessengerTest extends TestCase
         $connection->on('close', Argument::type('callable'))->shouldBeCalled();
         $connection->write(Argument::type('string'))->shouldBeCalled();
 
-        $messenger = new Messenger($connection->reveal());
+        $messenger = new Messenger($connection->reveal(), new Options('rng', '127.0.0.1:13', 1));
 
-        $messenger->error(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::error(new \Exception('foo:bar')));
+        $messenger->error(Factory::error(new Exception('foo:bar')));
     }
 
     public function testRpc(): void
@@ -79,9 +84,9 @@ final class MessengerTest extends TestCase
         $connection->on('close', Argument::type('callable'))->shouldBeCalled();
         $connection->write(Argument::type('string'))->shouldBeCalled();
 
-        $messenger = new Messenger($connection->reveal());
+        $messenger = new Messenger($connection->reveal(), new Options('rng', '127.0.0.1:13', 1));
 
-        $messenger->rpc(\WyriHaximus\React\ChildProcess\Messenger\Messages\Factory::rpc('target', ['foo' => 'bar']));
+        $messenger->rpc(Factory::rpc('target', ['foo' => 'bar']));
     }
 
     public function testEmitOnData(): void
@@ -89,7 +94,7 @@ final class MessengerTest extends TestCase
         $connection = new ConnectionStub();
 
         $cbCalled = false;
-        (new Messenger($connection))->on('data', function ($data) use (&$cbCalled): void {
+        (new Messenger($connection, new Options('rng', '127.0.0.1:13', 1)))->on('data', static function ($data) use (&$cbCalled): void {
             self::assertEquals('bar.foo', $data);
             $cbCalled = true;
         });
@@ -103,14 +108,12 @@ final class MessengerTest extends TestCase
     {
         self::expectException(ProcessUnexpectedEndException::class);
 
-        $loop       = Factory::create();
         $connection = new ConnectionStub();
 
-        $messenger = new Messenger($connection);
-        $loop->futureTick(static function () use ($messenger): void {
-            $messenger->crashed(123);
+        $messenger = new Messenger($connection, new Options('rng', '127.0.0.1:13', 1));
+        $messenger->on('error', static function (Throwable $throwable): void {
+            throw $throwable;
         });
-
-        throw await(first($messenger, 'error'), $loop); /** @phpstan-ignore-line  */
+        $messenger->crashed(123);
     }
 }

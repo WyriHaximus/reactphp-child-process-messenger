@@ -7,6 +7,7 @@ namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 use Closure;
 use Exception;
 use JsonSerializable;
+use Throwable;
 
 final class Rpc implements JsonSerializable, ActionableMessageInterface
 {
@@ -49,26 +50,38 @@ final class Rpc implements JsonSerializable, ActionableMessageInterface
 
     public function handle(object $bindTo, string $source): void
     {
-        $cb = Closure::fromCallable(function ($target, $payload, $uniqid): void {
+        $cb = Closure::fromCallable(function (string $target, Payload $payload, string $uniqid): void {
+            /**
+             * @psalm-suppress UndefinedMethod
+             */
             if (! $this->hasRpc($target)) { /** @phpstan-ignore-line  */
                 $this->write($this->createLine(Factory::rpcError($uniqid, new Exception(sprintf('Rpc target <%s> doesn\'t exist',$target))))); /** @phpstan-ignore-line  */
 
                 return;
             }
 
+            /**
+             * @psalm-suppress UndefinedMethod
+             */
             $this->callRpc($target, $payload)->done( /** @phpstan-ignore-line  */
                 function (array $payload) use ($uniqid): void {
+                    /**
+                     * @psalm-suppress UndefinedMethod
+                     */
                     $this->write($this->createLine(Factory::rpcSuccess($uniqid, $payload))); /** @phpstan-ignore-line  */
                 },
-                function ($error) use ($uniqid): void {
+                function (Throwable $error) use ($uniqid): void {
+                    /**
+                     * @psalm-suppress UndefinedMethod
+                     */
                     $this->write($this->createLine(Factory::rpcError($uniqid, $error))); /** @phpstan-ignore-line  */
-                },
-                function ($payload) use ($uniqid): void {
-                    $this->write($this->createLine(Factory::rpcNotify($uniqid, $payload))); /** @phpstan-ignore-line  */
                 }
             );
         });
         $cb = $cb->bindTo($bindTo);
+        /**
+         * @psalm-suppress PossiblyInvalidFunctionCall
+         */
         $cb($this->target, $this->payload, $this->uniqid);
     }
 }

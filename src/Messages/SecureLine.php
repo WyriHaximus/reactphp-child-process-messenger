@@ -19,7 +19,7 @@ final class SecureLine implements LineInterface
     protected string $key;
 
     /**
-     * @param array<string, mixed> $options
+     * @param array<mixed> $options
      */
     public function __construct(ActionableMessageInterface $line, array $options)
     {
