@@ -11,7 +11,7 @@ use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 
 $loop = EventLoopFactory::create();
 
-MessengerFactory::parentFromClass('WyriHaximus\React\ChildProcess\Messenger\ReturnChild', $loop)->done(function (Messenger $messenger) use ($loop) {
+MessengerFactory::parentFromClass(\WyriHaximus\React\ChildProcess\Messenger\ReturnChild::class, $loop)->done(function (Messenger $messenger) use ($loop) {
     $messenger->on('message', function ($message) {
         echo 'Message: ', \var_export($message, true), PHP_EOL;
     });

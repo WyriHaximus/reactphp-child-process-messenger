@@ -13,8 +13,6 @@ use function React\Promise\resolve;
 
 final class ReturnChild implements ChildInterface
 {
-    protected bool $ran = false;
-
     /** @phpstan-ignore-next-line */
     private function __construct(Messenger $messenger, LoopInterface $loop)
     {
@@ -24,16 +22,10 @@ final class ReturnChild implements ChildInterface
         $messenger->on('message', static function (Payload $payload) use ($messenger): void {
             $messenger->message(MessagesFactory::message($payload->getPayload()));
         });
-        $this->ran = true;
     }
 
     public static function create(Messenger $messenger, LoopInterface $loop): void
     {
         new static($messenger, $loop);
-    }
-
-    public function getRan(): bool
-    {
-        return $this->ran;
     }
 }

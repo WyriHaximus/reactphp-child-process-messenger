@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
 use JsonSerializable;
-use WyriHaximus\React\ChildProcess\Messenger\Messenger;
+use WyriHaximus\React\ChildProcess\Messenger\MessengerInterface;
 
 interface ActionableMessageInterface extends JsonSerializable
 {
-    public function handle(Messenger $bindTo, string $source): void;
+    public function handle(MessengerInterface $bindTo, string $source): void;
 }

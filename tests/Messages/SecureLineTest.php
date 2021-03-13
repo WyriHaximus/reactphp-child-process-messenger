@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
-use WyriHaximus\TestUtilities\TestCase;
+use Throwable;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\ActionableMessageInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\LineInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\SecureLine;
+use WyriHaximus\TestUtilities\TestCase;
 
 use function Safe\json_decode;
 use function Safe\json_encode;
@@ -49,9 +50,6 @@ final class SecureLineTest extends TestCase
     }
 
     /**
-     * @param mixed $output
-     * @param mixed $lineString
-     *
      * @dataProvider providerBasic
      */
     public function testBasic(ActionableMessageInterface $input, string $output, string $lineString): void
@@ -67,12 +65,10 @@ final class SecureLineTest extends TestCase
         self::assertEquals($lineString, json_encode($stringLine));
     }
 
-    /**
-     * @expectedException           \Exception
-     * @expectedExceptionMessage    Signature mismatch!
-     */
     public function testSignatureMismatch(): void
     {
+        self::expectException(Throwable::class);
+        self::expectExceptionMessage('Signature mismatch!');
         $line = '{"type":"secure","line":"{\"type\":\"rpc\",\"uniqid\":\"wasedrftgyhujiko\",\"target\":\"foo\",\"payload\":[\"bar\",\"baz\"]}","signature":"n6VBaCjLsuUuISTRC0+IreYuBm0WXRdVSRnbIO\/NlP4="}';
         SecureLine::fromLine(json_decode($line, true), ['key' => 'cba']);
     }

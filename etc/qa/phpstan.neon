@@ -8,4 +8,4 @@ parameters:
 			- WyriHaximus\TestUtilities\TestCase
 
 includes:
-	- vendor/wyrihaximus/test-utilities/rules.neon
+	- ../../vendor/wyrihaximus/test-utilities/rules.neon

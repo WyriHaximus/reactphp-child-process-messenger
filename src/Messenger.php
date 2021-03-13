@@ -6,10 +6,10 @@ namespace WyriHaximus\React\ChildProcess\Messenger;
 
 use Evenement\EventEmitterInterface;
 use Evenement\EventEmitterTrait;
-use Exception;
 use React\Promise\PromiseInterface;
 use React\Socket\ConnectionInterface;
 use Throwable;
+use WyriHaximus\React\ChildProcess\Messenger\ChildProcess\Options;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\ActionableMessageInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Error;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Factory as MessagesFactory;
@@ -26,7 +26,7 @@ use function explode;
 use function React\Promise\reject;
 use function strpos;
 
-final class Messenger implements EventEmitterInterface
+final class Messenger implements MessengerInterface, EventEmitterInterface
 {
     use EventEmitterTrait;
 
@@ -52,22 +52,20 @@ final class Messenger implements EventEmitterInterface
         'lineOptions' => [],
     ];
 
-    /**
-     * @param array<string, class-string|array<mixed>> $options
-     *
-     * @phpstan-ignore-next-line
-     */
     public function __construct(
         ConnectionInterface $connection,
-        array $options = []
+        Options $options
     ) {
         $this->connection = $connection;
 
-        $this->options = $this->defaultOptions + $options;
+        /**
+         * @psalm-suppress InvalidMethodCall
+         */
+        $this->options = $this->defaultOptions + $options->toArray();
 
         $this->outstandingRpcCalls = new OutstandingCalls();
 
-        $this->connection->on('data', function ($data): void {
+        $this->connection->on('data', function (string $data): void {
             $this->buffer .= $data;
             $this->emit('data', [$data]);
             $this->handleData();
@@ -104,13 +102,8 @@ final class Messenger implements EventEmitterInterface
     public function callRpc(string $target, Payload $payload): PromiseInterface
     {
         try {
-            $promise = $this->rpcs[$target]($payload->getPayload(), $this);
-            if ($promise instanceof PromiseInterface) {
-                return $promise;
-            }
+            return $this->rpcs[$target]($payload, $this);
 
-            /** @phpstan-ignore-next-line  */
-            throw new Exception('RPC must return promise');
             /** @phpstan-ignore-next-line  */
         } catch (Throwable $exception) {
             return reject($exception);
@@ -127,15 +120,14 @@ final class Messenger implements EventEmitterInterface
         $this->write($this->createLine($error));
     }
 
-    public function getOutstandingCall(string $uniqid): OutstandingCall
+    public function getOutstandingCall(string $uniqid): OutstandingCallInterface
     {
         return $this->outstandingRpcCalls->getCall($uniqid);
     }
 
     public function rpc(Rpc $rpc): PromiseInterface
     {
-        $callReference = $this->outstandingRpcCalls->newCall(function (): void {
-        });
+        $callReference = $this->outstandingRpcCalls->newCall(function (): void {}); // phpcs:disabled
 
         $this->write($this->createLine($rpc->setUniqid($callReference->getUniqid())));
 
@@ -146,6 +138,9 @@ final class Messenger implements EventEmitterInterface
     {
         $lineCLass = $this->options['lineClass'];
 
+        /**
+         * @psalm-suppress InvalidCast
+         */
         return (string) new $lineCLass($line, $this->options['lineOptions']);
     }
 

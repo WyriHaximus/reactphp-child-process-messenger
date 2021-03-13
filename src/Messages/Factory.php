@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
-use Doctrine\Common\Inflector\Inflector;
 use Doctrine\Inflector\InflectorFactory;
 use Exception;
 use Throwable;
 
-use function get_class;
 use function Safe\json_decode;
-use function method_exists;
 
-final class  Factory
+final class Factory
 {
     /**
      * @param array<mixed> $lineOptions
@@ -21,12 +18,33 @@ final class  Factory
     public static function fromLine(string $line, array $lineOptions): ActionableMessageInterface
     {
         $line   = json_decode($line, true);
-        $method = InflectorFactory::create()->build()->camelize($line['type']) . 'FromLine';
-        if (method_exists(get_class(new static()), $method) && $method !== 'FromLine') {
-            return static::$method($line, $lineOptions); /** @phpstan-ignore-line  */
+        $method = InflectorFactory::create()->build()->camelize($line['type']);
+        if ($method === 'secure') {
+            return static::secureFromLine($line, $lineOptions);
         }
 
-        throw new Exception('Unknown message type: ' . $line['type']); /** @phpstan-ignore-line  */
+        if ($method === 'message') {
+            return static::messageFromLine($line);
+        }
+
+        if ($method === 'error') {
+            return static::errorFromLine($line);
+        }
+
+        if ($method === 'rpc') {
+            return static::rpcFromLine($line);
+        }
+
+        if ($method === 'rpcError') {
+            return static::rpcErrorFromLine($line);
+        }
+
+        if ($method === 'rpcSuccess') {
+            return static::rpcSuccessFromLine($line);
+        }
+
+        /** @phpstan-ignore-next-line */
+        throw new Exception('Unknown message type: ' . $line['type']);
     }
 
     /**
@@ -62,14 +80,6 @@ final class  Factory
     public static function rpcSuccess(string $uniqid, array $payload = []): RpcSuccess
     {
         return new RpcSuccess($uniqid, new Payload($payload));
-    }
-
-    /**
-     * @param array<mixed> $payload
-     */
-    public static function rpcNotify(string $uniqid, array $payload = []): RpcNotify
-    {
-        return new RpcNotify($uniqid, new Payload($payload));
     }
 
     /**
@@ -119,13 +129,5 @@ final class  Factory
     private static function rpcSuccessFromLine(array $line): RpcSuccess
     {
         return static::rpcSuccess($line['uniqid'], $line['payload']);
-    }
-
-    /**
-     * @param  array<mixed> $line
-     */
-    private static function rpcNotifyFromLine(array $line): RpcNotify
-    {
-        return static::rpcNotify($line['uniqid'], $line['payload']);
     }
 }

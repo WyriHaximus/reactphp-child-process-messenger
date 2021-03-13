@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger\Messages;
 
-use WyriHaximus\TestUtilities\TestCase;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
+use WyriHaximus\TestUtilities\TestCase;
 
 final class PayloadTest extends TestCase
 {

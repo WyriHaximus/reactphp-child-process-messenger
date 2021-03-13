@@ -1,1 +1,4 @@
+bin/child-process
+etc/qa/.phpunit.result.cache
+var/
 vendor/

@@ -11,57 +11,74 @@ on:
       - review_requested
 jobs:
   set-milestone:
+    name: Set Milestone
+    if: github.event.pull_request.milestone == null
     runs-on: ubuntu-latest
+    outputs:
+      check: ${{ steps.generate-checks-strategy.outputs.check }}
     steps:
       - uses: actions/checkout@v1
-        if: github.event.pull_request.milestone == null
       - name: 'Get Previous tag'
-        if: github.event.pull_request.milestone == null
         id: previoustag
-        uses: "WyriHaximus/github-action-get-previous-tag@master"
+        uses: "WyriHaximus/github-action-get-previous-tag@v1"
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-      - name: 'Get next minor version'
-        if: github.event.pull_request.milestone == null
+      - name: 'Get next versions'
         id: semvers
-        uses: "WyriHaximus/github-action-next-semvers@master"
+        uses: "WyriHaximus/github-action-next-semvers@v1"
         with:
           version: ${{ steps.previoustag.outputs.tag }}
+      - name: 'Decide which version fits this PR'
+        id: decidedversion
+        run: |
+          if [ "$(jq '.sender.id' -r ${GITHUB_EVENT_PATH})" = "49699333" ]; then
+            printf "::set-output name=version::%s" "${PATCH}"
+            exit 0
+          fi
+
+          composer install --no-progress --ansi --no-interaction --prefer-dist -o -q
+
+          if ! (./vendor/bin/roave-backward-compatibility-check); then
+            printf "::set-output name=version::%s" "${MAJOR}"
+            exit 0
+          fi
+
+          printf "::set-output name=version::%s" "${MINOR}"
+        env:
+          MAJOR: ${{ steps.semvers.outputs.major }}
+          MINOR: ${{ steps.semvers.outputs.minor }}
+          PATCH: ${{ steps.semvers.outputs.patch }}
       - name: 'Get Milestones'
-        if: github.event.pull_request.milestone == null
         uses: "WyriHaximus/github-action-get-milestones@master"
         id: milestones
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       - run: printf "::set-output name=number::%s" $(printenv MILESTONES | jq --arg MILESTONE $(printenv MILESTONE) '.[]  | select(.title == $MILESTONE) | .number')
-        if: github.event.pull_request.milestone == null
         id: querymilestone
         env:
           MILESTONES: ${{ steps.milestones.outputs.milestones }}
-          MILESTONE: ${{ steps.semvers.outputs.minor }}
+          MILESTONE: ${{ steps.decidedversion.outputs.version }}
       - name: 'Create Milestone'
-        if: github.event.pull_request.milestone == null && steps.querymilestone.outputs.number == ''
+        if: steps.querymilestone.outputs.number == ''
         id: createmilestone
-        uses: "WyriHaximus/github-action-create-milestone@master"
+        uses: "WyriHaximus/github-action-create-milestone@0.1.0"
         with:
-          title: ${{ steps.semvers.outputs.minor }}
+          title: ${{ steps.decidedversion.outputs.version }}
         env:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       - name: 'Select found or created Milestone'
-        if: github.event.pull_request.milestone == null
         id: selectmilestone
         run: |
-            if [ $(echo ${QUERY_NUMBER} | wc -c) -eq 1 ] ; then
-              printf "::set-output name=number::%s" "${CREATED_NUMBER}"
-              exit 0
-            fi
+          if [ $(echo ${QUERY_NUMBER} | wc -c) -eq 1 ] ; then
+            printf "::set-output name=number::%s" "${CREATED_NUMBER}"
+            exit 0
+          fi
 
-            printf "::set-output name=number::%s" "${QUERY_NUMBER}"
+          printf "::set-output name=number::%s" "${QUERY_NUMBER}"
         env:
           CREATED_NUMBER: ${{ steps.createmilestone.outputs.number }}
           QUERY_NUMBER: ${{ steps.querymilestone.outputs.number }}
       - name: 'Set Milestone'
-        if: github.event.pull_request.milestone == null
         uses: "WyriHaximus/github-action-set-milestone@master"
         with:
           issue_number: ${{ github.event.pull_request.number }}
