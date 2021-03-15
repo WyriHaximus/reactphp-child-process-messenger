@@ -64,7 +64,7 @@ jobs:
         run: composer update --ansi --no-progress --no-interaction --prefer-dist -o
         if: matrix.composer == 'highest'
   qa:
-    name: Run ${{ matrix.check }} on PHP ${{ matrix.php }} with ${{ matrix.composer }} dependency preference
+    name: Run ${{ matrix.check }} on PHP ${{ matrix.php }} with ${{ matrix.composer }} dependency preference (Linux)
     strategy:
       fail-fast: false
       matrix:
@@ -100,6 +100,49 @@ jobs:
         run: git fetch --depth=1 origin +refs/tags/*:refs/tags/* || true
         if: matrix.check == 'backward-compatibility-check'
       - run: make ${{ matrix.check }}
+        env:
+          COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          COVERALLS_RUN_LOCALLY: ${{ secrets.COVERALLS_RUN_LOCALLY }}
+  qa-non-linux:
+    name: Run ${{ matrix.check }} on PHP ${{ matrix.php }} with ${{ matrix.composer }} dependency preference (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+        php: ${{ fromJson(needs.supported-versions-matrix.outputs.version) }}
+        composer: [lowest, current, highest]
+    needs:
+      - lint-yaml
+      - lint-json
+      - composer-install
+      - supported-versions-matrix
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v1
+      - name: Setup PHP, extensions and composer with shivammathur/setup-php
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: xdebug, pcov
+      - name: Cache composer packages
+        uses: actions/cache@v1
+        with:
+          path: ./vendor/
+          key: ${{ matrix.composer }}-${{ matrix.php }}-${{ hashFiles('**/composer.lock') }}
+      - name: Install Dependencies
+        run: (test -f vendor && true ) || composer update --prefer-lowest --no-progress --ansi --no-interaction --prefer-dist -o
+        if: matrix.composer == 'lowest'
+      - name: Install Dependencies
+        run: (test -f vendor && true ) || composer install --ansi --no-progress --no-interaction --prefer-dist -o
+        if: matrix.composer == 'current'
+      - name: Install Dependencies
+        run: (test -f vendor && true ) || composer update --ansi --no-progress --no-interaction --prefer-dist -o
+        if: matrix.composer == 'highest'
+      - name: Fetch Tags
+        run: git fetch --depth=1 origin +refs/tags/*:refs/tags/* || true
+        if: matrix.check == 'backward-compatibility-check'
+      - run: |
+          ./vendor/bin/phpunit -c ./etc/qa/phpunit.xml
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
           COVERALLS_RUN_LOCALLY: ${{ secrets.COVERALLS_RUN_LOCALLY }}
@@ -169,6 +212,7 @@ jobs:
       - lint-yaml
       - lint-json
       - qa
+      - qa-non-linux
       - qodana
     runs-on: ubuntu-latest
     steps:
