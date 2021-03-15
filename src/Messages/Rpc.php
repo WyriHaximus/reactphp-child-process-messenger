@@ -9,6 +9,8 @@ use Exception;
 use JsonSerializable;
 use Throwable;
 
+use function sprintf;
+
 final class Rpc implements JsonSerializable, ActionableMessageInterface
 {
     protected string $target;
@@ -55,7 +57,7 @@ final class Rpc implements JsonSerializable, ActionableMessageInterface
              * @psalm-suppress UndefinedMethod
              */
             if (! $this->hasRpc($target)) { /** @phpstan-ignore-line  */
-                $this->write($this->createLine(Factory::rpcError($uniqid, new Exception(sprintf('Rpc target <%s> doesn\'t exist',$target))))); /** @phpstan-ignore-line  */
+                $this->write($this->createLine(Factory::rpcError($uniqid, new Exception(sprintf('Rpc target <%s> doesn\'t exist', $target))))); /** @phpstan-ignore-line  */
 
                 return;
             }
