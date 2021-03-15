@@ -143,6 +143,16 @@ jobs:
         if: matrix.check == 'backward-compatibility-check'
       - run: |
           ./vendor/bin/phpunit -c ./etc/qa/phpunit.xml
+          php ./examples/advanced-own-child-process/index.php
+          php ./examples/error/index.php
+          php ./examples/messages/index.php
+          php ./examples/overflow/index.php
+          php ./examples/prime/index.php
+          php ./examples/return-class/index.php
+          php ./examples/return-class-messaging/index.php
+          php ./examples/secure-messages/index.php
+          php ./examples/secure-return-class/index.php
+          php ./examples/time-format/index.php
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
           COVERALLS_RUN_LOCALLY: ${{ secrets.COVERALLS_RUN_LOCALLY }}

@@ -70,6 +70,18 @@ backward-compatibility-check: ## Check code for backwards incompatible changes
 backward-compatibility-check-raw: ## Check code for backwards incompatible changes, doesn't ignore the failure ###
 	$(DOCKER_RUN) vendor/bin/roave-backward-compatibility-check
 
+run-examples: ## Run all examples
+	$(DOCKER_RUN) php examples/advanced-own-child-process/index.php
+	$(DOCKER_RUN) php examples/error/index.php
+	$(DOCKER_RUN) php examples/messages/index.php
+	$(DOCKER_RUN) php examples/overflow/index.php
+	$(DOCKER_RUN) php examples/prime/index.php
+	$(DOCKER_RUN) php examples/return-class/index.php
+	$(DOCKER_RUN) php examples/return-class-messaging/index.php
+	$(DOCKER_RUN) php examples/secure-messages/index.php
+	$(DOCKER_RUN) php examples/secure-return-class/index.php
+	$(DOCKER_RUN) php examples/time-format/index.php
+
 shell: ## Provides Shell access in the expected environment ###
 	$(DOCKER_RUN) ash
 

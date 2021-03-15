@@ -1,7 +1,7 @@
 <?php
 
 use React\EventLoop\Factory as LoopFactory;
-use WyriHaximus\React\ChildProcess\Messenger\ArgvEncoder;
+use WyriHaximus\React\ChildProcess\Messenger\ChildProcess\ArgvEncoder;
 use WyriHaximus\React\ChildProcess\Messenger\Factory as MessengerFactory;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
