@@ -1,14 +1,12 @@
-# ChildProcessMessenger
+# ReactPHP Child Process Messenger
 
-[![Linux Build Status](https://travis-ci.org/WyriHaximus/reactphp-child-process-messenger.png)](https://travis-ci.org/WyriHaximus/reactphp-child-process-messenger)
-[![Windows Build status](https://ci.appveyor.com/api/projects/status/1sfdh9g2pvbuw4pp?svg=true)](https://ci.appveyor.com/project/WyriHaximus/reactphp-child-process-messenger)
+[![Continuous Integration](https://github.com/WyriHaximus/reactphp-child-process-messenger/actions/workflows/ci.yml/badge.svg?event=push)](https://github.com/WyriHaximus/reactphp-child-process-messenger/actions/workflows/ci.yml)
 [![Latest Stable Version](https://poser.pugx.org/WyriHaximus/react-child-process-messenger/v/stable.png)](https://packagist.org/packages/WyriHaximus/react-child-process-messenger)
 [![Total Downloads](https://poser.pugx.org/WyriHaximus/react-child-process-messenger/downloads.png)](https://packagist.org/packages/WyriHaximus/react-child-process-messenger)
 [![Code Coverage](https://scrutinizer-ci.com/g/WyriHaximus/reactphp-child-process-messenger/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/WyriHaximus/reactphp-child-process-messenger/?branch=master)
 [![License](https://poser.pugx.org/WyriHaximus/react-child-process-messenger/license.png)](https://packagist.org/packages/wyrihaximus/react-child-process-messenger)
-[![PHP 7 ready](http://php7ready.timesplinter.ch/WyriHaximus/reactphp-child-process-messenger/badge.svg)](https://travis-ci.org/WyriHaximus/reactphp-child-process-messenger)
 
-Plain messages and RPC style STDIN/OUT/ERR wrapper around [`react/child-process`](https://github.com/reactphp/child-process). For pooling messengers take a look at [`wyrihaximus/react-child-process-pool`](https://github.com/WyriHaximus/reactphp-child-process-pool)
+Plain messages and RPC style wrapper around [`react/child-process`](https://github.com/reactphp/child-process). For pooling messengers take a look at [`wyrihaximus/react-child-process-pool`](https://github.com/WyriHaximus/reactphp-child-process-pool)
 
 ### Installation ###
 
@@ -29,12 +27,14 @@ use React\EventLoop\LoopInterface;
 use WyriHaximus\React\ChildProcess\Messenger\ChildInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 
-class ExampleChild implements ChildInterface
+use function React\Promise\resolve;
+
+final class ExampleChild implements ChildInterface
 {
     public static function create(Messenger $messenger, LoopInterface $loop)
     {
         $messenger->registerRpc('example', function (Payload $payload) {
-            return \React\Promise\resolve($payload->getPayload());
+            return resolve($payload->getPayload());
         });
     }
 }
@@ -43,7 +43,7 @@ class ExampleChild implements ChildInterface
 On the parent side you only need need to call to spawn a child running that class:
 
 ```php
-MessengerFactory::parentFromClass('ExampleChild', $loop)->then(function (Messenger $messenger) {
+MessengerFactory::parentFromClass('ExampleChild', $loop)->then(static function (Messenger $messenger): void {
     $messenger->rpc(/* etc etc */);
 });
 ```
@@ -58,7 +58,7 @@ Please see [CONTRIBUTING](CONTRIBUTING.md) for details.
 
 ## License ##
 
-Copyright 2019 [Cees-Jan Kiewiet](http://wyrihaximus.net/)
+Copyright 2021 [Cees-Jan Kiewiet](http://wyrihaximus.net/)
 
 Permission is hereby granted, free of charge, to any person
 obtaining a copy of this software and associated documentation
