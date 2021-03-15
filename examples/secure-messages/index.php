@@ -28,9 +28,9 @@ MessengerFactory::parentFromClass(ExamplesChildProcess::class, $loop, $options)-
     });
 
     $i = 0;
-    $loop->addPeriodicTimer(1, function (TimerInterface $timer) use (&$i, $messenger) {
+    $loop->addPeriodicTimer(1, function (TimerInterface $timer) use (&$i, $messenger, $loop) {
         if ($i >= 13) {
-            $timer->cancel();
+            $loop->cancelTimer($timer);
             $messenger->softTerminate();
 
             return;

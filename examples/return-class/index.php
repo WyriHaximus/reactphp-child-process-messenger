@@ -10,24 +10,18 @@ use WyriHaximus\React\ChildProcess\Messenger\Messages\Payload;
 use WyriHaximus\React\ChildProcess\Messenger\Messenger;
 use WyriHaximus\React\ChildProcess\Messenger\ReturnChild;
 
-$options = [
-    'lineClass' => 'WyriHaximus\React\ChildProcess\Messenger\Messages\SecureLine',
-    'lineOptions' => [
-        'key' => 'abc123',
-    ],
-];
-
 $loop = EventLoopFactory::create();
 
-MessengerFactory::parentFromClass(ReturnChild::class, $loop, $options)->then(function (Messenger $messenger) use ($loop) {
+MessengerFactory::parentFromClass(ReturnChild::class, $loop)->done(function (Messenger $messenger) use ($loop) {
     $messenger->on('error', function ($e) {
         echo 'Error: ', \var_export($e, true), PHP_EOL;
     });
 
     $i = 0;
-    $loop->addPeriodicTimer(1, function (TimerInterface $timer) use (&$i, $messenger) {
+    $loop->addPeriodicTimer(1, function (TimerInterface $timer) use (&$i, $messenger, $loop) {
+        echo 'tick', PHP_EOL;
         if ($i >= 13) {
-            $timer->cancel();
+            $loop->cancelTimer($timer);
             $messenger->softTerminate();
 
             return;
@@ -37,6 +31,7 @@ MessengerFactory::parentFromClass(ReturnChild::class, $loop, $options)->then(fun
             'i' => $i,
             'time' => \time(),
         ]))->then(function (Payload $payload) {
+            var_export($payload);
             echo $payload['time'], PHP_EOL;
         });
 

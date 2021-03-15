@@ -17,10 +17,10 @@ MessengerFactory::parentFromClass(ExamplesChildProcess::class, $loop)->done(func
         echo 'Error: ', \var_export($e, true), PHP_EOL;
     });
 
-    $loop->addPeriodicTimer(1, function (TimerInterface $timer) use ($messenger, &$i) {
+    $loop->addPeriodicTimer(1, function (TimerInterface $timer) use ($messenger, &$i, $loop) {
         if ($i >= 13) {
             $messenger->softTerminate();
-            $timer->cancel();
+            $loop->cancelTimer($timer);
 
             return;
         }
