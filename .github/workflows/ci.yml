@@ -103,12 +103,12 @@ jobs:
         env:
           COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
           COVERALLS_RUN_LOCALLY: ${{ secrets.COVERALLS_RUN_LOCALLY }}
-  qa-non-linux:
-    name: Run ${{ matrix.check }} on PHP ${{ matrix.php }} with ${{ matrix.composer }} dependency preference (${{ matrix.os }})
+  unittests-directly-on-os:
+    name: Run unit tests on PHP ${{ matrix.php }} with ${{ matrix.composer }} dependency preference (${{ matrix.os }})
     strategy:
       fail-fast: false
       matrix:
-        os: [windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
         php: ${{ fromJson(needs.supported-versions-matrix.outputs.version) }}
         composer: [lowest, current, highest]
     needs:
@@ -212,7 +212,7 @@ jobs:
       - lint-yaml
       - lint-json
       - qa
-      - qa-non-linux
+      - unittests-directly-on-os
       - qodana
     runs-on: ubuntu-latest
     steps:
