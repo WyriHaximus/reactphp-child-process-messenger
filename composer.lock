@@ -1213,21 +1213,21 @@
         },
         {
             "name": "wyrihaximus/composer-update-bin-autoload-path",
-            "version": "1.0.1",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WyriHaximus/php-composer-update-bin-autoload-path.git",
-                "reference": "c9b70e4d7e3f6bcfc16890bdffd0f1f2f22c28a7"
+                "reference": "33413e3af4f4d7ab4de3653a706aed57f51e84af"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WyriHaximus/php-composer-update-bin-autoload-path/zipball/c9b70e4d7e3f6bcfc16890bdffd0f1f2f22c28a7",
-                "reference": "c9b70e4d7e3f6bcfc16890bdffd0f1f2f22c28a7",
+                "url": "https://api.github.com/repos/WyriHaximus/php-composer-update-bin-autoload-path/zipball/33413e3af4f4d7ab4de3653a706aed57f51e84af",
+                "reference": "33413e3af4f4d7ab4de3653a706aed57f51e84af",
                 "shasum": ""
             },
             "require": {
                 "composer-plugin-api": "^2",
-                "php": "^7.4"
+                "php": "^8 || ^7.4"
             },
             "require-dev": {
                 "wyrihaximus/test-utilities": "^3"
@@ -1251,7 +1251,7 @@
             "description": "🏰 Composer plugin that fills a bin file with the absolute composer autoload path",
             "support": {
                 "issues": "https://github.com/WyriHaximus/php-composer-update-bin-autoload-path/issues",
-                "source": "https://github.com/WyriHaximus/php-composer-update-bin-autoload-path/tree/1.0.1"
+                "source": "https://github.com/WyriHaximus/php-composer-update-bin-autoload-path/tree/1.1.1"
             },
             "funding": [
                 {
@@ -1259,7 +1259,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-11-07T16:35:14+00:00"
+            "time": "2021-03-14T20:55:38+00:00"
         },
         {
             "name": "wyrihaximus/constants",
