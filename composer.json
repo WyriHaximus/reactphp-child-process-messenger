@@ -10,9 +10,9 @@
         }
     ],
     "require": {
-        "php": "^7.4",
-        "ext-hash": "^7.4",
-        "ext-json": "^7.4",
+        "php": "^8 || ^7.4",
+        "ext-hash": "^8 || ^7.4",
+        "ext-json": "^8 || ^7.4",
         "cakephp/utility": "^4.2.4",
         "doctrine/inflector": "^2.0.3",
         "evenement/evenement": "^3.0.1",
