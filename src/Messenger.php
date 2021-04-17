@@ -13,7 +13,7 @@ use WyriHaximus\React\ChildProcess\Messenger\Messages\LineInterface;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Message;
 use WyriHaximus\React\ChildProcess\Messenger\Messages\Rpc;
 
-class Messenger extends EventEmitter
+class Messenger extends EventEmitter implements MessengerInterface
 {
     const INTERVAL = 0.1;
     const TERMINATE_RPC = 'wyrihaximus.react.child-process.messenger.terminate';
