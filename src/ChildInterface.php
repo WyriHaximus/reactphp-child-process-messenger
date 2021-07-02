@@ -8,5 +8,5 @@ use React\EventLoop\LoopInterface;
 
 interface ChildInterface
 {
-    public static function create(Messenger $messenger, LoopInterface $loop): void;
+    public static function create(Messenger $messenger, LoopInterface $loop);
 }
