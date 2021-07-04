@@ -8,10 +8,5 @@ use React\EventLoop\LoopInterface;
 
 interface ChildInterface
 {
-    /**
-     * @return void
-     *
-     * @psalm-suppress MissingReturnType
-     */
-    public static function create(Messenger $messenger, LoopInterface $loop); // phpcs:disabled
+    public static function create(Messenger $messenger, LoopInterface $loop): void;
 }
