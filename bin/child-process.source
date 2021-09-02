@@ -3,11 +3,21 @@
 
 use WyriHaximus\React\ChildProcess\Messenger\ChildProcess\Factory;
 
+/**
+ * Require Composer's autoloader
+ */
 (function() {
-    /**
-     * Require Composer's autoloader
-     */
-    require_once '%s';
+    foreach ([
+        '%s',
+        dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'vendor.php',
+        dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'autoload.php',
+    ] as $path) {
+        if (file_exists($path)) {
+            require_once $path;
+
+            return;
+        }
+    }
 })();
 
 (function(array $argv): void {
