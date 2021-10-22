@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": "^8 || ^7.4",
+        "php": ">=7.4",
         "ext-hash": "^8 || ^7.4",
         "ext-json": "^8 || ^7.4",
         "cakephp/utility": "^4.2.4",
@@ -19,11 +19,12 @@
         "indigophp/hash-compat": "^1.1",
         "paragonie/random_compat": "^9.0 || ^2.0",
         "react/child-process": "^0.6.2",
-        "react/event-loop": "^1.1.1",
+        "react/event-loop": "^1.2",
         "react/promise": "^2.8",
         "react/promise-stream": "^1.2",
         "react/promise-timer": "^1.6",
-        "react/socket": "^1.6",
+        "react/socket": "^1.9",
+        "symfony/polyfill-php81": "^1.23",
         "thecodingmachine/safe": "^1.3.3",
         "wyrihaximus/composer-update-bin-autoload-path": "^1.1.1",
         "wyrihaximus/constants": "^1.6",
@@ -32,7 +33,8 @@
         "wyrihaximus/ticking-promise": "^2"
     },
     "require-dev": {
-        "wyrihaximus/async-test-utilities": "^3.4.18"
+        "phpstan/phpstan-phpunit": "^0.12.22",
+        "wyrihaximus/async-test-utilities": ">=4.0.5"
     },
     "config": {
         "platform": {
@@ -43,7 +45,8 @@
     "extra": {
         "unused": [
             "php",
-            "react/promise-stream"
+            "react/promise-stream",
+            "symfony/polyfill-php81"
         ],
         "wyrihaximus": {
             "bin-autoload-path-update": [

@@ -11,7 +11,7 @@ use React\EventLoop\TimerInterface;
 use React\Promise;
 use React\Socket\ConnectionInterface;
 use React\Socket\Connector;
-use React\Socket\Server;
+use React\Socket\SocketServer;
 use RuntimeException;
 use Throwable;
 use WyriHaximus\FileDescriptors\Factory as FileDescriptorsFactory;
@@ -54,7 +54,7 @@ final class Factory
         array $options = []
     ): Promise\PromiseInterface {
         return new Promise\Promise(static function (callable $resolve, callable $reject) use ($process, $loop, $options): void {
-            $server = new Server('127.0.0.1:0', $loop);
+            $server = new SocketServer('127.0.0.1:0', [], $loop);
 
             $options['random']  = bin2hex(random_bytes(32));
             $options['address'] = (string) $server->getAddress();
@@ -105,7 +105,7 @@ final class Factory
                 }
             }
 
-            $server         = new Server('127.0.0.1:0', $loop);
+            $server         = new SocketServer('127.0.0.1:0', [], $loop);
             $connectTimeout = $options['connect-timeout'] ?? self::DEFAULT_CONNECT_TIMEOUT;
             $options        = new Options(bin2hex(random_bytes(32)), (string) $server->getAddress(), $options['connect-timeout'] ?? self::DEFAULT_CONNECT_TIMEOUT);
 
@@ -187,7 +187,7 @@ final class Factory
 
     private static function startParent(
         Process $process,
-        Server $server,
+        SocketServer $server,
         LoopInterface $loop,
         Options $options
     ): Promise\PromiseInterface {

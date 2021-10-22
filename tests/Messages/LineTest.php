@@ -46,7 +46,7 @@ final class LineTest extends TestCase
      *
      * @dataProvider providerBasic
      */
-    public function testBasic(ActionableMessageInterface $input, $output): void
+    public function testBasic(ActionableMessageInterface $input, /** @phpcsSuppress SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint */ $output): void
     {
         $line = new Line($input, []);
         self::assertSame($input, $line->getPayload());

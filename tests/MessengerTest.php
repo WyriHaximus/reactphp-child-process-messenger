@@ -6,6 +6,7 @@ namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 
 use Exception;
 use Prophecy\Argument;
+use React\EventLoop\Loop;
 use React\Promise\PromiseInterface;
 use React\Socket\ConnectionInterface;
 use Throwable;
@@ -45,7 +46,7 @@ final class MessengerTest extends TestCase
         self::assertFalse($messenger->hasRpc('tset'));
         self::assertTrue($messenger->hasRpc('test'));
 
-        self::assertSame($payload, await($messenger->callRpc('test', new Payload($payload)), \React\EventLoop\Factory::create()));
+        self::assertSame($payload, await($messenger->callRpc('test', new Payload($payload)), Loop::get()));
 
         self::assertTrue($callableFired);
 

@@ -6,6 +6,8 @@ namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
 use ArrayAccess;
 use JsonSerializable;
+// phpcs:ignore SlevomatCodingStandard.Namespaces.UnusedUses.UnusedUse
+use ReturnTypeWillChange;
 
 /**
  * @phpstan-ignore-next-line
@@ -76,7 +78,7 @@ final class Payload implements JsonSerializable, ArrayAccess
      *
      * @return mixed|null
      */
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->payload[$offset] ?? null;
