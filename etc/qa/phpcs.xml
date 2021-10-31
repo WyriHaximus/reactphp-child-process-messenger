@@ -9,5 +9,10 @@
     <file>../../src</file>
     <file>../../tests</file>
 
-    <rule ref="WyriHaximus-OSS" />
+    <rule ref="WyriHaximus-OSS">
+        <!-- Running these on PHP 8.1 suggests to add "mixed", which is not available on PHP 7.4 -->
+        <exclude name="SlevomatCodingStandard.TypeHints.PropertyTypeHint.MissingNativeTypeHint" />
+        <exclude name="SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint" />
+        <exclude name="SlevomatCodingStandard.TypeHints.ReturnTypeHint.MissingNativeTypeHint" />
+    </rule>
 </ruleset>

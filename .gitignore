@@ -1,4 +1,6 @@
 bin/child-process
 etc/qa/.phpunit.result.cache
+etc/qa/.phpcs.cache
 var/
 vendor/
+.idea

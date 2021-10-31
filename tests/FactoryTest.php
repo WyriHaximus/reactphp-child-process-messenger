@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace WyriHaximus\React\Tests\ChildProcess\Messenger;
 
 use React\ChildProcess\Process;
-use React\EventLoop\Factory as EventLoopFactory;
+use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
 use React\Promise\PromiseInterface;
 use Throwable;
@@ -25,7 +25,7 @@ final class FactoryTest extends TestCase
 
     public function setUp(): void
     {
-        $this->loop    = EventLoopFactory::create();
+        $this->loop    = Loop::get();
         $this->process = $this->prophesize(Process::class)->reveal();
     }
 
@@ -46,14 +46,13 @@ final class FactoryTest extends TestCase
      */
     public function parentFromClassActualRun(): void
     {
-        $loop    = \React\EventLoop\Factory::create();
         $payload = await(
-            Factory::parentFromClass(ReturnChild::class, $loop)->then(
+            Factory::parentFromClass(ReturnChild::class, $this->loop)->then(
                 static function (MessengerInterface $messenger): PromiseInterface {
                     return $messenger->rpc(MessagesFactory::rpc('return', ['foo' => 'bar']));
                 }
             ),
-            $loop
+            $this->loop
         );
         self::assertSame(['foo' => 'bar'], $payload->getPayload());
     }

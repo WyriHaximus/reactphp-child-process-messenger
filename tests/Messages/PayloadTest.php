@@ -14,6 +14,7 @@ final class PayloadTest extends TestCase
         $payload = new Payload(['foo' => 'bar']);
 
         self::assertEquals(['foo' => 'bar'], $payload->getPayload());
+        // @phpstan-ignore-next-line - https://github.com/phpstan/phpstan-phpunit/issues/100
         self::assertArrayHasKey('foo', $payload);
         self::assertEquals('bar', $payload['foo']);
         $payload['ajsdhjkfad'] = 'abc';
