@@ -9,7 +9,7 @@ use WyriHaximus\React\ChildProcess\Messenger\ChildProcess\Factory;
 (function() {
     foreach ([
         '%s',
-        dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'vendor.php',
+        dirname(__DIR__) . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php',
         dirname(__DIR__, 3) . DIRECTORY_SEPARATOR . 'autoload.php',
     ] as $path) {
         if (file_exists($path)) {
