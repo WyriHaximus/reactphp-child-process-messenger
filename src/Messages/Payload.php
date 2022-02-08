@@ -76,6 +76,7 @@ final class Payload implements JsonSerializable, ArrayAccess
      *
      * @return mixed|null
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->payload[$offset] ?? null;
