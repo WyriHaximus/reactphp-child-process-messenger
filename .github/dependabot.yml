@@ -1,6 +1,17 @@
 version: 2
 updates:
     - package-ecosystem: "composer"
+      target-branch: "master"
+      directory: "/"
+      schedule:
+          interval: "daily"
+      labels:
+          - "Dependencies 📦"
+          - "PHP 🐘"
+      versioning-strategy: "widen"
+      open-pull-requests-limit: 1
+    - package-ecosystem: "composer"
+      target-branch: "4.x"
       directory: "/"
       schedule:
           interval: "daily"
