@@ -29,12 +29,20 @@
         "wyrihaximus/constants": "^1.6",
         "wyrihaximus/file-descriptors": "^1.1",
         "wyrihaximus/json-throwable": "^4.1",
-        "wyrihaximus/ticking-promise": "^2"
+        "wyrihaximus/ticking-promise": "^2 || ^3"
     },
     "require-dev": {
         "wyrihaximus/async-test-utilities": "^3.4.18"
     },
     "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "ergebnis/composer-normalize": true,
+            "icanhazstring/composer-unused": true,
+            "infection/extension-installer": true,
+            "wyrihaximus/composer-update-bin-autoload-path": true
+        },
         "platform": {
             "php": "7.4.7"
         },
