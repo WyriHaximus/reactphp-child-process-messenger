@@ -33,6 +33,19 @@
     "require-dev": {
         "wyrihaximus/async-test-utilities": "^3.4.18"
     },
+    "autoload": {
+        "psr-4": {
+            "WyriHaximus\\React\\ChildProcess\\Messenger\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "WyriHaximus\\React\\Tests\\ChildProcess\\Messenger\\": "tests/"
+        },
+        "files": [
+            "examples/ExamplesChildProcess.php"
+        ]
+    },
     "config": {
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
@@ -57,19 +70,6 @@
                 "bin/child-process"
             ]
         }
-    },
-    "autoload": {
-        "psr-4": {
-            "WyriHaximus\\React\\ChildProcess\\Messenger\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "WyriHaximus\\React\\Tests\\ChildProcess\\Messenger\\": "tests/"
-        },
-        "files": [
-            "examples/ExamplesChildProcess.php"
-        ]
     },
     "scripts": {
         "post-install-cmd": [
