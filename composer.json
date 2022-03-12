@@ -16,7 +16,6 @@
         "cakephp/utility": "^4.2.4",
         "doctrine/inflector": "^2.0.3",
         "evenement/evenement": "^3.0.1",
-        "indigophp/hash-compat": "^1.1",
         "paragonie/random_compat": "^9.0 || ^2.0",
         "react/child-process": "^0.6.2",
         "react/event-loop": "^1.2",
