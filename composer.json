@@ -29,7 +29,7 @@
         "wyrihaximus/constants": "^1.6",
         "wyrihaximus/file-descriptors": "^1.1",
         "wyrihaximus/json-throwable": "^4.1",
-        "wyrihaximus/ticking-promise": "^2"
+        "wyrihaximus/ticking-promise": "^2 || ^3"
     },
     "require-dev": {
         "phpstan/phpstan-phpunit": "^0.12.22",
