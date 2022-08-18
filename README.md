@@ -40,7 +40,7 @@ final class ExampleChild implements ChildInterface
 }
 ```
 
-On the parent side you only need need to call to spawn a child running that class:
+On the parent side you only need to call to spawn a child running that class:
 
 ```php
 MessengerFactory::parentFromClass('ExampleChild', $loop)->then(static function (Messenger $messenger): void {
