@@ -124,7 +124,7 @@ final class Factory
                 $fds
             );
 
-            futurePromise($loop)->then(static function () use ($process, $server, $loop, $options, $connectTimeout): Promise\PromiseInterface {
+            futurePromise()->then(static function () use ($process, $server, $loop, $options, $connectTimeout): Promise\PromiseInterface {
                 return Promise\Timer\timeout(self::startParent($process, $server, $loop, $options), $connectTimeout, $loop);
             })->then(static function (Messenger $messenger) use ($class): Promise\PromiseInterface {
                 return $messenger->rpc(MessengesFactory::rpc(Factory::PROCESS_REGISTER, ['className' => $class]))->then(static function () use ($messenger): Promise\PromiseInterface {
