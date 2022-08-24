@@ -29,11 +29,24 @@
         "wyrihaximus/constants": "^1.6",
         "wyrihaximus/file-descriptors": "^1.1",
         "wyrihaximus/json-throwable": "^4.1",
-        "wyrihaximus/ticking-promise": "^2"
+        "wyrihaximus/ticking-promise": "^3"
     },
     "require-dev": {
         "phpstan/phpstan-phpunit": "^0.12.22",
         "wyrihaximus/async-test-utilities": ">=4.0.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "WyriHaximus\\React\\ChildProcess\\Messenger\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "WyriHaximus\\React\\Tests\\ChildProcess\\Messenger\\": "tests/"
+        },
+        "files": [
+            "examples/ExamplesChildProcess.php"
+        ]
     },
     "config": {
         "platform": {
@@ -52,19 +65,6 @@
                 "bin/child-process"
             ]
         }
-    },
-    "autoload": {
-        "psr-4": {
-            "WyriHaximus\\React\\ChildProcess\\Messenger\\": "src/"
-        }
-    },
-    "autoload-dev": {
-        "psr-4": {
-            "WyriHaximus\\React\\Tests\\ChildProcess\\Messenger\\": "tests/"
-        },
-        "files": [
-            "examples/ExamplesChildProcess.php"
-        ]
     },
     "scripts": {
         "post-install-cmd": [
