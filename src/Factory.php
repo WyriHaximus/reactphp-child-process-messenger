@@ -213,9 +213,11 @@ final class Factory
                         return Promise\reject(new RuntimeException('Handshake failed'));
                     })->then(static function (MessengerInterface $messenger) use ($server, $resolve): void {
                         $server->close();
+                        $server->removeAllListeners('connection');
                         $resolve($messenger);
                     }, static function (Throwable $throwable) use ($server, $reject): void {
                         $server->close();
+                        $server->removeAllListeners();
                         $reject($throwable);
                     });
                 }
@@ -227,6 +229,7 @@ final class Factory
             $process->start($loop);
         }, static function () use ($server, $process): void {
             $server->close();
+            $server->removeAllListeners();
             $process->terminate();
         }))->then(static function (Messenger $messenger) use ($loop, $process): Messenger {
             $loop->addPeriodicTimer(self::INTERVAL, static function (TimerInterface $timer) use ($messenger, $loop, $process): void {

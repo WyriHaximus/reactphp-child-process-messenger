@@ -56,4 +56,18 @@ final class FactoryTest extends TestCase
         );
         self::assertSame(['foo' => 'bar'], $payload->getPayload());
     }
+
+    public function testNoGarbageCollectionAfterSuccessfulRun(): void
+    {
+        \gc_collect_cycles();
+        $payload = await(
+            Factory::parentFromClass(ReturnChild::class, $this->loop)->then(
+                static function (MessengerInterface $messenger): PromiseInterface {
+                    return $messenger->rpc(MessagesFactory::rpc('return', ['foo' => 'bar']));
+                }
+            ),
+            $this->loop
+        );
+        $this->assertSame(0, \gc_collect_cycles());
+    }
 }
