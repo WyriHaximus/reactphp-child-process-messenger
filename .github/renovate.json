@@ -1,0 +1,26 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "packageRules": [
+    {
+      "managers": ["composer"],
+      "rangeStrategy": "in-range-only"
+    },
+    {
+      "managers": ["composer"],
+      "rangeStrategy": "bump"
+    },
+    {
+      "managers": ["composer"],
+      "matchPackageNames": ["php"],
+      "enabled": false
+    }
+  ],
+  "extends": [
+    "config:base",
+    ":widenPeerDependencies",
+    ":rebaseStalePrs",
+    ":prHourlyLimitNone",
+    ":prConcurrentLimitNone",
+    "group:phpstan"
+  ]
+}
