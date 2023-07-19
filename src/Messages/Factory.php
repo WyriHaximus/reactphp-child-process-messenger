@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace WyriHaximus\React\ChildProcess\Messenger\Messages;
 
+use Doctrine\Inflector\Inflector;
 use Doctrine\Inflector\InflectorFactory;
 use Exception;
 use Throwable;
@@ -12,13 +13,16 @@ use function Safe\json_decode;
 
 final class Factory
 {
+    private static ?Inflector $inflector = null;
+
     /**
      * @param array<mixed> $lineOptions
      */
     public static function fromLine(string $line, array $lineOptions): ActionableMessageInterface
     {
         $line   = json_decode($line, true);
-        $method = InflectorFactory::create()->build()->camelize($line['type']);
+        self::$inflector ??= InflectorFactory::create()->build();
+        $method = self::$inflector->camelize($line['type']);
         if ($method === 'secure') {
             return static::secureFromLine($line, $lineOptions);
         }
