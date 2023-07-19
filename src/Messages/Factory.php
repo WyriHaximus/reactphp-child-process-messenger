@@ -20,9 +20,9 @@ final class Factory
      */
     public static function fromLine(string $line, array $lineOptions): ActionableMessageInterface
     {
-        $line   = json_decode($line, true);
+        $line              = json_decode($line, true);
         self::$inflector ??= InflectorFactory::create()->build();
-        $method = self::$inflector->camelize($line['type']);
+        $method            = self::$inflector->camelize($line['type']);
         if ($method === 'secure') {
             return static::secureFromLine($line, $lineOptions);
         }

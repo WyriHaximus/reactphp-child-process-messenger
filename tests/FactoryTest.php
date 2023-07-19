@@ -16,6 +16,7 @@ use WyriHaximus\React\ChildProcess\Messenger\ReturnChild;
 use WyriHaximus\TestUtilities\TestCase;
 
 use function Clue\React\Block\await;
+use function gc_collect_cycles;
 
 final class FactoryTest extends TestCase
 {
@@ -59,7 +60,7 @@ final class FactoryTest extends TestCase
 
     public function testNoGarbageCollectionAfterSuccessfulRun(): void
     {
-        \gc_collect_cycles();
+        gc_collect_cycles();
         $payload = await(
             Factory::parentFromClass(ReturnChild::class, $this->loop)->then(
                 static function (MessengerInterface $messenger): PromiseInterface {
@@ -68,6 +69,6 @@ final class FactoryTest extends TestCase
             ),
             $this->loop
         );
-        $this->assertSame(0, \gc_collect_cycles());
+        $this->assertSame(0, gc_collect_cycles());
     }
 }

@@ -10,7 +10,7 @@
         }
     ],
     "require": {
-        "php": ">=7.4",
+        "php": "^8 || ^7.4",
         "ext-hash": "^8 || ^7.4",
         "ext-json": "^8 || ^7.4",
         "cakephp/utility": "^4.2.4",
@@ -33,7 +33,7 @@
     },
     "require-dev": {
         "phpstan/phpstan-phpunit": "^0.12.22",
-        "wyrihaximus/async-test-utilities": ">=4.0.5"
+        "wyrihaximus/async-test-utilities": "^4.2.2"
     },
     "autoload": {
         "psr-4": {
@@ -49,6 +49,13 @@
         ]
     },
     "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true,
+            "infection/extension-installer": true,
+            "ergebnis/composer-normalize": true,
+            "icanhazstring/composer-unused": true,
+            "wyrihaximus/composer-update-bin-autoload-path": true
+        },
         "platform": {
             "php": "7.4.7"
         },
