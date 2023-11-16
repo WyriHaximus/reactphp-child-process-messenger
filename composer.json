@@ -19,7 +19,7 @@
         "paragonie/random_compat": "^9.0 || ^2.0",
         "react/child-process": "^0.6.2",
         "react/event-loop": "^1.2",
-        "react/promise": "^2.8",
+        "react/promise": "^3.1.0",
         "react/promise-stream": "^1.2",
         "react/promise-timer": "^1.6",
         "react/socket": "^1.9",
