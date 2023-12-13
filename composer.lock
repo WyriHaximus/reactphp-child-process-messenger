@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ac4cb8b264095f4e2a1da18af712346c",
+    "content-hash": "e29f0d2400fd42e058a81ca7403f5ed5",
     "packages": [
         {
             "name": "cakephp/core",
@@ -756,16 +756,16 @@
         },
         {
             "name": "react/promise-stream",
-            "version": "v1.6.0",
+            "version": "v1.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/promise-stream.git",
-                "reference": "87d1399a33926fd5ba28a7647346b71482787502"
+                "reference": "5c7ec3450f558deb779742e33967d837e2db7871"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/promise-stream/zipball/87d1399a33926fd5ba28a7647346b71482787502",
-                "reference": "87d1399a33926fd5ba28a7647346b71482787502",
+                "url": "https://api.github.com/repos/reactphp/promise-stream/zipball/5c7ec3450f558deb779742e33967d837e2db7871",
+                "reference": "5c7ec3450f558deb779742e33967d837e2db7871",
                 "shasum": ""
             },
             "require": {
@@ -774,7 +774,7 @@
                 "react/stream": "^1.0 || ^0.7 || ^0.6 || ^0.5 || ^0.4.6"
             },
             "require-dev": {
-                "phpunit/phpunit": "^9.5 || ^5.7 || ^4.8.35"
+                "phpunit/phpunit": "^9.6 || ^5.7 || ^4.8.36"
             },
             "type": "library",
             "autoload": {
@@ -823,7 +823,7 @@
             ],
             "support": {
                 "issues": "https://github.com/reactphp/promise-stream/issues",
-                "source": "https://github.com/reactphp/promise-stream/tree/v1.6.0"
+                "source": "https://github.com/reactphp/promise-stream/tree/v1.7.0"
             },
             "funding": [
                 {
@@ -831,7 +831,7 @@
                     "type": "open_collective"
                 }
             ],
-            "time": "2023-07-07T10:11:54+00:00"
+            "time": "2023-12-13T11:32:02+00:00"
         },
         {
             "name": "react/promise-timer",
@@ -10011,5 +10011,5 @@
     "platform-overrides": {
         "php": "7.4.7"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
