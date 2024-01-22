@@ -27,7 +27,7 @@
         "thecodingmachine/safe": "^1.3.3",
         "wyrihaximus/composer-update-bin-autoload-path": "^1.1.1",
         "wyrihaximus/constants": "^1.6",
-        "wyrihaximus/file-descriptors": "^1.1",
+        "wyrihaximus/file-descriptors": "^1.1.1",
         "wyrihaximus/json-throwable": "^4.1",
         "wyrihaximus/ticking-promise": "^3"
     },
