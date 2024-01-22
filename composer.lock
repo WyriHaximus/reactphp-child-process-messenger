@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ac4cb8b264095f4e2a1da18af712346c",
+    "content-hash": "3add35ae0c76cd1653a63bb6b7d5b8cc",
     "packages": [
         {
             "name": "cakephp/core",
@@ -1446,20 +1446,21 @@
         },
         {
             "name": "wyrihaximus/file-descriptors",
-            "version": "1.1.0",
+            "version": "1.1.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WyriHaximus/php-file-descriptors.git",
-                "reference": "7e2a8330c6dfe535a597e8a317b31dddf3b49398"
+                "reference": "de9c3dceecfab88c3f73aa6c9ea5372e7f635d7a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WyriHaximus/php-file-descriptors/zipball/7e2a8330c6dfe535a597e8a317b31dddf3b49398",
-                "reference": "7e2a8330c6dfe535a597e8a317b31dddf3b49398",
+                "url": "https://api.github.com/repos/WyriHaximus/php-file-descriptors/zipball/de9c3dceecfab88c3f73aa6c9ea5372e7f635d7a",
+                "reference": "de9c3dceecfab88c3f73aa6c9ea5372e7f635d7a",
                 "shasum": ""
             },
             "require": {
                 "php": "^8 || ^7.4",
+                "thecodingmachine/safe": "^2 || ^1",
                 "tivie/php-os-detector": "^1.1"
             },
             "require-dev": {
@@ -1485,7 +1486,7 @@
             "description": "List open file descriptors for the current process cross platform",
             "support": {
                 "issues": "https://github.com/WyriHaximus/php-file-descriptors/issues",
-                "source": "https://github.com/WyriHaximus/php-file-descriptors/tree/1.1.0"
+                "source": "https://github.com/WyriHaximus/php-file-descriptors/tree/1.1.1"
             },
             "funding": [
                 {
@@ -1493,7 +1494,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2020-11-25T23:03:56+00:00"
+            "time": "2024-01-22T13:34:53+00:00"
         },
         {
             "name": "wyrihaximus/json-throwable",
@@ -10011,5 +10012,5 @@
     "platform-overrides": {
         "php": "7.4.7"
     },
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
