@@ -33,7 +33,7 @@
     },
     "require-dev": {
         "phpstan/phpstan-phpunit": "^0.12.22",
-        "wyrihaximus/async-test-utilities": "^4.2.2"
+        "wyrihaximus/async-test-utilities": "^7.3.0"
     },
     "autoload": {
         "psr-4": {
