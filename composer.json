@@ -18,7 +18,7 @@
         "evenement/evenement": "^3.0.1",
         "paragonie/random_compat": "^9.0 || ^2.0",
         "react/child-process": "^0.6.2",
-        "react/event-loop": "^1.2",
+        "react/event-loop": "^1.5.0",
         "react/promise": "^2.8",
         "react/promise-stream": "^1.2",
         "react/promise-timer": "^1.6",
