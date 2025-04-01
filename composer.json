@@ -20,7 +20,7 @@
         "react/child-process": "^0.6.2",
         "react/event-loop": "^1.2",
         "react/promise": "^2.8",
-        "react/promise-stream": "^1.2",
+        "react/promise-stream": "^1.7.0",
         "react/promise-timer": "^1.6",
         "react/socket": "^1.9",
         "symfony/polyfill-php81": "^1.23",
